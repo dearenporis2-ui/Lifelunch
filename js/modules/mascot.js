@@ -1,20 +1,23 @@
-// Penny is LifeLaunch's friendly learning companion, drawn inline to keep the app asset-light.
+// Penny is LifeLaunch's friendly dollar-bill guide, drawn inline to keep the app asset-light.
 export function pennySvg(className = '') {
-  return `<svg class="penny-svg ${className}" viewBox="0 0 140 150" aria-hidden="true" focusable="false">
-    <ellipse cx="70" cy="140" rx="34" ry="6" fill="#244A40" opacity=".13"/>
-    <path class="penny-tail" d="M98 104c25 5 33-10 22-21-9-9-22-2-17 7" fill="none" stroke="#F4B942" stroke-width="13" stroke-linecap="round"/>
-    <path d="M98 104c25 5 33-10 22-21-9-9-22-2-17 7" fill="none" stroke="#FFE28A" stroke-width="4" stroke-linecap="round"/>
-    <path d="M47 104q-14 7-18 17m64-17q14 7 18 17" fill="none" stroke="#087D67" stroke-width="10" stroke-linecap="round"/>
-    <path d="M54 111q-4 15-1 21m31-21q4 15 1 21" fill="none" stroke="#087D67" stroke-width="10" stroke-linecap="round"/>
-    <path d="M47 128h12m20 0h12" fill="none" stroke="#075F54" stroke-width="8" stroke-linecap="round"/>
-    <path d="M40 52 27 29q19-1 31 13m42 10 13-23q-19 0-31 13" fill="#087D67" stroke="#075F54" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M59 20q11-17 22 0-11 3-22 0Z" fill="#FFD15A" stroke="#D89926" stroke-width="2"/>
-    <path d="M38 57c0-22 14-37 32-37s32 15 32 37c0 25-14 41-32 41S38 82 38 57Z" fill="#25B992" stroke="#087D67" stroke-width="4"/>
-    <path d="M49 65q7-9 14 0m14 0q7-9 14 0" fill="none" stroke="#173D36" stroke-width="4" stroke-linecap="round"/>
-    <circle cx="54" cy="72" r="4" fill="#F48E78" opacity=".72"/><circle cx="86" cy="72" r="4" fill="#F48E78" opacity=".72"/>
-    <path d="M62 77q8 9 16 0" fill="none" stroke="#173D36" stroke-width="3.5" stroke-linecap="round"/>
-    <circle cx="70" cy="108" r="12" fill="#FFD15A" stroke="#D89926" stroke-width="2.5"/>
-    <path d="m70 101 2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#FFF8D8"/>
-    <path class="penny-wave-arm" d="M40 89q-15-9-18 5" fill="none" stroke="#087D67" stroke-width="9" stroke-linecap="round"/>
+  return `<svg class="penny-svg ${className}" viewBox="0 0 160 130" aria-hidden="true" focusable="false">
+    <ellipse cx="80" cy="119" rx="39" ry="6" fill="#244A40" opacity=".14"/>
+    <path d="M49 94q-4 13-2 20m59-20q4 13 2 20" fill="none" stroke="#176D50" stroke-width="8" stroke-linecap="round"/>
+    <path d="M42 113h12m49 0h12" fill="none" stroke="#105B46" stroke-width="7" stroke-linecap="round"/>
+    <path class="penny-wave-arm" d="M24 59Q5 51 14 34" fill="none" stroke="#176D50" stroke-width="8" stroke-linecap="round"/>
+    <path d="M136 63q18 8 12 23" fill="none" stroke="#176D50" stroke-width="8" stroke-linecap="round"/>
+    <rect x="20" y="18" width="120" height="79" rx="15" fill="#9BD7A8" stroke="#176D50" stroke-width="4"/>
+    <rect x="27" y="25" width="106" height="65" rx="10" fill="none" stroke="#5EAD79" stroke-width="2"/>
+    <path d="M117 20h8q13 0 13 13v8l-21-21Z" fill="#D2EFD5" stroke="#176D50" stroke-width="2"/>
+    <circle cx="42" cy="57" r="13" fill="#DDF1D8" stroke="#5EAD79" stroke-width="2"/>
+    <circle cx="118" cy="57" r="13" fill="#DDF1D8" stroke="#5EAD79" stroke-width="2"/>
+    <text x="42" y="62" text-anchor="middle" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#28724D">$</text>
+    <text x="118" y="62" text-anchor="middle" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#28724D">$</text>
+    <path d="M70 46q5-7 10 0m10 0q5-7 10 0" fill="none" stroke="#173D36" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="70" cy="54" r="2" fill="#173D36"/><circle cx="90" cy="54" r="2" fill="#173D36"/>
+    <path d="M76 64q4 4 8 0" fill="none" stroke="#173D36" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="67" cy="62" r="3" fill="#F28D76" opacity=".72"/><circle cx="93" cy="62" r="3" fill="#F28D76" opacity=".72"/>
+    <path d="M76 79q4-7 8 0 4-7 8 0" fill="none" stroke="#FFF8D8" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="m116 19 18 18" stroke="#176D50" stroke-width="1.5" opacity=".35"/>
   </svg>`;
 }

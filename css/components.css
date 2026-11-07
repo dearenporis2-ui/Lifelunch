@@ -132,13 +132,11 @@ transform:scale(.96);transition:top .6s var(--ease),left .6s var(--ease),transfo
 .node.done{background:var(--cash)}
 .node.locked{background:var(--line);color:var(--muted);box-shadow:0 6px 0 rgba(0,0,0,.08)}
 .start-tip{position:absolute;left:50%;top:-34px;background:#fff;border:2px solid var(--line);border-radius:8px;padding:2px 12px;font-weight:700;color:var(--u);animation:bob 1.4s ease-in-out infinite;pointer-events:none}
-.path-buddy{position:absolute;z-index:3;top:50%;width:82px;height:90px;pointer-events:none;transform:translateY(-50%);animation:pennyFloat 3.2s ease-in-out infinite}
+.path-buddy{position:absolute;z-index:3;top:50%;width:102px;height:84px;pointer-events:none;transform:translateY(-50%);animation:pennyFloat 3.2s ease-in-out infinite}
 .path-buddy.side-left{right:calc(100% + 8px)}.path-buddy.side-right{left:calc(100% + 8px)}
 .path-penny{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 7px 6px rgba(36,74,64,.16))}
-.path-buddy-bubble{position:absolute;top:-13px;z-index:1;width:132px;display:grid;gap:1px;padding:7px 10px;border:1px solid #E7EADD;border-radius:13px;background:#fff;color:#344F43;box-shadow:0 5px 14px rgba(32,67,53,.12);font-size:.69rem;line-height:1.28}
-.path-buddy-bubble::after{content:"";position:absolute;bottom:-5px;width:9px;height:9px;transform:rotate(45deg);border-right:1px solid #E7EADD;border-bottom:1px solid #E7EADD;background:#fff}
-.side-left .path-buddy-bubble{right:-22px}.side-left .path-buddy-bubble::after{right:17px}
-.side-right .path-buddy-bubble{left:-22px}.side-right .path-buddy-bubble::after{left:17px}
+.path-buddy-bubble{position:absolute;top:-51px;left:50%;z-index:1;width:132px;display:grid;gap:1px;padding:7px 10px;transform:translateX(-50%);border:1px solid #E7EADD;border-radius:13px;background:#fff;color:#344F43;box-shadow:0 5px 14px rgba(32,67,53,.12);font-size:.69rem;line-height:1.28}
+.path-buddy-bubble::after{content:"";position:absolute;left:calc(50% - 5px);bottom:-5px;width:9px;height:9px;transform:rotate(45deg);border-right:1px solid #E7EADD;border-bottom:1px solid #E7EADD;background:#fff}
 .path-buddy-bubble strong{color:#0B8C70;font-size:.66rem;letter-spacing:.07em;text-transform:uppercase}
 .path-buddy-bubble small{font-size:.68rem}
 @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-5px)}}
@@ -553,9 +551,9 @@ main:has(.dashboard){max-width:1480px;padding-top:clamp(28px,4vw,54px)}
 .goal-status span{color:#11A47D}
 .goal-status.complete{background:#E5F8EE;color:#14845F}
 .next-card{border-left:5px solid #11B88E!important;background:linear-gradient(145deg,#fff,#F7FCF9)}
-.next-penny{width:39px;height:42px;flex:none;display:block}
+.next-penny{width:51px;height:42px;flex:none;display:block}
 .penny-dashboard{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 4px 3px rgba(24,95,72,.14));animation:pennyFloat 3s ease-in-out infinite}
-.penny-svg .penny-wave-arm{transform-box:view-box;transform-origin:40px 89px;animation:pennyWave 2.8s ease-in-out infinite}
+.penny-svg .penny-wave-arm{transform-box:view-box;transform-origin:24px 59px;animation:pennyWave 2.8s ease-in-out infinite}
 @keyframes pennyFloat{0%,100%{translate:0 0}50%{translate:0 -5px}}
 @keyframes pennyWave{0%,75%,100%{transform:rotate(0)}82%{transform:rotate(-22deg)}89%{transform:rotate(15deg)}95%{transform:rotate(-12deg)}}
 .next-icon{color:#0B9B78;background:#E0F7EB}
@@ -907,7 +905,7 @@ body.menu-open{overflow:hidden}
   .quick-link{gap:4px;font-size:.65rem}
 }
 @media(max-width:720px){
-  .path-buddy{width:68px;height:76px}
+  .path-buddy{width:82px;height:68px}
   .path-buddy-bubble{width:118px;padding:6px 8px;font-size:.64rem}
   .path-buddy-bubble small{font-size:.63rem}
 }

@@ -25,7 +25,7 @@ The current app has 30 lessons across five learning paths: Earning and Taxes; Bu
 - Each lesson has a worked example, either as a lesson card or as an `example` field in its lesson JSON. The path session displays a real life example beside the lesson.
 - The path session now uses a wider learning scene with a large lesson or quiz panel, a friendly SVG mascot named Penny, the real life example, and a three step mini mission. Mobile layout stacks the side rail below the lesson.
 - Penny is an original dollar-bill character drawn as one shared inline SVG in `js/modules/mascot.js`. She appears beside the next open learning-path step, in the lesson side rail, and as a small guide on the dashboard’s next-step card. Only the first unfinished path node is marked current.
-- Penny acts as a lightweight guide: she points to the next lesson, gives short activity tips, and celebrates path completion. Her speech reveals word by word with a soft rise/fade and respects reduced-motion settings; she is not an AI mentor.
+- Penny acts as a lightweight guide: she points to the next lesson, gives varied lesson, example, question, calculator, and activity prompts, reacts differently to answers and streaks, and celebrates session completion. Her dialogue reveals word by word with a soft rise/fade and respects reduced-motion settings; she is not an AI mentor.
 - The shared lesson card and question markup is in `js/modules/lesson-ui.js`.
 - The AI mentor is a future idea; it has not been implemented. Character customization is also not implemented; the profile currently uses an initial as its avatar. There is no backend or cross device progress sync yet.
 

@@ -140,6 +140,7 @@ transform:scale(.96);transition:top .6s var(--ease),left .6s var(--ease),transfo
 .path-buddy-bubble strong{color:#0B8C70;font-size:.66rem;letter-spacing:.07em;text-transform:uppercase}
 .path-buddy-bubble small{font-size:.68rem}
 .penny-talk>span{display:inline-block;animation:pennyWordIn .34s cubic-bezier(.2,.75,.25,1) both}
+.penny-end-line{width:min(100%,560px);margin:18px auto 0;color:#16836B;font-weight:700;line-height:1.5;text-align:center}
 @keyframes pennyWordIn{from{opacity:0;transform:translateY(4px);filter:blur(1.5px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
 @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-5px)}}
 .chip.hearts{color:var(--bad)}

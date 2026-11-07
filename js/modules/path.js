@@ -10,7 +10,20 @@ import { pennySvg, pennyTalk } from './mascot.js';
 
 const COLORS = ['#0F7B5F', '#A8741A', '#3E4C59', '#6B5EA8', '#C4452F'];
 const OFFSETS = [0, 44, 68, 44, 0, -44, -68, -44];
-const PRAISE = ['Nice!', 'Correct!', 'Great job!', 'Well done!', 'Spot on!'];
+const PENNY_LINES = {
+  lesson: ['Let’s break this idea into one clear step.', 'No rush—the why is just as useful as the answer.', 'You’ll spot this idea in everyday money choices.', 'Keep this one in your back pocket.', 'A small detail here can make a big difference.', 'You’re building a skill you can use for real.', 'Let’s make this idea feel simple.', 'Little by little, money choices get easier.'],
+  example: ['Let’s see this idea out in the real world.', 'Look closely at what changes after this choice.', 'Can you spot the tradeoff?', 'Notice which number matters most here.', 'Imagine this in a real monthly budget.', 'This is where the idea starts to click.', 'Watch how one small choice changes the result.', 'Try explaining this example in your own words.'],
+  question: ['Read the whole question—what is it really asking?', 'Look for the detail that matters most.', 'You know more than you think. Take your time.', 'Try ruling out the choices that don’t fit.', 'Pause a moment; the clue is right there.', 'Think it through—there’s no rush.', 'Check each option against what you just learned.', 'What would you choose in real life?'],
+  calculator: ['Let’s work the numbers one step at a time.', 'Start with the amount you already know.', 'Try the math, then check if it feels right.', 'Watch how each number changes the total.', 'Change an input and see what happens.'],
+  activity: ['Give it a try—you can always adjust.', 'Make a choice and see what happens next.', 'Experiment a little and notice what changes.', 'Think about what you would choose in real life.', 'There’s more than one way to learn this.'],
+  correct: ['Exactly! You spotted the important detail.', 'That’s right—your reasoning paid off.', 'Nice work! Your money instincts are growing.', 'Yes! You worked that out carefully.', 'Good catch. That clue mattered.', 'You got it—keep that idea handy.', 'Right on. You’re getting sharper.', 'Great thinking—that’s the one.', 'That’s a smart money move.', 'Brilliant. You’re ready for the next one.'],
+  retry: ['Not quite, but now you know what to look for.', 'That’s okay—every try teaches you something.', 'Close! Check the explanation for the key detail.', 'Take a breath and see how the right choice fits.', 'Learning happens one answer at a time.', 'That one was tricky. You’ll recognize it next time.', 'Use this as a clue for the next question.', 'Good effort. Let’s keep building.'],
+  streak: ['{n} in a row! Your focus is showing.', 'You’re on fire—{n} straight!', '{n} straight answers. What a run!', 'Look at that streak—keep it going!'],
+  finish: ['You showed up and made progress. That counts!', 'Look how much you just learned. Nice work!', 'Another step toward feeling confident with money.', 'You did the work—take a moment to be proud.', 'That lesson is in the books. Onward!'],
+  complete: ['Path complete! You’ve built some brilliant money skills.', 'You made it all the way through—what a milestone!', 'Every step paid off. Look at you go!', 'You finished the path! That deserves a little celebration.', 'You’ve come a long way. Keep that confidence with you.'],
+  practice: ['Practice is progress. Nice showing up!', 'Every round makes these ideas easier to spot.', 'Good work putting your skills to use!', 'You’re building confidence one question at a time.']
+};
+const pennyLine = (lines, seed) => lines[Math.abs(seed) % lines.length];
 const ERR = '<div class="empty">Could not load content. Check your connection and refresh.</div>';
 export const sessionCount = s => Math.max(1, Math.round(s / 4)); // about 4 teaching cards per session
 const sessionsDone = (st, id, n) => (studied(st, id) ? n : Math.min(n, st.path?.[id] || 0));
@@ -81,11 +94,13 @@ async function startNode(root, ctx, idx, id, k) {
 export function runSession(root, ctx, o) {
   const queue = o.cards.map(c => ({ c, retry: false })), totalQ = o.cards.filter(c => c.type === 'quiz').length, useHearts = o.hearts !== false;
   let i = 0, firstRight = 0, combo = 0, best = 0, tipI = o.coach, tipQ = o.coach, scrollCueDismissed = false;
+  const sessionSeed = Date.now();
   document.body.classList.add('in-session'); root.onclick = root.oninput = root.onchange = null; ctx.audio.play('lessonStart');
   const exit = () => { document.body.classList.remove('in-session'); bump(root); (o.back || renderLearn)(root, ctx); };
   const shell = (body, foot) => {
     const c = queue[i]?.c || {}, stage = c.type === 'quiz' || c.kind === 'calc' || ACTIVITY_KINDS.includes(c.kind) ? 2 : c.kind === 'example' ? 1 : 0;
-    const cheer = c.type === 'quiz' ? 'You have got this. Think it through and choose the answer that fits.' : c.kind === 'example' ? 'Here is the idea out in the wild. Spot the choice that makes the difference.' : 'One clear money idea at a time. You are building a skill you can use.';
+    const cheerSet = c.type === 'quiz' ? PENNY_LINES.question : c.kind === 'example' ? PENNY_LINES.example : c.kind === 'calc' ? PENNY_LINES.calculator : ACTIVITY_KINDS.includes(c.kind) ? PENNY_LINES.activity : PENNY_LINES.lesson;
+    const cheer = pennyLine(cheerSet, sessionSeed + i);
     const stages = ['Get the idea', 'See it in real life', 'Try it yourself'];
     const examplePanel = c.kind === 'example'
       ? `<div class="rail-example-note"><span>LOOK CLOSER</span><h3>What makes this work?</h3><p>Notice the choice, the tradeoff, and what happens next. That is the useful part of the example.</p></div>`
@@ -123,7 +138,7 @@ export function runSession(root, ctx, o) {
   };
 
   function step() {
-    if (i >= queue.length) return o.onFinish({ acc: totalQ ? firstRight / totalQ : 1, best, exit });
+    if (i >= queue.length) return o.onFinish({ acc: totalQ ? firstRight / totalQ : 1, best, exit, seed: sessionSeed });
     const { c, retry } = queue[i], $ = s => root.querySelector(s);
     if (c.type === 'info') {
       const act = ACTIVITY_KINDS.includes(c.kind), tip = tipI && !act ? 'Tip: read the card, then tap Continue.' : '';
@@ -149,7 +164,9 @@ export function runSession(root, ctx, o) {
       else { combo = 0; opts.find(x => +x.dataset.n === pick).classList.add('wrong'); if (!retry) queue.push({ c, retry: true }); if (useHearts) ctx.update(s => loseHeart(s)); }
       ctx.audio.play(ok ? 'correct' : 'wrong');
       const foot = $('#foot'); foot.className = 's-foot ' + (ok ? 'ok' : 'bad');
-      foot.innerHTML = `<div class="fb"><strong>${ok ? (combo >= 3 ? `Streak of ${combo}!` : PRAISE[i % PRAISE.length]) : 'Not quite'}</strong><p>${c.why}</p>${ok ? '' : `<p>Correct answer: <b>${c.options[c.answer]}</b></p>`}</div>
+      const responseLines = ok ? combo >= 3 ? PENNY_LINES.streak.map(line => line.replace('{n}', combo)) : PENNY_LINES.correct : PENNY_LINES.retry;
+      const response = pennyLine(responseLines, sessionSeed + i + (retry ? 11 : 0));
+      foot.innerHTML = `<div class="fb"><strong class="penny-talk">${pennyTalk(response)}</strong><p>${c.why}</p>${ok ? '' : `<p>Correct answer: <b>${c.options[c.answer]}</b></p>`}</div>
         <button class="btn big ${ok ? 'primary' : 'danger-solid'}" id="cont">Continue</button>`;
       if (useHearts && $('.s-hearts')) $('.s-hearts').textContent = `♥ ${heartsNow(ctx.state)}`;
       $('#cont').focus();
@@ -159,14 +176,14 @@ export function runSession(root, ctx, o) {
   step();
 }
 
-function endScreen(root, { head, sub = '', stats, note = '', exit }) {
+function endScreen(root, { head, sub = '', stats, note = '', pennyLine: guideLine = pennyLine(PENNY_LINES.finish, Date.now()), exit }) {
   root.innerHTML = `<div class="session"><div class="confetti" aria-hidden="true">${Array.from({ length: 28 }, (_, n) => `<i style="left:${(n * 37) % 100}%;background:${COLORS[n % 5]};animation-delay:${(n % 7) * 0.08}s"></i>`).join('')}</div>
-    <div class="s-body center"><h1>${head}</h1>${sub ? `<p class="lede" style="margin:0 auto">${sub}</p>` : ''}<div class="stats">${stats.map(([k, v]) => `<div class="stat"><span>${k}</span><strong>${v}</strong></div>`).join('')}</div>${note}</div>
+    <div class="s-body center"><h1>${head}</h1>${sub ? `<p class="lede" style="margin:0 auto">${sub}</p>` : ''}<div class="stats">${stats.map(([k, v]) => `<div class="stat"><span>${k}</span><strong>${v}</strong></div>`).join('')}</div><p class="penny-end-line penny-talk">${pennyTalk(guideLine)}</p>${note}</div>
     <div class="s-foot"><button class="btn primary big" id="cont">Continue</button></div></div>`;
   root.querySelector('#cont').onclick = exit; root.querySelector('#cont').focus();
 }
 
-function finishNode(root, ctx, lesson, k, n, coach, { acc, best, exit }) {
+function finishNode(root, ctx, lesson, k, n, coach, { acc, best, exit, seed }) {
   const st = ctx.state, pct = Math.round(acc * 100), totalQ = lesson.cards.filter(c => c.type === 'quiz').length;
   const first = !(studied(st, lesson.id) || (st.path?.[lesson.id] || 0) > k), complete = k + 1 >= n;
   const bonus = (acc === 1 && totalQ ? 10 : 0) + (best >= 3 ? best * 2 : 0);
@@ -179,7 +196,7 @@ function finishNode(root, ctx, lesson, k, n, coach, { acc, best, exit }) {
   });
   ctx.audio.play('reward');
   const g = st.goal, goalLine = g?.done ? 'Daily goal reached.' : g ? `${g.xp} of ${GOAL_XP} XP toward today's goal.` : '';
-  endScreen(root, { head: complete ? `${lesson.title} complete!` : 'Session complete!', sub: first ? '' : 'Practice run: replays give a small XP bonus.',
+  endScreen(root, { head: complete ? `${lesson.title} complete!` : 'Session complete!', sub: first ? '' : 'Practice run: replays give a small XP bonus.', pennyLine: pennyLine(complete ? PENNY_LINES.complete : PENNY_LINES.finish, seed + best),
     stats: [['XP earned', `+${xp}`], ['Accuracy', `${pct}%`], ['Best streak', best]], note: `<p class="coach" style="text-align:left">${goalLine}${cash ? ` You also earned ${ctx.money(cash)}.` : ''}</p>`, exit });
   if (coach && complete) setTimeout(() => ctx.giftTour?.(), 1300);
 }
@@ -198,6 +215,6 @@ export async function startPractice(root, ctx, back) {
     const pct = Math.round(acc * 100), win = pct >= 60 && heartsNow(ctx.state) < MAX_HEARTS;
     ctx.update(s => { s.xp += 10; if (win) addHeart(s); });
     ctx.audio.play('reward');
-    endScreen(root, { head: 'Practice complete!', sub: win ? 'You won a heart back.' : pct < 60 ? 'Score 60% or more to win a heart back. Try again any time.' : '', stats: [['XP earned', '+10'], ['Accuracy', `${pct}%`], ['Hearts', `♥ ${heartsNow(ctx.state)}`]], exit });
+    endScreen(root, { head: 'Practice complete!', sub: win ? 'You won a heart back.' : pct < 60 ? 'Score 60% or more to win a heart back. Try again any time.' : '', pennyLine: pennyLine(PENNY_LINES.practice, Date.now()), stats: [['XP earned', '+10'], ['Accuracy', `${pct}%`], ['Hearts', `♥ ${heartsNow(ctx.state)}`]], exit });
   } });
 }

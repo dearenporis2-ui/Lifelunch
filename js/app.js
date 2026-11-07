@@ -112,9 +112,16 @@ async function renderDashboard(root) {
   const d = derive(state), C = 326.7, doneN = Object.keys(state.lessons).length;
   const all = idx ? idx.tracks.flatMap(t => t.lessons.map((l, i) => ({ ...l, open: i === 0 || studied(state, t.lessons[i - 1].id) }))) : [];
   const next = all.find(l => !studied(state, l.id) && l.open);
-  const pennyTip = next ? 'Take it one short lesson at a time. You’ve got this!' : idx ? 'You cleared every lesson—what a milestone!' : 'Let’s find your next lesson together.';
   const earned = BADGES.filter(b => state.badges.includes(b.id)), dailyDone = state.daily?.day === day(0);
   const gl = state.goal?.day === day(0) ? state.goal : { xp: 0, done: false };
+  const pennyLines = !next && idx
+    ? ['You cleared every lesson—what a milestone!', 'Look at all the money skills you’ve built. Brilliant work!', 'Every lesson complete! Your next adventure is around the corner.']
+    : gl.done
+      ? ['Daily goal reached! You showed up for yourself today.', 'Goal complete—look at you building good habits!', 'You made today count. Penny is proud of you!']
+      : state.streak > 1
+        ? [`${state.streak} days in a row—keep that lovely rhythm going!`, 'Your streak is growing, one small step at a time.', 'A little learning each day really adds up.']
+        : ['Take it one short lesson at a time. You’ve got this!', 'Ready when you are—let’s make one money idea click.', 'Small steps today, stronger money choices tomorrow.', 'Pick up one useful idea to take into your day.', 'A few minutes of learning can make future-you smile.', 'No rush. We’ll make progress one clear step at a time.', 'Your next win could be just one lesson away.'];
+  const pennyTip = pennyLines[Math.floor(Math.random() * pennyLines.length)];
   const lessonPct = idx?.total ? Math.round(doneN / idx.total * 100) : 0;
   root.innerHTML = `<div class="stack dashboard">
   <section class="hero dashboard-hero"><div class="hero-copy"><span class="hero-eyebrow"><i aria-hidden="true">✦</i> YOUR MONEY JOURNEY</span><h1>Welcome back, ${esc(state.name)} <span class="hero-wave" aria-hidden="true">✦</span></h1><p class="lede">Every small lesson is a step toward a more confident future.</p><a class="btn hero-cta" href="#/learn">Continue learning <span aria-hidden="true">→</span></a></div>

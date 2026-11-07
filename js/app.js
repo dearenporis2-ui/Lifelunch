@@ -39,7 +39,7 @@ function celebrate({ type, kicker, title, body, reward }) {
   const overlay = document.createElement('div'); overlay.className = `celebration-overlay celebration-${next.type}`;
   overlay.innerHTML = `<section class="celebration-card" role="dialog" aria-modal="true" aria-labelledby="celebration-title">
     <div class="celebration-burst" aria-hidden="true">${Array.from({ length: 24 }, (_, n) => { const angle = n * Math.PI / 12, radius = 95 + (n % 4) * 35; return `<i style="--i:${n};--h:${(n * 47) % 360};--dx:${Math.cos(angle) * radius}px;--dy:${Math.sin(angle) * radius}px"></i>`; }).join('')}</div>
-    <div class="celebration-emblem" aria-hidden="true">${next.type === 'level' ? `<span class="level-orbit"></span><b>${next.reward}</b>` : next.type === 'streak' ? '<span class="streak-flame">🔥</span><b>' + next.reward + '</b>' : `<span class="milestone-symbol">${next.type === 'badge' ? '🏅' : '✦'}</span><b>${next.reward}</b>`}</div>
+    <div class="celebration-emblem" aria-hidden="true">${next.type === 'level' ? `<span class="level-orbit"></span><b>${next.reward}</b>` : next.type === 'streak' ? '<span class="streak-flame">🔥</span><b>' + next.reward + '</b>' : next.type === 'badge' ? `<span class="badge-icon">${next.reward}</span>` : `<span class="milestone-symbol">✦</span><b>${next.reward}</b>`}</div>
     <span class="celebration-kicker">${next.kicker}</span><h2 id="celebration-title">${next.title}</h2><p>${next.body}</p>
     <button type="button" class="btn primary celebration-continue">Let’s go ${icon('arrow',17)}</button>
   </section>`;
@@ -86,7 +86,7 @@ function update(fn) {
   fn(state);
   if (state.xp > xp0) trackGoal(state.xp - xp0);
   for (const b of BADGES) if (!state.badges.includes(b.id) && b.test(state)) {
-    state.badges.push(b.id); toast(`Badge unlocked: ${b.name}`, 'gold'); audio.play('badge'); celebrate({ type: 'badge', kicker: 'BADGE UNLOCKED', title: b.name, body: b.desc, reward: '★' });
+    state.badges.push(b.id); toast(`Badge unlocked: ${b.name}`, 'gold'); audio.play('badge'); celebrate({ type: 'badge', kicker: 'BADGE UNLOCKED', title: b.name, body: b.desc, reward: b.icon });
   }
   if (levelOf(state.xp) > before) { const level = levelOf(state.xp); audio.play('levelup'); celebrate({ type: 'level', kicker: 'LEVEL UP', title: `You reached Level ${level}!`, body: 'Your money skills are growing. Keep building that momentum.', reward: level }); }
   save(); renderHud();

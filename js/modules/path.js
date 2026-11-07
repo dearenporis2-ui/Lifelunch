@@ -98,12 +98,12 @@ export function runSession(root, ctx, o) {
       <div class="s-progress"><div class="s-progress-label"><strong>${o.title}</strong><span>STEP ${i + 1} OF ${queue.length}</span></div>
       <div class="s-bar" role="progressbar" aria-label="Session progress" aria-valuemin="0" aria-valuemax="${queue.length}" aria-valuenow="${i}"><i style="width:${i / queue.length * 100}%"></i></div></div>
       ${useHearts ? `<span class="s-hearts" aria-label="Hearts">♥ ${heartsNow(ctx.state)}</span>` : ''}</div>
-      <div class="s-body"><div class="lesson-stage"><section class="lesson-main">${body}</section>${rail}</div></div><div class="s-foot" id="foot"><div class="session-scroll-cue" hidden>${icon('arrow',15,'scroll-cue-arrow')}<span>Scroll for Penny’s examples &amp; tips</span></div>${foot}</div></div>`;
+      <div class="s-body"><div class="lesson-stage"><section class="lesson-main">${body}</section>${rail}</div></div><div class="s-foot" id="foot"><div class="session-scroll-cue" hidden>${icon('arrow',15,'scroll-cue-arrow')}<span>Scroll down for examples &amp; Penny’s tips</span></div>${foot}</div></div>`;
     const sBody = root.querySelector('.s-body'), sFoot = root.querySelector('#foot'), cue = root.querySelector('.session-scroll-cue');
     const showScrollCue = () => {
       if (scrollCueDismissed || !sBody || !cue) return;
-      const canScroll = sBody.scrollHeight > sBody.clientHeight + 18;
-      cue.hidden = !canScroll; sFoot.classList.toggle('has-scroll-cue', canScroll);
+      const shouldCue = window.matchMedia('(max-width: 720px)').matches;
+      cue.hidden = !shouldCue; sFoot.classList.toggle('has-scroll-cue', shouldCue);
     };
     sBody.addEventListener('scroll', () => {
       if (sBody.scrollTop > 12 && !scrollCueDismissed) {

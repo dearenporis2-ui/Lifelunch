@@ -563,7 +563,7 @@ main:has(.dashboard){max-width:1480px;padding-top:clamp(28px,4vw,54px)}
 .session-scroll-cue[hidden]{display:none!important}
 @media(max-width:720px){
   .s-foot.has-scroll-cue{min-height:100px;flex-direction:column;gap:7px;padding-top:9px}
-  .session-scroll-cue{display:flex;align-items:center;justify-content:center;gap:7px;color:#577A6A;font-size:.74rem;font-weight:700;line-height:1.2}
+  .session-scroll-cue{display:flex;align-items:center;justify-content:center;gap:7px;padding:6px 12px;border:1px solid #D5E9DC;border-radius:99px;background:#F3FAF5;color:#476F5D;box-shadow:0 2px 8px rgba(30,87,57,.07);font-size:.74rem;font-weight:700;line-height:1.2}
   .scroll-cue-arrow{color:#0A9677;transform:rotate(90deg);animation:scrollCueNudge 1.35s ease-in-out infinite}
   .s-foot.has-scroll-cue .btn{min-height:50px}
 }

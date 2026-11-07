@@ -6,6 +6,7 @@ import { fmt, shuffle, studied } from './lessons.js';
 import { lessonCard, questionCard } from './lesson-ui.js';
 import { heartsNow, loseHeart, addHeart, msToNext, fmtWait, MAX_HEARTS, REFILL_COST, GOAL_XP } from './hearts.js';
 import { icon } from './icons.js';
+import { pennySvg } from './mascot.js';
 
 const COLORS = ['#0F7B5F', '#A8741A', '#3E4C59', '#6B5EA8', '#C4452F'];
 const OFFSETS = [0, 44, 68, 44, 0, -44, -68, -44];
@@ -23,15 +24,19 @@ export async function renderLearn(root, ctx) {
   if (root.dataset.rid !== rid) return;
   heartsNow(state);
   const trackIcons = ['coins', 'wallet', 'bank', 'chart', 'shield'];
+  let curSeen = false;
+  const hasPathProgress = Object.keys(state.studied || {}).length > 0 || Object.values(state.path || {}).some(n => n > 0);
+  const pennyLine = hasPathProgress ? 'One step at a time. You’ve got this!' : 'Ready for your first money mission?';
   root.innerHTML = `<div class="page-shell"><header class="page-intro"><span class="page-mark path-mark">${icon('route',26)}</span><div><span class="section-kicker">YOUR LEARNING JOURNEY</span><h1>Your path</h1><p class="lede">Short sessions that teach, then test you. Finish one to unlock the next.</p></div></header>` +
     idx.tracks.map((t, u) => {
-      let curSeen = false, gi = 0;
+      let gi = 0;
       const body = t.lessons.map(l => {
         const n = sessionCount(l.s), d = sessionsDone(state, l.id, n);
         const nodes = Array.from({ length: n }, (_, k) => {
           const isDone = k < d, isCur = !isDone && !curSeen; if (isCur) curSeen = true;
           const cls = isDone ? 'done' : isCur ? 'current' : 'locked';
-          return `<div class="node-wrap" style="--x:${OFFSETS[gi++ % OFFSETS.length]}px"><button class="node ${cls}" data-node="${l.id}:${k}" aria-label="${l.title}, part ${k + 1} of ${n}${isDone ? ', done' : isCur ? ', up next' : ', locked'}">${icon(isDone ? 'check' : isCur ? 'sparkles' : 'lock',isCur ? 25 : 22)}</button>${isCur ? '<span class="start-tip">Start</span>' : ''}</div>`;
+          const x = OFFSETS[gi++ % OFFSETS.length], buddy = isCur ? `<span class="path-buddy ${x > 0 ? 'side-left' : 'side-right'}">${pennySvg('path-penny')}<span class="path-buddy-bubble"><strong>Penny</strong><small>${pennyLine}</small></span></span>` : '';
+          return `<div class="node-wrap" style="--x:${x}px"><button class="node ${cls}" data-node="${l.id}:${k}" aria-label="${l.title}, part ${k + 1} of ${n}${isDone ? ', done' : isCur ? ', up next' : ', locked'}">${icon(isDone ? 'check' : isCur ? 'sparkles' : 'lock',isCur ? 25 : 22)}</button>${isCur ? '<span class="start-tip">Start</span>' : ''}${buddy}</div>`;
         }).join('');
         return `<div class="lesson-label">${l.title}</div><div class="nodes">${nodes}</div>`;
       }).join('');
@@ -88,7 +93,7 @@ export function runSession(root, ctx, o) {
       ? `<div class="rail-example-note"><span>LOOK CLOSER</span><h3>What makes this work?</h3><p>Notice the choice, the tradeoff, and what happens next. That is the useful part of the example.</p></div>`
       : `<div class="rail-example"><div class="rail-card-head"><span>REAL LIFE</span><b aria-hidden="true">↗</b></div><h3>See the idea in action</h3><div class="rail-example-copy">${o.example ? fmt(o.example) : '<p>Keep looking for this idea in everyday choices. Small decisions add up over time.</p>'}</div></div>`;
     const rail = `<aside class="lesson-rail" aria-label="Lesson side notes">
-      <div class="rail-buddy"><div class="buddy-art" aria-hidden="true"><svg viewBox="0 0 160 160" role="img"><ellipse cx="80" cy="145" rx="45" ry="8" fill="#31564B" opacity=".12"/><path d="M39 91 22 103q-7 6 1 12l17 4M121 91l17 12q7 6-1 12l-17 4" fill="none" stroke="#C7772E" stroke-width="9" stroke-linecap="round"/><circle cx="80" cy="78" r="51" fill="#FFD36B" stroke="#F0A93D" stroke-width="5"/><path d="M63 77q6-8 12 0M87 77q6-8 12 0" fill="none" stroke="#573F38" stroke-width="5" stroke-linecap="round"/><path d="M68 91q12 13 24 0" fill="none" stroke="#573F38" stroke-width="4" stroke-linecap="round"/><path d="m116 30 4 10 10 4-10 4-4 10-4-10-10-4 10-4z" fill="#E87C62"/><circle cx="43" cy="42" r="5" fill="#8FCBA4"/></svg></div><div><span class="buddy-label">Penny says</span><p>${cheer}</p></div></div>
+      <div class="rail-buddy"><div class="buddy-art" aria-hidden="true">${pennySvg('penny-session')}</div><div><span class="buddy-label">Penny says</span><p>${cheer}</p></div></div>
       ${examplePanel}<div class="rail-flow"><span class="rail-flow-title">YOUR MINI MISSION</span><ol>${stages.map((label, j) => `<li class="${j < stage ? 'done' : j === stage ? 'current' : ''}"><i>${j < stage ? '✓' : j + 1}</i><span>${label}</span></li>`).join('')}</ol></div>
     </aside>`;
     root.innerHTML = `<div class="session"><div class="s-top"><button class="s-close" aria-label="Quit session">✕</button>

@@ -23,6 +23,7 @@ The current app has 30 lessons across five learning paths: Earning and Taxes; Bu
 - On a browser’s first visit, a one-time early access notice explains this is a test build, progress stays in that browser/device, account linking and cloud saves are not available, and testers should use pretend details. Acknowledge it to begin the tutorial; `testNoticeSeen` is stored with local progress.
 - Each lesson has a worked example, either as a lesson card or as an `example` field in its lesson JSON. The path session displays a real life example beside the lesson.
 - The path session now uses a wider learning scene with a large lesson or quiz panel, a friendly SVG mascot named Penny, the real life example, and a three step mini mission. Mobile layout stacks the side rail below the lesson.
+- Penny now uses one shared inline SVG in `js/modules/mascot.js`, appearing beside the next open learning-path step, in the lesson side rail, and as a small guide on the dashboard’s next-step card. Only the first unfinished path node is marked current.
 - The shared lesson card and question markup is in `js/modules/lesson-ui.js`.
 - The AI mentor is a future idea; it has not been implemented. Character customization is also not implemented; the profile currently uses an initial as its avatar. There is no backend or cross device progress sync yet.
 

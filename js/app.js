@@ -9,6 +9,7 @@ import { renderLearn } from './modules/path.js';
 import { heartsNow, GOAL_XP } from './modules/hearts.js';
 import { startTutorial } from './modules/tutorial.js';
 import { icon } from './modules/icons.js';
+import { pennySvg } from './modules/mascot.js';
 
 const KEY = 'lifelaunch.v1';
 const fresh = () => ({ name: 'Player One', cash: 500, savings: 0, xp: 0, streak: 0, lastDay: null, lessons: {}, studied: {}, path: {}, hearts: 5, heartsAt: Date.now(), goal: null, badges: [], month: 1, draft: null, daily: null, dailyDone: 0, perfects: 0, testNoticeSeen: false, tutorialSeen: false, tutorialDone: false, bestScore: 0, history: [] });
@@ -126,7 +127,7 @@ async function renderDashboard(root) {
     <div class="tile mint"><span><i class="tile-icon">${icon('cap',19)}</i> LESSONS FINISHED</span><strong>${all.filter(l => studied(state, l.id)).length}<em> / ${idx ? idx.total : '–'}</em></strong><small>${lessonPct}% of your path explored</small></div></div>
   <div class="grid dashboard-panels">
   <section class="card daily-goal-card"><div class="panel-heading"><span class="panel-icon goal-icon">${icon('target',21)}</span><h2>Daily goal</h2><span class="reward-pill">+${GOAL_XP} XP</span></div><p>${gl.done ? 'Goal reached. Nice work!' : 'A little progress today goes a long way.'}</p><div class="bar goal-bar" role="progressbar" aria-label="Daily XP goal" aria-valuenow="${Math.min(gl.xp, GOAL_XP)}" aria-valuemin="0" aria-valuemax="${GOAL_XP}"><i style="width:${Math.min(100, gl.xp / GOAL_XP * 100)}%"></i></div><small class="goal-caption">${gl.xp} of ${GOAL_XP} XP ${gl.done ? 'earned today — you did it!' : 'earned today'}</small><div class="goal-status ${gl.done ? 'complete' : ''}"><span>${icon(gl.done ? 'check' : 'sparkles',16)}</span>${gl.done ? 'You showed up for yourself today.' : 'Complete a lesson or practice to reach your goal.'}</div></section>
-  <section class="card next-card"><div class="panel-heading"><span class="panel-icon next-icon">${icon('route',20)}</span><span class="section-kicker">YOUR NEXT STEP</span><span class="time-pill">5 min</span></div>${next
+  <section class="card next-card"><div class="panel-heading"><span class="next-penny" aria-hidden="true">${pennySvg('penny-dashboard')}</span><span class="section-kicker">PENNY’S PICK</span><span class="time-pill">5 min</span></div>${next
     ? `<h2>${next.title}</h2><p>${next.blurb}</p><a class="btn primary next-cta" href="#/learn">Continue your path ${icon('arrow',18)}</a>`
     : idx ? `<h2>Ready for your next milestone?</h2><p>All lessons cleared. Close more budget months to keep growing your net worth.</p><a class="btn primary next-cta" href="#/budget">Plan month ${state.month} ${icon('arrow',18)}</a>`
     : '<p>Lessons could not load. Check your connection and refresh.</p>'}</section>

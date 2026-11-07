@@ -20,11 +20,52 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const money = n => CURRENCY + Math.round(n).toLocaleString();
 const day = off => { const d = new Date(); d.setDate(d.getDate() + off); return d.toLocaleDateString('en-CA'); };
+const THEME_KEY = 'll.theme';
+let darkTheme = localStorage.getItem(THEME_KEY) === 'dark';
+document.documentElement.dataset.theme = darkTheme ? 'dark' : 'light';
 
 function toast(msg, kind = '') {
   const el = document.createElement('div'); el.className = 'toast ' + kind; el.textContent = msg;
   $('#toasts').append(el); setTimeout(() => el.remove(), 3200);
 }
+const celebrationQueue = [];
+let activeCelebration = false;
+function celebrate({ type, kicker, title, body, reward }) {
+  celebrationQueue.push({ type, kicker, title, body, reward });
+  if (activeCelebration) return;
+  const next = celebrationQueue.shift(); if (!next) return;
+  activeCelebration = true;
+  const previousFocus = document.activeElement;
+  const overlay = document.createElement('div'); overlay.className = `celebration-overlay celebration-${next.type}`;
+  overlay.innerHTML = `<section class="celebration-card" role="dialog" aria-modal="true" aria-labelledby="celebration-title">
+    <div class="celebration-burst" aria-hidden="true">${Array.from({ length: 24 }, (_, n) => { const angle = n * Math.PI / 12, radius = 95 + (n % 4) * 35; return `<i style="--i:${n};--h:${(n * 47) % 360};--dx:${Math.cos(angle) * radius}px;--dy:${Math.sin(angle) * radius}px"></i>`; }).join('')}</div>
+    <div class="celebration-emblem" aria-hidden="true">${next.type === 'level' ? `<span class="level-orbit"></span><b>${next.reward}</b>` : next.type === 'streak' ? '<span class="streak-flame">🔥</span><b>' + next.reward + '</b>' : `<span class="milestone-symbol">${next.type === 'badge' ? '🏅' : '✦'}</span><b>${next.reward}</b>`}</div>
+    <span class="celebration-kicker">${next.kicker}</span><h2 id="celebration-title">${next.title}</h2><p>${next.body}</p>
+    <button type="button" class="btn primary celebration-continue">Let’s go ${icon('arrow',17)}</button>
+  </section>`;
+  document.body.append(overlay);
+  let closing = false;
+  const finish = () => {
+    if (closing) return; closing = true;
+    document.removeEventListener('keydown', onKey); overlay.classList.add('celebration-exit');
+    setTimeout(() => { overlay.remove(); activeCelebration = false; if (previousFocus?.isConnected) previousFocus.focus(); const queued = celebrationQueue.shift(); if (queued) celebrate(queued); }, 220);
+  };
+  const onKey = e => { if (e.key === 'Escape') finish(); else if (e.key === 'Tab') { e.preventDefault(); overlay.querySelector('button').focus(); } };
+  overlay.addEventListener('click', e => { if (e.target === overlay || e.target.closest('.celebration-continue')) finish(); });
+  document.addEventListener('keydown', onKey); requestAnimationFrame(() => { overlay.classList.add('is-visible'); overlay.querySelector('button').focus(); });
+}
+function applyTheme() {
+  document.documentElement.dataset.theme = darkTheme ? 'dark' : 'light';
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', darkTheme ? '#101B20' : '#FFFFFF');
+  try { localStorage.setItem(THEME_KEY, darkTheme ? 'dark' : 'light'); } catch { /* preference is still applied for this page */ }
+  document.querySelectorAll('#theme-toggle,#theme-toggle-menu').forEach(button => {
+    const label = darkTheme ? 'Switch to light theme' : 'Switch to dark theme';
+    button.setAttribute('aria-label', label); button.setAttribute('title', label); button.setAttribute('aria-pressed', String(darkTheme));
+    const graphic = button.querySelector('.theme-icon'); if (graphic) graphic.innerHTML = icon(darkTheme ? 'sun' : 'moon', 18);
+    const text = button.querySelector('.theme-label'); if (text) text.textContent = darkTheme ? 'Light theme' : 'Dark theme';
+  });
+}
+applyTheme();
 function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { toast('Progress could not be saved in this browser', 'bad'); } }
 
 function derive(s) {
@@ -37,7 +78,7 @@ function trackGoal(gain) { // daily XP goal, with a small cash bonus the first t
   const t = day(0);
   if (state.goal?.day !== t) state.goal = { day: t, xp: 0, done: false };
   state.goal.xp += gain;
-  if (!state.goal.done && state.goal.xp >= GOAL_XP) { state.goal.done = true; state.cash += 20; toast('Daily goal reached! +20 cash', 'gold'); audio.play('goal'); }
+  if (!state.goal.done && state.goal.xp >= GOAL_XP) { state.goal.done = true; state.cash += 20; toast('Daily goal reached! +20 cash', 'gold'); audio.play('goal'); celebrate({ type: 'goal', kicker: 'DAILY GOAL COMPLETE', title: 'You showed up for yourself!', body: 'That steady effort adds up. Your daily reward is ready.', reward: '+20' }); }
 }
 
 function update(fn) {
@@ -45,9 +86,9 @@ function update(fn) {
   fn(state);
   if (state.xp > xp0) trackGoal(state.xp - xp0);
   for (const b of BADGES) if (!state.badges.includes(b.id) && b.test(state)) {
-    state.badges.push(b.id); toast(`Badge unlocked: ${b.name}`, 'gold'); audio.play('badge');
+    state.badges.push(b.id); toast(`Badge unlocked: ${b.name}`, 'gold'); audio.play('badge'); celebrate({ type: 'badge', kicker: 'BADGE UNLOCKED', title: b.name, body: b.desc, reward: '★' });
   }
-  if (levelOf(state.xp) > before) { toast(`Level ${levelOf(state.xp)} reached`, 'gold'); audio.play('levelup'); }
+  if (levelOf(state.xp) > before) { const level = levelOf(state.xp); audio.play('levelup'); celebrate({ type: 'level', kicker: 'LEVEL UP', title: `You reached Level ${level}!`, body: 'Your money skills are growing. Keep building that momentum.', reward: level }); }
   save(); renderHud();
 }
 
@@ -77,7 +118,7 @@ function renderHud() {
   <nav class="tabs" aria-label="Main">${menuItems.map(([k, r]) => `<a class="tab" href="#/${k}" ${k === cur ? 'aria-current="page"' : ''}>${icon(navIcons[k],18)}<span>${r.label}</span></a>`).join('')}</nav>
   <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span><span></span></button>
   <div class="hud-stats"><span class="chip hearts" title="Hearts">♥ ${heartsNow(state)}</span><span class="chip cash">${money(state.cash)}</span><span class="chip xp hud-xp"><b>Lv ${d.level}</b>${state.xp} XP</span>
-  <button class="icon" id="mute" title="${audio.muted ? 'Turn sound on' : 'Turn sound off'}" aria-label="${audio.muted ? 'Turn sound on' : 'Turn sound off'}" aria-pressed="${audio.muted}">${icon(audio.muted ? 'volumeX' : 'volume',18)}</button></div>
+  <button class="icon theme-toggle" id="theme-toggle" title="${darkTheme ? 'Switch to light theme' : 'Switch to dark theme'}" aria-label="${darkTheme ? 'Switch to light theme' : 'Switch to dark theme'}" aria-pressed="${darkTheme}"><span class="theme-icon">${icon(darkTheme ? 'sun' : 'moon',18)}</span></button><button class="icon" id="mute" title="${audio.muted ? 'Turn sound on' : 'Turn sound off'}" aria-label="${audio.muted ? 'Turn sound on' : 'Turn sound off'}" aria-pressed="${audio.muted}">${icon(audio.muted ? 'volumeX' : 'volume',18)}</button></div>
   <div class="mobile-menu" id="mobile-menu" hidden>
     <button class="mobile-menu-scrim" type="button" data-menu-close aria-label="Close navigation menu"></button>
     <section class="mobile-menu-panel" role="dialog" aria-modal="true" aria-label="LifeLaunch navigation">
@@ -86,7 +127,7 @@ function renderHud() {
       <nav class="mobile-menu-grid" aria-label="Main navigation">${mobileLink('dashboard','Home','home','Your launchpad','menu-home')}${mobileLink('learn','Learn','route','Pick up your path','menu-learn')}${mobileLink('practice','Practice','game','Play and build skills','menu-practice')}${mobileLink('lessons','Library','book','Browse all lessons','menu-library')}${mobileLink('profile','Profile','user','Your progress and badges','menu-profile')}</nav>
       <div class="mobile-quick-title"><span class="section-kicker">QUICK PLAYS</span><span>Little wins, right now</span></div>
       <div class="mobile-quick-links"><a href="#/daily" class="quick-link">${icon('trophy',18)} Daily challenge ${icon('arrow',15)}</a><a href="#/budget" class="quick-link">${icon('wallet',18)} Budget month ${icon('arrow',15)}</a><a href="#/invest" class="quick-link">${icon('chart',18)} Invest years ${icon('arrow',15)}</a></div>
-      <div class="mobile-menu-footer"><span class="menu-spark">${icon('sparkles',16)}</span><span>Small steps. Big future energy.</span><span class="menu-xp">${state.xp} XP</span></div>
+      <div class="mobile-menu-footer"><span class="menu-spark">${icon('sparkles',16)}</span><span>Small steps. Big future energy.</span><span class="menu-xp">${state.xp} XP</span><button class="menu-theme-toggle" id="theme-toggle-menu" type="button" aria-label="${darkTheme ? 'Switch to light theme' : 'Switch to dark theme'}" aria-pressed="${darkTheme}"><span class="theme-icon">${icon(darkTheme ? 'sun' : 'moon',17)}</span><span class="theme-label">${darkTheme ? 'Light theme' : 'Dark theme'}</span></button></div>
     </section>
   </div>`;
   // Keep the fixed sheet outside the sticky, backdrop-filtered header. A filtered
@@ -230,6 +271,7 @@ document.addEventListener('click', e => {
     audio.play('click');
     return;
   }
+  if (e.target.closest('#theme-toggle,#theme-toggle-menu')) { darkTheme = !darkTheme; applyTheme(); audio.play('click'); return; }
   if (e.target.closest('#mute')) { audio.setMuted(!audio.muted); renderHud(); return; }
   const tab = e.target.closest('a.tab'); // tapping the tab you are already on resets that page (e.g. leave a quiz)
   if (tab && tab.getAttribute('href') === (location.hash || '#/dashboard') && !document.querySelector('.tour')) route();
@@ -254,7 +296,10 @@ function checkIn() {
   const t = day(0); if (state.lastDay === t) return;
   state.streak = state.lastDay === day(-1) ? state.streak + 1 : 1; state.lastDay = t;
   streakCelebration = true;
-  setTimeout(() => { update(s => { s.xp += 10; }); toast(`Day ${state.streak} streak. +10 XP`, 'good'); audio.play('streak'); }, 600);
+  setTimeout(() => {
+    update(s => { s.xp += 10; }); toast(`Day ${state.streak} streak. +10 XP`, 'good'); audio.play('streak');
+    celebrate({ type: 'streak', kicker: state.streak > 1 ? 'STREAK KEPT ALIVE' : 'YOUR FIRST DAY', title: state.streak > 1 ? `${state.streak} days in a row!` : 'Your streak starts now!', body: state.streak > 1 ? 'You came back and kept your momentum going. Come back tomorrow to grow it again.' : 'You showed up today. Come back tomorrow and make it a streak.', reward: `+10 XP` });
+  }, 600);
 }
 
 const boot = $('#boot-screen'), bootBar = $('#boot-progress'), bootTrack = $('.boot-track'), bootCount = $('#boot-count'), bootPercent = $('#boot-percent'), bootMessage = $('#boot-message');

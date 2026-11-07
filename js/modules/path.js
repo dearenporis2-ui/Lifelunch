@@ -6,7 +6,7 @@ import { fmt, shuffle, studied } from './lessons.js';
 import { lessonCard, questionCard } from './lesson-ui.js';
 import { heartsNow, loseHeart, addHeart, msToNext, fmtWait, MAX_HEARTS, REFILL_COST, GOAL_XP } from './hearts.js';
 import { icon } from './icons.js';
-import { pennySvg } from './mascot.js';
+import { pennySvg, pennyTalk } from './mascot.js';
 
 const COLORS = ['#0F7B5F', '#A8741A', '#3E4C59', '#6B5EA8', '#C4452F'];
 const OFFSETS = [0, 44, 68, 44, 0, -44, -68, -44];
@@ -25,8 +25,6 @@ export async function renderLearn(root, ctx) {
   heartsNow(state);
   const trackIcons = ['coins', 'wallet', 'bank', 'chart', 'shield'];
   let curSeen = false;
-  const hasPathProgress = Object.keys(state.studied || {}).length > 0 || Object.values(state.path || {}).some(n => n > 0);
-  const pennyLine = hasPathProgress ? 'One step at a time. You’ve got this!' : 'Ready for your first money mission?';
   root.innerHTML = `<div class="page-shell"><header class="page-intro"><span class="page-mark path-mark">${icon('route',26)}</span><div><span class="section-kicker">YOUR LEARNING JOURNEY</span><h1>Your path</h1><p class="lede">Short sessions that teach, then test you. Finish one to unlock the next.</p></div></header>` +
     idx.tracks.map((t, u) => {
       let gi = 0;
@@ -35,7 +33,7 @@ export async function renderLearn(root, ctx) {
         const nodes = Array.from({ length: n }, (_, k) => {
           const isDone = k < d, isCur = !isDone && !curSeen; if (isCur) curSeen = true;
           const cls = isDone ? 'done' : isCur ? 'current' : 'locked';
-          const x = OFFSETS[gi++ % OFFSETS.length], buddy = isCur ? `<span class="path-buddy ${x > 0 ? 'side-left' : 'side-right'}">${pennySvg('path-penny')}<span class="path-buddy-bubble"><strong>Penny</strong><small>${pennyLine}</small></span></span>` : '';
+          const x = OFFSETS[gi++ % OFFSETS.length], buddy = isCur ? `<span class="path-buddy ${x > 0 ? 'side-left' : 'side-right'}">${pennySvg('path-penny')}<span class="path-buddy-bubble"><strong>NEXT UP</strong><small class="penny-talk">${pennyTalk(l.title)}</small></span></span>` : '';
           return `<div class="node-wrap" style="--x:${x}px"><button class="node ${cls}" data-node="${l.id}:${k}" aria-label="${l.title}, part ${k + 1} of ${n}${isDone ? ', done' : isCur ? ', up next' : ', locked'}">${icon(isDone ? 'check' : isCur ? 'sparkles' : 'lock',isCur ? 25 : 22)}</button>${isCur ? '<span class="start-tip">Start</span>' : ''}${buddy}</div>`;
         }).join('');
         return `<div class="lesson-label">${l.title}</div><div class="nodes">${nodes}</div>`;
@@ -93,7 +91,7 @@ export function runSession(root, ctx, o) {
       ? `<div class="rail-example-note"><span>LOOK CLOSER</span><h3>What makes this work?</h3><p>Notice the choice, the tradeoff, and what happens next. That is the useful part of the example.</p></div>`
       : `<div class="rail-example"><div class="rail-card-head"><span>REAL LIFE</span><b aria-hidden="true">↗</b></div><h3>See the idea in action</h3><div class="rail-example-copy">${o.example ? fmt(o.example) : '<p>Keep looking for this idea in everyday choices. Small decisions add up over time.</p>'}</div></div>`;
     const rail = `<aside class="lesson-rail" aria-label="Lesson side notes">
-      <div class="rail-buddy"><div class="buddy-art" aria-hidden="true">${pennySvg('penny-session')}</div><div><span class="buddy-label">Penny says</span><p>${cheer}</p></div></div>
+      <div class="rail-buddy"><div class="buddy-art" aria-hidden="true">${pennySvg('penny-session')}</div><div><span class="buddy-label">Penny says</span><p class="penny-talk">${pennyTalk(cheer)}</p></div></div>
       ${examplePanel}<div class="rail-flow"><span class="rail-flow-title">YOUR MINI MISSION</span><ol>${stages.map((label, j) => `<li class="${j < stage ? 'done' : j === stage ? 'current' : ''}"><i>${j < stage ? '✓' : j + 1}</i><span>${label}</span></li>`).join('')}</ol></div>
     </aside>`;
     root.innerHTML = `<div class="session"><div class="s-top"><button class="s-close" aria-label="Quit session">✕</button>

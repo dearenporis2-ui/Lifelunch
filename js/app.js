@@ -9,7 +9,7 @@ import { renderLearn } from './modules/path.js';
 import { heartsNow, GOAL_XP } from './modules/hearts.js';
 import { startTutorial } from './modules/tutorial.js';
 import { icon } from './modules/icons.js';
-import { pennySvg } from './modules/mascot.js';
+import { pennySvg, pennyTalk } from './modules/mascot.js';
 
 const KEY = 'lifelaunch.v1';
 const fresh = () => ({ name: 'Player One', cash: 500, savings: 0, xp: 0, streak: 0, lastDay: null, lessons: {}, studied: {}, path: {}, hearts: 5, heartsAt: Date.now(), goal: null, badges: [], month: 1, draft: null, daily: null, dailyDone: 0, perfects: 0, testNoticeSeen: false, tutorialSeen: false, tutorialDone: false, bestScore: 0, history: [] });
@@ -112,6 +112,7 @@ async function renderDashboard(root) {
   const d = derive(state), C = 326.7, doneN = Object.keys(state.lessons).length;
   const all = idx ? idx.tracks.flatMap(t => t.lessons.map((l, i) => ({ ...l, open: i === 0 || studied(state, t.lessons[i - 1].id) }))) : [];
   const next = all.find(l => !studied(state, l.id) && l.open);
+  const pennyTip = next ? 'Take it one short lesson at a time. You’ve got this!' : idx ? 'You cleared every lesson—what a milestone!' : 'Let’s find your next lesson together.';
   const earned = BADGES.filter(b => state.badges.includes(b.id)), dailyDone = state.daily?.day === day(0);
   const gl = state.goal?.day === day(0) ? state.goal : { xp: 0, done: false };
   const lessonPct = idx?.total ? Math.round(doneN / idx.total * 100) : 0;
@@ -128,7 +129,7 @@ async function renderDashboard(root) {
   <div class="grid dashboard-panels">
   <section class="card daily-goal-card"><div class="panel-heading"><span class="panel-icon goal-icon">${icon('target',21)}</span><h2>Daily goal</h2><span class="reward-pill">+${GOAL_XP} XP</span></div><p>${gl.done ? 'Goal reached. Nice work!' : 'A little progress today goes a long way.'}</p><div class="bar goal-bar" role="progressbar" aria-label="Daily XP goal" aria-valuenow="${Math.min(gl.xp, GOAL_XP)}" aria-valuemin="0" aria-valuemax="${GOAL_XP}"><i style="width:${Math.min(100, gl.xp / GOAL_XP * 100)}%"></i></div><small class="goal-caption">${gl.xp} of ${GOAL_XP} XP ${gl.done ? 'earned today — you did it!' : 'earned today'}</small><div class="goal-status ${gl.done ? 'complete' : ''}"><span>${icon(gl.done ? 'check' : 'sparkles',16)}</span>${gl.done ? 'You showed up for yourself today.' : 'Complete a lesson or practice to reach your goal.'}</div></section>
   <section class="card next-card"><div class="panel-heading"><span class="next-penny" aria-hidden="true">${pennySvg('penny-dashboard')}</span><span class="section-kicker">PENNY’S PICK</span><span class="time-pill">5 min</span></div>${next
-    ? `<h2>${next.title}</h2><p>${next.blurb}</p><a class="btn primary next-cta" href="#/learn">Continue your path ${icon('arrow',18)}</a>`
+    ? `<h2>${next.title}</h2><p>${next.blurb}</p><p class="penny-tip penny-talk">${pennyTalk(pennyTip)}</p><a class="btn primary next-cta" href="#/learn">Continue your path ${icon('arrow',18)}</a>`
     : idx ? `<h2>Ready for your next milestone?</h2><p>All lessons cleared. Close more budget months to keep growing your net worth.</p><a class="btn primary next-cta" href="#/budget">Plan month ${state.month} ${icon('arrow',18)}</a>`
     : '<p>Lessons could not load. Check your connection and refresh.</p>'}</section>
   <section class="card challenge-card"><div class="panel-heading"><span class="panel-icon challenge-icon">${icon('trophy',20)}</span><h2>Daily challenge</h2><span class="bonus-pill">BONUS XP</span></div><strong class="challenge-title">${dailyDone ? 'Challenge complete!' : 'Ready for a quick win?'}</strong><p>${dailyDone ? 'Brilliant work. Come back tomorrow for a fresh challenge.' : 'Three quick questions to sharpen your money skills.'}</p>${dailyDone ? `<div class="challenge-done">${icon('check',16)} Completed today</div>` : `<a class="btn challenge-cta" href="#/daily">Take the challenge ${icon('arrow',18)}</a>`}</section></div>

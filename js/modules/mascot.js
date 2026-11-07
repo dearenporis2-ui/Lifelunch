@@ -1,4 +1,10 @@
 // Penny is LifeLaunch's friendly dollar-bill guide, drawn inline to keep the app asset-light.
+const escapeHtml = text => String(text).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+
+export function pennyTalk(text) {
+  return String(text).split(/\s+/).map((word, index) => `<span style="animation-delay:${index * 42}ms">${escapeHtml(word)}</span>`).join(' ');
+}
+
 export function pennySvg(className = '') {
   return `<svg class="penny-svg ${className}" viewBox="0 0 160 130" aria-hidden="true" focusable="false">
     <ellipse cx="80" cy="119" rx="39" ry="6" fill="#244A40" opacity=".14"/>

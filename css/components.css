@@ -139,6 +139,8 @@ transform:scale(.96);transition:top .6s var(--ease),left .6s var(--ease),transfo
 .path-buddy-bubble::after{content:"";position:absolute;left:calc(50% - 5px);bottom:-5px;width:9px;height:9px;transform:rotate(45deg);border-right:1px solid #E7EADD;border-bottom:1px solid #E7EADD;background:#fff}
 .path-buddy-bubble strong{color:#0B8C70;font-size:.66rem;letter-spacing:.07em;text-transform:uppercase}
 .path-buddy-bubble small{font-size:.68rem}
+.penny-talk>span{display:inline-block;animation:pennyWordIn .34s cubic-bezier(.2,.75,.25,1) both}
+@keyframes pennyWordIn{from{opacity:0;transform:translateY(4px);filter:blur(1.5px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
 @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-5px)}}
 .chip.hearts{color:var(--bad)}
 .sheet-bg{position:fixed;inset:0;background:rgba(22,26,34,.45);z-index:55;display:grid;align-items:end;justify-items:center}
@@ -554,6 +556,7 @@ main:has(.dashboard){max-width:1480px;padding-top:clamp(28px,4vw,54px)}
 .next-penny{width:51px;height:42px;flex:none;display:block}
 .penny-dashboard{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 4px 3px rgba(24,95,72,.14));animation:pennyFloat 3s ease-in-out infinite}
 .penny-svg .penny-wave-arm{transform-box:view-box;transform-origin:24px 59px;animation:pennyWave 2.8s ease-in-out infinite}
+.penny-tip{margin-top:-5px!important;color:#698176!important;font-size:.79rem!important;line-height:1.35!important}
 @keyframes pennyFloat{0%,100%{translate:0 0}50%{translate:0 -5px}}
 @keyframes pennyWave{0%,75%,100%{transform:rotate(0)}82%{transform:rotate(-22deg)}89%{transform:rotate(15deg)}95%{transform:rotate(-12deg)}}
 .next-icon{color:#0B9B78;background:#E0F7EB}
@@ -911,5 +914,5 @@ body.menu-open{overflow:hidden}
 }
 @media(prefers-reduced-motion:reduce){
   .mobile-menu-scrim,.mobile-menu-panel,.nav-toggle,.nav-toggle span,.mobile-menu-item,.mobile-menu-icon,.quick-link{transition:none!important;animation:none!important}
-  .path-buddy,.penny-dashboard,.penny-svg .penny-wave-arm{animation:none!important}
+  .path-buddy,.penny-dashboard,.penny-svg .penny-wave-arm,.penny-talk>span{animation:none!important}
 }

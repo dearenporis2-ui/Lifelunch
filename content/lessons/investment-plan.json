@@ -1,0 +1,55 @@
+{
+  "id": "investment-plan",
+  "title": "Make an Investing Starter Plan",
+  "blurb": "Set goals and understand the tradeoffs before choosing investments.",
+  "xp": 200,
+  "cash": 230,
+  "cards": [
+    [
+      "i",
+      "Start with your goal and timeline",
+      "Write down what the money is for and when you may need it. Money needed soon is usually less suited to investments that can change sharply in value."
+    ],
+    [
+      "i",
+      "Build a financial base first",
+      "Consider essential bills, costly debt and a cash buffer before taking investment risk. The right order depends on your circumstances and local rules."
+    ],
+    [
+      "i",
+      "Understand risk, costs and access",
+      "Learn what could make an investment lose value, what fees apply, how quickly you can access money, and whether the provider is regulated where you live."
+    ],
+    [
+      "q",
+      "You need money for a bill next month. What matters most?",
+      [
+        "Choose the most volatile investment",
+        "Keep the bill money accessible and avoid risking it",
+        "Invest it all for a quick gain",
+        "Borrow to invest"
+      ],
+      1,
+      "Short-term essential money generally needs reliability and access, not exposure to market swings."
+    ],
+    [
+      "t",
+      "Past performance guarantees an investment's future return.",
+      false,
+      "Past performance cannot guarantee future returns."
+    ],
+    [
+      "q",
+      "Before using an investment platform, what should you check?",
+      [
+        "Only its social media followers",
+        "Its fees, risks, and regulatory status using official sources",
+        "A stranger's promise of fast profits",
+        "Whether it asks for your password"
+      ],
+      1,
+      "Research the provider and product using trusted, official information."
+    ]
+  ],
+  "example": "If you need money for a course fee in three months, a volatile investment could drop just when the bill is due. Keep near-term essential money accessible."
+}

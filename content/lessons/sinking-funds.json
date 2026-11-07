@@ -1,0 +1,54 @@
+{
+  "id": "sinking-funds",
+  "title": "Plan for Irregular Costs",
+  "blurb": "Turn annual bills and planned purchases into monthly targets.",
+  "xp": 180,
+  "cash": 210,
+  "cards": [
+    [
+      "i",
+      "Not every surprise is unpredictable",
+      "Annual fees, school supplies, gifts and routine maintenance may arrive only once in a while, but you can often anticipate them."
+    ],
+    [
+      "i",
+      "Divide the target across the time left",
+      "Estimate the total and divide by the number of months before it is due. Save that amount regularly in a clearly named pot or category."
+    ],
+    [
+      "e",
+      "A yearly bill",
+      "A 360 bill due in 9 months needs 40 per month, before any interest or price changes. Starting earlier lowers the monthly amount. Recheck the estimate if the cost changes."
+    ],
+    [
+      "q",
+      "A 240 annual cost is due in 12 months. What monthly amount reaches the target?",
+      [
+        "10",
+        "20",
+        "24",
+        "120"
+      ],
+      1,
+      "240 divided by 12 is 20 per month."
+    ],
+    [
+      "t",
+      "A sinking fund is only useful for emergencies.",
+      false,
+      "It is also useful for known future costs, planned purchases and annual bills."
+    ],
+    [
+      "q",
+      "You already missed the ideal start date. What is sensible?",
+      [
+        "Give up",
+        "Work out what is affordable for the time left and adjust the plan",
+        "Borrow the full amount immediately",
+        "Assume the bill will vanish"
+      ],
+      1,
+      "Use the time remaining and your real budget to choose a workable contribution."
+    ]
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "id": "debt-payoff",
+  "title": "Build a Debt Payoff Plan",
+  "blurb": "Compare repayment approaches while protecting essential expenses.",
+  "xp": 200,
+  "cash": 230,
+  "cards": [
+    [
+      "i",
+      "Get the whole picture",
+      "List balances, interest or fees, minimum payments and due dates. Check the agreement and local rules; costs can change and some debts have special consequences."
+    ],
+    [
+      "i",
+      "Keep required payments current",
+      "Missing a required payment can add fees or other consequences. If payment is becoming difficult, contact the lender through official channels early and ask what options exist."
+    ],
+    [
+      "i",
+      "Choose a focus for extra payments",
+      "The avalanche approach targets the highest interest rate first, which can reduce interest if rates and fees stay as expected. The snowball approach targets the smallest balance first for faster milestones. Keep paying minimums on all accounts."
+    ],
+    [
+      "e",
+      "Compare before choosing",
+      "Check rates, fees, promotional end dates and whether early repayment has a charge. Then pick the plan you can sustain. Avoid taking new high-cost credit to make the plan look easier."
+    ],
+    [
+      "q",
+      "In a payoff plan, what generally happens to other debts while you focus extra payments on one?",
+      [
+        "Ignore all due dates",
+        "Keep meeting required minimums where possible",
+        "Stop opening bills",
+        "Borrow to pay each minimum"
+      ],
+      1,
+      "A focus debt receives extra, while required payments on other debts remain important."
+    ],
+    [
+      "q",
+      "You may miss a payment. What is a sensible first move?",
+      [
+        "Wait until the debt grows",
+        "Contact the lender using official details and ask about options",
+        "Pay an unsolicited caller with gift cards",
+        "Hide all letters"
+      ],
+      1,
+      "Early contact through official channels may reveal options and helps you understand the consequences."
+    ]
+  ]
+}

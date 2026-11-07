@@ -1,0 +1,72 @@
+{
+  "id": "expense-audit",
+  "title": "Audit Your Spending",
+  "blurb": "Find patterns in your spending without judging yourself.",
+  "xp": 180,
+  "cash": 210,
+  "cards": [
+    [
+      "i",
+      "Gather a useful snapshot",
+      "Review recent transactions over a representative period. Group them into essentials, flexible spending, savings and debt. Hide account numbers and other private details if you take notes."
+    ],
+    [
+      "i",
+      "Look for patterns, not blame",
+      "Check for forgotten subscriptions, costs that rose, and categories that regularly exceed your plan. The goal is to find one change that fits your life."
+    ],
+    [
+      "s",
+      "Choose an action",
+      "Pick the most practical next step.",
+      [
+        "Review it",
+        "Leave it alone"
+      ],
+      [
+        [
+          "A subscription you have not used in months",
+          0
+        ],
+        [
+          "A one-off essential repair",
+          1
+        ],
+        [
+          "Three small purchases that happen every day",
+          0
+        ],
+        [
+          "A bill that just increased",
+          0
+        ]
+      ],
+      "Recurring patterns and changed bills are useful to review. A necessary one-off cost is not a personal failure."
+    ],
+    [
+      "q",
+      "What is the purpose of a spending audit?",
+      [
+        "Prove that every purchase was wrong",
+        "Spot patterns and choose practical adjustments",
+        "Compare yourself with friends",
+        "Avoid looking at your plan"
+      ],
+      1,
+      "An audit gives you information to improve your plan, without shame."
+    ],
+    [
+      "q",
+      "You find one category is consistently too low. What next?",
+      [
+        "Raise it to a realistic amount and adjust elsewhere",
+        "Give up on budgeting",
+        "Hide the transactions",
+        "Borrow automatically"
+      ],
+      0,
+      "A budget should reflect real life. Adjust the plan using what you learned."
+    ]
+  ],
+  "example": "A $9 subscription you no longer use costs $108 over a year. Reviewing recurring payments can reveal changes that are easy to miss month to month."
+}

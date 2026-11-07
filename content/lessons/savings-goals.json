@@ -1,0 +1,67 @@
+{
+  "id": "savings-goals",
+  "title": "Saving for Goals",
+  "blurb": "Turn \"I want it\" into a plan with a date.",
+  "xp": 140,
+  "cash": 180,
+  "cards": [
+    [
+      "i",
+      "Goals need a number and a date",
+      "\"Save more\" is a wish. \"Save 600 for a laptop by June\" is a plan. Divide the target by the months left to get your monthly amount."
+    ],
+    [
+      "q",
+      "You want 600 in 6 months. How much do you save each month?",
+      [
+        "50",
+        "100",
+        "120",
+        "150"
+      ],
+      1,
+      "600 ÷ 6 = 100 per month."
+    ],
+    [
+      "i",
+      "Where to keep savings",
+      "Keep goal money separate from spending, ideally in a savings account that pays interest. Out of sight means less temptation to dip into it."
+    ],
+    [
+      "t",
+      "Interest means your savings can grow without you adding anything.",
+      true,
+      "Savings accounts pay interest, so your balance grows slowly over time."
+    ],
+    [
+      "i",
+      "Small steps compound",
+      "Money that earns interest then earns interest on that interest. That is compounding, and it rewards starting early far more than saving big amounts later."
+    ],
+    [
+      "q",
+      "Why does starting to save early matter so much?",
+      [
+        "Banks give young people bonuses",
+        "Time lets interest build on interest",
+        "Prices never rise",
+        "It does not matter"
+      ],
+      1,
+      "Compounding needs time. The earlier you start, the longer it works for you."
+    ],
+    [
+      "q",
+      "Which habit best protects a savings goal?",
+      [
+        "Moving the money automatically on payday",
+        "Saving whatever is left at month end",
+        "Keeping it in your spending account",
+        "Telling nobody"
+      ],
+      0,
+      "Automatic transfers remove willpower from the equation."
+    ]
+  ],
+  "example": "A $480 laptop goal is eight months away. Saving $60 each month reaches the target before any changes in price or interest."
+}

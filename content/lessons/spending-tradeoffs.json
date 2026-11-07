@@ -1,0 +1,72 @@
+{
+  "id": "spending-tradeoffs",
+  "title": "Make Spending Tradeoffs",
+  "blurb": "Choose what matters most without making a budget impossible to live with.",
+  "xp": 190,
+  "cash": 220,
+  "cards": [
+    [
+      "i",
+      "A plan is a set of choices",
+      "Money is limited, so choosing one thing can mean postponing another. A useful budget makes those tradeoffs visible before you commit."
+    ],
+    [
+      "i",
+      "Protect priorities and room for life",
+      "Cover essentials and important goals, then leave a realistic amount for enjoyment. A plan that allows no flexibility can be hard to maintain."
+    ],
+    [
+      "s",
+      "Choose the tradeoff",
+      "Sort each choice by the best first question to ask.",
+      [
+        "Check the plan",
+        "Pause before deciding"
+      ],
+      [
+        [
+          "A new recurring monthly subscription",
+          0
+        ],
+        [
+          "A purchase being rushed by a countdown timer",
+          1
+        ],
+        [
+          "A necessary work expense",
+          0
+        ],
+        [
+          "A non-essential item that uses rent money",
+          1
+        ]
+      ],
+      "New commitments affect future months; pressure and spending essential money are reasons to pause."
+    ],
+    [
+      "q",
+      "A purchase would use money set aside for a bill. What should you do?",
+      [
+        "Buy it before thinking",
+        "Protect the bill money and reconsider the purchase",
+        "Borrow without checking the cost",
+        "Ignore the due date"
+      ],
+      1,
+      "Keep essential commitments covered before spending flexibly."
+    ],
+    [
+      "q",
+      "Why leave some flexible spending in a budget?",
+      [
+        "It guarantees wealth",
+        "It can make the plan more realistic and sustainable",
+        "It replaces every savings goal",
+        "It means you should not review spending"
+      ],
+      1,
+      "A realistic plan can balance essentials, goals and enjoyment."
+    ]
+  ],
+  "example": "You have $40 left for flexible spending and want a $35 outing, but a phone bill is due soon. Cover the bill first, then decide what fits the remaining amount."
+}

@@ -1,0 +1,69 @@
+{
+  "id": "budget-capstone",
+  "title": "Budgeting Checkpoint",
+  "blurb": "Show what you know about building, using, and improving a budget.",
+  "xp": 220,
+  "cash": 260,
+  "cards": [
+    [
+      "i",
+      "Your budgeting toolkit",
+      "A strong budget starts with dependable take-home income, covers essentials and commitments, makes room for goals and flexible spending, and changes when life changes."
+    ],
+    [
+      "q",
+      "Income varies. What is a safer base for essential commitments?",
+      [
+        "Your highest month",
+        "A cautious low typical month",
+        "An unconfirmed bonus",
+        "A guess based on a friend"
+      ],
+      1,
+      "Build essential commitments around income you can reasonably rely on."
+    ],
+    [
+      "q",
+      "A known annual bill is due in eight months. What can help?",
+      [
+        "Estimate the total and divide it across the months left",
+        "Forget it until the due date",
+        "Borrow now without comparing",
+        "Count it as free money"
+      ],
+      0,
+      "A monthly sinking-fund amount can make a known bill easier to manage."
+    ],
+    [
+      "q",
+      "One category keeps exceeding its limit. What should you do?",
+      [
+        "Review the actual costs and rebalance the plan",
+        "Stop tracking it",
+        "Assume the category does not matter",
+        "Spend from bill money"
+      ],
+      0,
+      "Use the pattern as information and make a realistic adjustment."
+    ],
+    [
+      "t",
+      "A budget should balance today's needs, future goals, and a plan you can sustain.",
+      true,
+      "Sustainable plans make room for real needs and choices while supporting goals over time."
+    ],
+    [
+      "q",
+      "Which is the best sign of a useful budget?",
+      [
+        "It never changes",
+        "It matches your situation and helps you make informed choices",
+        "It is the strictest possible plan",
+        "It matches someone else's life"
+      ],
+      1,
+      "A useful budget is personal, practical and revisited when circumstances change."
+    ]
+  ],
+  "example": "A learner plans using take-home pay, covers rent and required payments, then assigns what remains to savings and flexible spending. If groceries keep running high, they revise that category next month."
+}

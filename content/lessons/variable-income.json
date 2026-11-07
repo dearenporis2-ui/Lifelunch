@@ -1,0 +1,54 @@
+{
+  "id": "variable-income",
+  "title": "Budget with Variable Income",
+  "blurb": "Build a plan that can flex when your pay changes.",
+  "xp": 190,
+  "cash": 220,
+  "cards": [
+    [
+      "i",
+      "Plan for a low month",
+      "Freelance, shift and seasonal income can move around. Use a conservative baseline based on a low but realistic month, not your best month."
+    ],
+    [
+      "i",
+      "Separate needs from timing",
+      "A good month can create a buffer for a slower one. Keep money for upcoming essentials separate from money that is truly available to spend."
+    ],
+    [
+      "e",
+      "A two-part plan",
+      "Set a baseline budget using dependable income. When extra arrives, first cover upcoming bills and refill your buffer; then divide what remains between goals, debt and optional spending."
+    ],
+    [
+      "q",
+      "Which income estimate is safer for a core monthly budget?",
+      [
+        "Your best recent month",
+        "A conservative typical low month",
+        "The most exciting month you expect",
+        "A random guess"
+      ],
+      1,
+      "A cautious baseline makes it less likely that essential bills depend on a high-income month."
+    ],
+    [
+      "q",
+      "Extra income arrives. What is a useful first move?",
+      [
+        "Immediately add a permanent bill",
+        "Check upcoming essentials and refill your buffer",
+        "Spend all of it",
+        "Pretend it never happened"
+      ],
+      1,
+      "A buffer helps smooth the next lower-income month."
+    ],
+    [
+      "t",
+      "A flexible budget can still include savings goals.",
+      true,
+      "Set a realistic baseline contribution, then add more when income allows."
+    ]
+  ]
+}

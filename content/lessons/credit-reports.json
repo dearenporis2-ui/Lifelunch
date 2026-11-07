@@ -1,0 +1,55 @@
+{
+  "id": "credit-reports",
+  "title": "Understand Credit Reports",
+  "blurb": "Learn what records may be used and how to check them.",
+  "xp": 190,
+  "cash": 220,
+  "cards": [
+    [
+      "i",
+      "Credit systems differ by country",
+      "A credit report may contain borrowing and repayment history. Scoring models and your rights to access or correct records vary by country, so use your local regulator or credit bureau's official guidance."
+    ],
+    [
+      "i",
+      "Check for errors safely",
+      "Use an official, trusted route to request your report. Look for accounts you do not recognize, incorrect balances, or outdated details. Never share a one-time code or password with someone who contacts you unexpectedly."
+    ],
+    [
+      "i",
+      "Dispute mistakes through official channels",
+      "Keep copies of relevant records and follow the bureau or lender's published correction process. If identity theft is possible, contact the relevant financial institution and local authority promptly."
+    ],
+    [
+      "q",
+      "You spot a loan you never opened. What is the safest next step?",
+      [
+        "Ignore it",
+        "Use official contact details to report and dispute it",
+        "Pay a stranger who promises to erase it",
+        "Post your full report online"
+      ],
+      1,
+      "Use official channels and protect personal information while you investigate."
+    ],
+    [
+      "t",
+      "Credit scores are calculated identically everywhere.",
+      false,
+      "Credit reporting rules and scoring models differ by country and provider."
+    ],
+    [
+      "q",
+      "A caller asks for your banking password to fix your report. What should you do?",
+      [
+        "Share it quickly",
+        "Refuse and contact the organization using official details",
+        "Send a photo of your card",
+        "Give them your one-time code"
+      ],
+      1,
+      "Legitimate support should not need your password or one-time security code."
+    ]
+  ],
+  "example": "A report lists a mobile contract you do not recognize. Save a copy, contact the bureau and provider using official details, and follow their dispute steps."
+}

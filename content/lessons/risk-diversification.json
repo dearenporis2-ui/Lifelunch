@@ -1,0 +1,196 @@
+{
+ "id": "risk-diversification",
+ "title": "Risk and Diversification",
+ "blurb": "Why higher returns come with higher risk, and how spreading your money protects you.",
+ "xp": 360,
+ "cash": 440,
+ "cards": [
+  [
+   "i",
+   "What risk really means",
+   "In investing, risk means the result can differ from what you expected, including losing money. Higher potential returns come with bigger swings. Anyone offering high returns with no risk is selling something.\n\nRisk is not the same as gambling. Risk you understand and spread out is the price of growth. Gambling is concentrated risk you cannot judge."
+  ],
+  [
+   "p",
+   "Guess first",
+   "A fund falls 20%. How much must it then gain to get back to where it started?",
+   {
+    "min": 0,
+    "max": 60,
+    "step": 1,
+    "def": 20,
+    "pre": "",
+    "post": "%"
+   },
+   25,
+   "Falling 20% leaves you with 80. To get back to 100 you need 20 more, which is 25% of 80. Losses hurt more than equal gains help, so avoiding big falls matters."
+  ],
+  [
+   "i",
+   "The kinds of risk",
+   "- **Market risk:** the whole market falls at once.\n- **Company risk:** one company fails or has a scandal.\n- **Inflation risk:** your money loses buying power.\n- **Liquidity risk:** you cannot sell quickly when you need cash.\n- **Behaviour risk:** panic selling or chasing hype. For most people this is the biggest one."
+  ],
+  [
+   "s",
+   "Steadier or bumpier?",
+   "Tap the label that fits each investment.",
+   [
+    "Steadier",
+    "Bumpier"
+   ],
+   [
+    [
+     "Savings account",
+     0
+    ],
+    [
+     "Short-term government bonds",
+     0
+    ],
+    [
+     "A broad index fund",
+     1
+    ],
+    [
+     "One company's shares",
+     1
+    ],
+    [
+     "A brand new cryptocurrency",
+     1
+    ]
+   ],
+   "Spread-out investments swing less than single bets, and new unproven assets swing the most. Steady does not mean growth, and bumpy does not mean bad. It depends on your time horizon."
+  ],
+  [
+   "i",
+   "Diversification",
+   "Diversification means spreading your money across many different investments so no single failure can sink you. A fund of hundreds of companies is already a diversified basket. Mixing in bonds and cash spreads you further.\n\nIt does not guarantee you will not lose money, because whole markets can fall together. What it does is protect you from the worst outcome: one thing going to zero."
+  ],
+  [
+   "e",
+   "Worked example: the scandal year",
+   "You have 1,000 and a company scandal hits. That one company falls 60%, the index fund rises 9% and bonds rise 4%.\n\n1. Portfolio A, all in that company: 1,000 × 0.40 = 400\n2. Portfolio B, 50% index fund, 30% bonds, 20% that company: 500 × 1.09 = 545, plus 300 × 1.04 = 312, plus 200 × 0.40 = 80\n3. Portfolio B total = 937\n\nA lost 600. B lost 63. Same disaster, very different outcome."
+  ],
+  [
+   "i",
+   "Time horizon and staying calm",
+   "Markets fall regularly, then recover. Investors who sold in a crash locked in their losses, while those who held on or kept investing recovered. The danger is not the fall, it is panic.\n\nMatch risk to time: money needed within a few years belongs in safer places, and money for ten or more years can ride the bumps.\n\n**Rebalancing** once a year, which means bringing your mix back to your plan, helps you buy low and sell high without predicting anything."
+  ],
+  [
+   "d",
+   "What would you do?",
+   "You invested for a goal 15 years away. Three months later the market is down 25%.",
+   [
+    [
+     "Sell everything to stop the stress",
+     "Selling after a fall turns a temporary loss into a permanent one. Markets have recovered before, and you have 15 years.",
+     false
+    ],
+    [
+     "Keep investing your regular amount",
+     "Your plan was built for this. Prices are lower, so your regular amount buys more.",
+     true
+    ],
+    [
+     "Borrow money to put in more",
+     "Borrowing to invest adds risk you cannot control, and you still owe it if things keep falling.",
+     false
+    ]
+   ]
+  ],
+  [
+   "i",
+   "Now try it for real",
+   "Time to practise. The **Invest years** game in the Practice tab puts you in charge of a portfolio through eight market years, including a recession and a company scandal.\n\nTry putting everything in one choice, then try spreading it out, and compare your results."
+  ],
+  [
+   "k",
+   [
+    "Risk means results can differ from what you expect, including losses.",
+    "A 20% fall needs a 25% gain to recover. Big losses are hard to undo.",
+    "Diversification protects against one failure, not against every loss.",
+    "Match risk to your time horizon. Short-term money should be safer.",
+    "Panic is the real enemy. Stick to a plan and rebalance yearly."
+   ]
+  ],
+  [
+   "q",
+   "A portfolio falls 30%. Roughly how much must it gain to recover?",
+   [
+    "30%",
+    "43%",
+    "50%",
+    "70%"
+   ],
+   1,
+   "After a 30% fall you have 70. To reach 100 you need 30 more, which is about 43% of 70."
+  ],
+  [
+   "q",
+   "What does diversification mean?",
+   [
+    "Putting everything in your best idea",
+    "Spreading money across many investments so no single failure sinks you",
+    "Only buying bonds",
+    "Trading as often as possible"
+   ],
+   1,
+   "Spreading your money limits the damage when any single investment fails."
+  ],
+  [
+   "q",
+   "One company's shares collapse. Who is best protected?",
+   [
+    "Someone with everything in that company",
+    "Someone holding a broad fund plus bonds",
+    "Someone who borrowed to buy more",
+    "Someone who bought yesterday"
+   ],
+   1,
+   "A spread-out portfolio takes only a small hit from one failure."
+  ],
+  [
+   "t",
+   "Diversification guarantees you will never lose money.",
+   false,
+   "Whole markets can fall together. Diversification protects against one thing failing, not against every loss."
+  ],
+  [
+   "q",
+   "You will not need the money for 20 years and the market drops 25%. What fits a sound plan?",
+   [
+    "Sell everything",
+    "Keep your regular investing",
+    "Switch to a hot tip",
+    "Withdraw what is left"
+   ],
+   1,
+   "With 20 years ahead, a fall is a chance to buy cheaper, not a reason to bail out."
+  ],
+  [
+   "q",
+   "What is rebalancing?",
+   [
+    "Selling everything every year",
+    "Bringing your mix back to your planned split",
+    "Buying whatever rose most",
+    "Switching funds at random"
+   ],
+   1,
+   "Rebalancing keeps your risk level on plan and quietly sells high and buys low."
+  ],
+  [
+   "q",
+   "A stranger says one stock is a sure thing and you should put everything in. Best response?",
+   [
+    "Go all in",
+    "Walk away and stick to your plan",
+    "Borrow to buy more",
+    "Ask them for more tips"
+   ],
+   1,
+   "Sure things do not exist, and putting everything in one stock is the opposite of diversification."
+  ]
+ ]
+}

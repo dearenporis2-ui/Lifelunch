@@ -1,0 +1,54 @@
+{
+  "id": "compound-growth",
+  "title": "See How Compound Growth Works",
+  "blurb": "Understand how returns can build on earlier returns—and why they are not guaranteed.",
+  "xp": 190,
+  "cash": 220,
+  "cards": [
+    [
+      "i",
+      "Growth can build on growth",
+      "With compounding, returns that remain invested may themselves earn returns later. The effect depends on time, rate, fees, taxes and whether returns are positive."
+    ],
+    [
+      "i",
+      "Start early, stay realistic",
+      "Time can make regular contributions more powerful, but investments can fall in value. A calculator illustration is not a promise or a forecast."
+    ],
+    [
+      "e",
+      "A simple illustration",
+      "If 100 grew by 5% for one year, it would become 105 before fees and taxes. If it then grew by 5% again, 5% would apply to 105, producing 110.25. Real investment returns do not arrive as a steady 5%."
+    ],
+    [
+      "q",
+      "What does compounding mean in this example?",
+      [
+        "Only the original amount can grow",
+        "Earlier returns may also earn returns",
+        "Investments cannot lose value",
+        "Growth is guaranteed each month"
+      ],
+      1,
+      "Compounding is growth on the original amount and on returns left invested."
+    ],
+    [
+      "t",
+      "A compound growth calculator guarantees the result it displays.",
+      false,
+      "It illustrates assumptions. Actual returns, fees and taxes may differ, and investment values can fall."
+    ],
+    [
+      "q",
+      "What happens if fees increase, while all else is equal?",
+      [
+        "More of the return stays invested",
+        "Less of the return remains for growth",
+        "Risk disappears",
+        "The result is guaranteed"
+      ],
+      1,
+      "Fees reduce the amount left invested to grow over time."
+    ]
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "id": "payday-plan",
+  "title": "Make a Payday Plan",
+  "blurb": "Give each paycheque a job before it disappears.",
+  "xp": 180,
+  "cash": 210,
+  "cards": [
+    [
+      "i",
+      "Start with money that actually arrives",
+      "Use take-home pay after deductions. If pay changes, start with a cautious amount you can rely on, then plan what extra income will do when it arrives."
+    ],
+    [
+      "i",
+      "Give essentials first priority",
+      "List bills by due date, minimum debt payments, food, transport and other essentials. Set aside the amounts before deciding what is available for flexible spending."
+    ],
+    [
+      "s",
+      "Sort the payday priorities",
+      "Choose the best first step for each item.",
+      [
+        "Plan now",
+        "Flexible later"
+      ],
+      [
+        [
+          "Rent due next week",
+          0
+        ],
+        [
+          "A streaming add-on you might want",
+          1
+        ],
+        [
+          "Minimum loan payment",
+          0
+        ],
+        [
+          "Extra shift pay not yet earned",
+          1
+        ]
+      ],
+      "Cover committed essentials first. Do not build today's plan around income that has not arrived."
+    ],
+    [
+      "e",
+      "A simple payday order",
+      "1. Confirm take-home pay.\n2. Cover essentials and minimum payments.\n3. Move a planned amount to savings.\n4. Set a realistic amount for flexible spending.\n5. Leave a small buffer if possible."
+    ],
+    [
+      "q",
+      "What should your payday plan use as its starting income?",
+      [
+        "Gross pay before deductions",
+        "Take-home pay you can rely on",
+        "Your highest-ever paycheque",
+        "A hoped-for bonus"
+      ],
+      1,
+      "Take-home pay is the amount available to plan after deductions."
+    ],
+    [
+      "q",
+      "A bonus is uncertain. What is a safer approach?",
+      [
+        "Spend it before it arrives",
+        "Build regular commitments around it",
+        "Decide how to use it after it arrives",
+        "Ignore all income forever"
+      ],
+      2,
+      "Keep recurring commitments affordable on reliable income. Make a plan for extra money once it is real."
+    ]
+  ]
+}

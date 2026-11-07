@@ -1,0 +1,62 @@
+{
+  "id": "spending-habits",
+  "title": "Spending Habits",
+  "blurb": "Find the leaks and beat impulse buys.",
+  "xp": 130,
+  "cash": 160,
+  "cards": [
+    [
+      "i",
+      "Small spends add up",
+      "A daily 4 coffee is about 120 a month. Small, repeated costs are called leaks. You do not have to cut them all, just choose which ones are worth it."
+    ],
+    [
+      "q",
+      "Which spending is the hardest to notice?",
+      [
+        "Rent",
+        "Small repeated purchases and subscriptions",
+        "A new phone",
+        "Annual insurance"
+      ],
+      1,
+      "Tiny regular costs hide in plain sight."
+    ],
+    [
+      "t",
+      "A subscription you never use still costs you money.",
+      true,
+      "Cancel anything you have not used in a month. You can always rejoin."
+    ],
+    [
+      "i",
+      "The 24-hour rule",
+      "For any non-essential purchase, wait a day before buying. Impulse fades faster than you think, and many wants simply disappear."
+    ],
+    [
+      "q",
+      "You see shoes on sale and want them now. What does the 24-hour rule suggest?",
+      [
+        "Buy immediately before the sale ends",
+        "Wait a day and decide with a clear head",
+        "Buy two pairs",
+        "Ask a friend to pay"
+      ],
+      1,
+      "A pause separates real needs from impulse."
+    ],
+    [
+      "q",
+      "\"50% off!\" What question matters most?",
+      [
+        "How big is the discount",
+        "Would I buy this at full price",
+        "Who else bought it",
+        "How fast can I pay"
+      ],
+      1,
+      "A discount on something you do not need is still a spend."
+    ]
+  ],
+  "example": "A $4 snack bought five days a week for four weeks is about $80 a month. You can decide whether that habit is worth keeping once you see the total."
+}

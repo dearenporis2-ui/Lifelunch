@@ -1,0 +1,188 @@
+{
+ "id": "investing-basics",
+ "title": "Investing Basics: Making Money Work",
+ "blurb": "Savings vs investing, the main asset types, compounding, fees and where to start.",
+ "xp": 340,
+ "cash": 420,
+ "cards": [
+  [
+   "i",
+   "Saving versus investing",
+   "Saving means keeping money safe and available, usually in a bank. Investing means putting money into things that can grow, such as companies, bonds or property, knowing the value can also fall.\n\nSaving protects you from short-term surprises. Investing is for long-term goals, where you can wait out the ups and downs. Most people need both."
+  ],
+  [
+   "i",
+   "The main building blocks",
+   "- **Savings accounts:** you lend money to a bank and earn interest. Very safe, slow growth.\n- **Bonds:** you lend to a government or company, which pays you interest and returns your money later. Steadier than shares.\n- **Shares (stocks):** you own a small slice of a company. Higher potential, bigger swings.\n- **Funds:** a basket holding many shares or bonds, bought in one purchase.\n- **Property:** buildings and land. Valuable, but expensive and hard to sell quickly."
+  ],
+  [
+   "o",
+   "Where should a beginner start?",
+   "Tap the steps in the best order.",
+   [
+    "Build a starter emergency fund",
+    "Pay off expensive debt such as card balances",
+    "Decide your goal and how many years you have",
+    "Choose a low-cost, spread-out fund",
+    "Invest a fixed amount regularly and leave it alone"
+   ]
+  ],
+  [
+   "p",
+   "Guess first",
+   "You invest 100 every month for 30 years and it grows 7% a year on average. How much will you have at the end?",
+   {
+    "min": 20000,
+    "max": 200000,
+    "step": 5000,
+    "def": 60000,
+    "pre": "",
+    "post": ""
+   },
+   122000,
+   "You only put in 36,000. Growth added about 86,000. Compounding rewards time more than anything else."
+  ],
+  [
+   "c",
+   "Try it: change the time",
+   "Slide the years up and down and watch how much of the final balance is growth.",
+   "compound"
+  ],
+  [
+   "e",
+   "Worked example: the cost of waiting",
+   "Two friends each invest 100 a month at 7% a year.\n\n1. Ana starts at 25 and invests for 30 years: about 122,000\n2. Ben waits until 35 and invests for 20 years: about 52,000\n3. Ana put in 36,000. Ben put in 24,000.\n\nTen extra years and 12,000 more in contributions gave Ana about 70,000 more. Time did the heavy lifting."
+  ],
+  [
+   "i",
+   "Funds and the index idea",
+   "An **index fund** holds all the companies in a market index, such as the largest few hundred companies in a country. You own a tiny slice of each, so no single company can sink you.\n\nIndex funds are cheap, simple and have beaten most professional fund managers over long periods, which is why many beginners start there.\n\nQuoted returns are averages. Real years are bumpy: some up 20%, some down 20%."
+  ],
+  [
+   "i",
+   "Fees matter more than you think",
+   "Every fund charges a yearly fee. It sounds small, but it comes out every year, forever.\n\nIn the example above, 100 a month for 30 years at 7% grows to about 122,000. At 6%, after a 1% fee, it grows to about 100,000. That one percent costs nearly a fifth of your final pot.\n\nLook for the **total yearly cost** of a fund and prefer low ones."
+  ],
+  [
+   "d",
+   "What would you do?",
+   "A friend says a new coin will triple by Friday. You have 500 saved.",
+   [
+    [
+     "Put it all in before it is too late",
+     "Fast-gain promises are the bait. Most people who chase hype lose money, and guaranteed tips are a classic warning sign.",
+     false
+    ],
+    [
+     "Skip it and stick to your plan of regular investing in a spread-out fund",
+     "Boring wins. A steady plan beats chasing tips, and it protects your savings from sudden losses.",
+     true
+    ],
+    [
+     "Borrow more so you can buy extra",
+     "Borrowing to speculate means you can lose money you do not even have.",
+     false
+    ]
+   ]
+  ],
+  [
+   "i",
+   "Rules of thumb",
+   "- Invest only money you will not need for at least five years.\n- Build an emergency fund first.\n- Automate: a fixed amount on payday removes the temptation to time the market.\n- Ignore hot tips and anything promising guaranteed high returns.\n- Check that the provider is regulated in your country.\n- Never invest in something you cannot explain in a sentence.\n\nThis is education, not personal financial advice. Rules, taxes and products differ by country."
+  ],
+  [
+   "k",
+   [
+    "Saving is for safety and short-term goals. Investing is for long-term growth.",
+    "Time and regular contributions matter more than picking winners.",
+    "Spread-out, low-cost funds are a sensible starting point.",
+    "Small yearly fees add up to a big cost over decades.",
+    "Guaranteed high returns are a warning sign, not an opportunity."
+   ]
+  ],
+  [
+   "q",
+   "What is the main difference between saving and investing?",
+   [
+    "Saving can grow faster than investing",
+    "Investing aims for growth but can lose value, while saving prioritises safety",
+    "They are the same",
+    "Saving is always better"
+   ],
+   1,
+   "Investing accepts risk in return for growth potential. Saving protects what you have."
+  ],
+  [
+   "q",
+   "Which gives you part-ownership of a company?",
+   [
+    "A savings account",
+    "A bond",
+    "A share",
+    "An overdraft"
+   ],
+   2,
+   "A share is a small slice of ownership. A bond is a loan."
+  ],
+  [
+   "q",
+   "What is an index fund?",
+   [
+    "A fund holding a whole market of companies in one purchase",
+    "A bank account with bonus interest",
+    "A loan to a government",
+    "A tip from an influencer"
+   ],
+   0,
+   "It tracks a market index, so you are spread across many companies at a low cost."
+  ],
+  [
+   "t",
+   "Higher potential returns usually come with higher risk.",
+   true,
+   "There is no free lunch. Bigger possible gains come with bigger possible losses."
+  ],
+  [
+   "q",
+   "You need money in 12 months for a deposit. What suits it best?",
+   [
+    "A savings account",
+    "One company's shares",
+    "A new coin",
+    "Everything in a stock fund"
+   ],
+   0,
+   "With a short time horizon, safety matters more than growth, because markets can fall right before you need the money."
+  ],
+  [
+   "t",
+   "A 1% yearly fee is too small to matter.",
+   false,
+   "Over 30 years it can cost nearly a fifth of your final amount."
+  ],
+  [
+   "q",
+   "Which is the clearest warning sign of an investment scam?",
+   [
+    "A regulated provider",
+    "Guaranteed high returns with no risk",
+    "A clear fee list",
+    "A diversified fund"
+   ],
+   1,
+   "No real investment can guarantee high returns without risk."
+  ],
+  [
+   "q",
+   "Why does starting early matter so much?",
+   [
+    "Early investors get bonuses",
+    "Growth builds on past growth, so more time compounds more",
+    "Prices are lower when you are young",
+    "It does not matter"
+   ],
+   1,
+   "Compounding needs time. Years in the market matter more than the size of each deposit."
+  ]
+ ]
+}

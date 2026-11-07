@@ -1,0 +1,85 @@
+{
+  "id": "monthly-budget-project",
+  "title": "Project: Plan a Month",
+  "blurb": "Apply your budgeting skills to a realistic monthly scenario.",
+  "xp": 220,
+  "cash": 260,
+  "cards": [
+    [
+      "i",
+      "Your scenario",
+      "Take-home income is 2,400. Essentials total 1,450, minimum debt payments are 150, and you want to save 200. The remaining 600 is for flexible spending and any extra goals."
+    ],
+    [
+      "o",
+      "Build your plan in a sensible order",
+      "Put each planning step in order.",
+      [
+        "Confirm take-home income",
+        "Cover essential bills and required payments",
+        "Choose a realistic savings contribution",
+        "Set flexible category limits and keep a buffer",
+        "Review the plan after the month"
+      ]
+    ],
+    [
+      "d",
+      "A 90 annual bill is due in six months",
+      "Choose what to do.",
+      [
+        [
+          "Set aside about 15 per month if the budget allows",
+          "A monthly amount spreads the known cost across the remaining months.",
+          true
+        ],
+        [
+          "Wait for the due date and hope",
+          "The bill is known, so planning can reduce the shock.",
+          false
+        ],
+        [
+          "Put it on high-cost credit automatically",
+          "Credit may add costs and does not replace planning.",
+          false
+        ]
+      ]
+    ],
+    [
+      "q",
+      "After essentials, debt minimums, and 200 savings, how much remains?",
+      [
+        "400",
+        "500",
+        "600",
+        "800"
+      ],
+      2,
+      "2,400 − 1,450 − 150 − 200 = 600."
+    ],
+    [
+      "q",
+      "A surprise repair costs 120. Your budget has a 50 buffer. What is a reasonable response?",
+      [
+        "Review options, use the buffer, and adjust flexible spending if needed",
+        "Ignore the repair",
+        "Take the most expensive loan without comparing",
+        "Stop tracking the rest of the month"
+      ],
+      0,
+      "Use the buffer and reassess flexible categories; compare options carefully if more is needed."
+    ],
+    [
+      "q",
+      "What should happen after the month ends?",
+      [
+        "Compare the plan with reality and adjust next month",
+        "Keep every category fixed forever",
+        "Judge yourself for each change",
+        "Never look at the plan again"
+      ],
+      0,
+      "A short review helps the next plan fit your actual needs."
+    ]
+  ],
+  "example": "From $2,400 take-home pay, subtract $1,450 essentials, $150 minimum debt payments and $200 savings. That leaves $600 for flexible spending, goals or a buffer."
+}

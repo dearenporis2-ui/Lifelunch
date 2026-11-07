@@ -1,0 +1,156 @@
+{
+ "id": "credit",
+ "title": "Credit and Debt: The Full Picture",
+ "blurb": "Types of credit, APR, minimum payments, scores and how to pay debt down.",
+ "xp": 340,
+ "cash": 400,
+ "cards": [
+  [
+   "i",
+   "What credit is",
+   "Credit is borrowing money now on the promise to repay it later, usually with interest. Used well, it lets you handle big costs or build a track record. Used badly, it becomes years of payments for things you already used up.\n\nThe key question for any credit: what does it cost, and can I repay it comfortably?"
+  ],
+  [
+   "i",
+   "The main types of credit",
+   "- **Credit cards:** a revolving limit. Pay in full each month and you usually pay no interest. Carry a balance and interest is typically very high.\n- **Personal loans:** a fixed amount repaid in fixed instalments over months or years.\n- **Overdrafts:** borrowing from your current account. Convenient and often costly.\n- **Buy now, pay later:** splitting a purchase into instalments. Easy to stack up without noticing.\n- **Student and car loans:** larger loans with longer terms."
+  ],
+  [
+   "i",
+   "Interest and APR",
+   "Interest is the price of borrowing. **APR** (annual percentage rate) shows the yearly cost including interest and some fees, so you can compare offers fairly.\n\nA 10% APR loan is far cheaper than a 30% APR card. Always compare APR, never just the monthly payment, because a low payment over a long time can cost much more in total."
+  ],
+  [
+   "c",
+   "Try it: what a loan really costs",
+   "Change the amount, the APR and the length. Watch how the total cost of borrowing moves.",
+   "loan"
+  ],
+  [
+   "e",
+   "Worked example: minimum payments",
+   "You owe 1,000 on a card at 24% APR. That is about 2% interest per month, or 20 in the first month.\n\n1. If your minimum payment is 30, only about 10 reduces the debt.\n2. Next month you owe 990, so interest is about 19.80.\n3. Month after month, most of the payment feeds interest.\n\nPaying only the minimum can take years and cost hundreds in interest. Paying even a little extra changes the picture quickly."
+  ],
+  [
+   "i",
+   "Your credit score and history",
+   "Lenders judge how risky you are using your credit history, often summarised as a score. The things that matter most, in rough order:\n\n- **Paying on time:** the biggest factor. Even one missed payment can hurt.\n- **Using a small share of your limit:** staying under about 30% looks responsible.\n- **Length of history:** older accounts help, so avoid closing your oldest one.\n- **New applications:** many applications in a short time can look desperate.\n\nScoring systems differ by country, but the habits that build trust are the same everywhere."
+  ],
+  [
+   "i",
+   "Good debt, bad debt and warning signs",
+   "Debt that helps you earn more or gain something lasting (a needed course, a tool for work, a fair housing loan) can be sensible if repayments are affordable.\n\nDebt for things that lose value, or that are simply wants, carries more risk.\n\nWarning signs: using one credit to pay another, paying only minimums for months, hiding statements, or feeling dread when you open the post. If you see these, act early. Contact the lender, ask for a payment plan, and look for free debt advice services in your country."
+  ],
+  [
+   "i",
+   "Paying debt down: two methods",
+   "- **Snowball:** pay the smallest balance first while paying minimums on the rest. Quick wins keep you motivated.\n- **Avalanche:** pay the highest interest rate first. Mathematically the cheapest.\n\nEither works if you stick with it. The best method is the one you will not abandon. Whichever you choose, stop adding new debt while you pay it down."
+  ],
+  [
+   "o",
+   "Order the steps: getting out of card debt",
+   "Tap the steps in the best order.",
+   [
+    "List every debt with its balance and interest rate",
+    "Make the minimum payment on all of them",
+    "Put every spare unit of money on one target debt",
+    "When it is cleared, roll that payment onto the next debt",
+    "Stop adding new debt while you do this"
+   ]
+  ],
+  [
+   "k",
+   [
+    "Credit is borrowed money. Always ask what it costs and whether you can repay it.",
+    "Compare offers by APR and total cost, not just the monthly payment.",
+    "Minimum payments mostly feed interest, so the debt barely shrinks.",
+    "On-time payments and low usage build a strong history.",
+    "If you are struggling, act early: contact the lender and seek free advice."
+   ]
+  ],
+  [
+   "q",
+   "You repay your whole card statement in full each month. How much interest do you usually pay?",
+   [
+    "Full APR on everything",
+    "Often none, if you clear the balance by the due date",
+    "Double",
+    "Half"
+   ],
+   1,
+   "Many cards charge no interest if you pay the full statement balance on time. Check your card's terms."
+  ],
+  [
+   "q",
+   "Loan A has a lower monthly payment but runs for 5 years. Loan B has a higher payment for 2 years at the same APR. Which usually costs less in total?",
+   [
+    "Loan A",
+    "Loan B",
+    "They cost the same",
+    "Cannot say"
+   ],
+   1,
+   "A longer term means more months of interest, so Loan B usually costs less overall."
+  ],
+  [
+   "q",
+   "You owe 2,000 at 18% APR. About how much interest builds in the first month?",
+   [
+    "3",
+    "30",
+    "300",
+    "3,000"
+   ],
+   1,
+   "18% a year is about 1.5% a month, so roughly 30."
+  ],
+  [
+   "t",
+   "Paying only the minimum on a card is a sensible way to clear debt.",
+   false,
+   "Minimums mostly cover interest, so the balance shrinks very slowly and costs far more."
+  ],
+  [
+   "q",
+   "Which action helps your credit history the most?",
+   [
+    "Paying on time every month",
+    "Applying for many cards at once",
+    "Closing your oldest account",
+    "Maxing out your limit"
+   ],
+   0,
+   "Payment history is the biggest factor, and the other three options can hurt."
+  ],
+  [
+   "q",
+   "You have three debts. Which does the avalanche method pay first?",
+   [
+    "The smallest balance",
+    "The highest interest rate",
+    "The oldest",
+    "The one you like least"
+   ],
+   1,
+   "Avalanche targets the highest rate to minimise total interest."
+  ],
+  [
+   "q",
+   "A friend uses one card to pay off another and has done it for three months. What is the best advice?",
+   [
+    "Keep going, it works",
+    "Stop, make a repayment plan, and seek free advice if needed",
+    "Open another card",
+    "Ignore the statements"
+   ],
+   1,
+   "Using credit to pay credit is a warning sign. Acting early gives you the most options."
+  ],
+  [
+   "t",
+   "A buy-now-pay-later plan counts as real debt and can be risky if you stack several.",
+   true,
+   "Instalment plans are debt. Several at once can add up faster than you notice."
+  ]
+ ]
+}

@@ -1,0 +1,191 @@
+{
+ "id": "budgeting",
+ "title": "Budgeting: Build Your Money Plan",
+ "blurb": "Income, fixed and variable costs, methods that work, and an emergency fund.",
+ "xp": 320,
+ "cash": 380,
+ "cards": [
+  [
+   "i",
+   "What a budget really is",
+   "A budget is a plan for your money before the month starts, not a record of what went wrong afterwards. It answers three questions: how much comes in, what must go out, and what you want your money to do for you.\n\nA good budget is not a punishment. It is permission: when you know your essentials and savings are covered, you can spend the rest without guilt."
+  ],
+  [
+   "i",
+   "Step 1: know your real income",
+   "Start with net income, the money that actually arrives each month. If your income changes (shifts, tips, freelance work), use your lowest typical month as the baseline and treat extra as a bonus to allocate later.\n\nWrite it down. A budget built on hoped-for income fails the first time reality arrives."
+  ],
+  [
+   "i",
+   "Step 2: list fixed and variable costs",
+   "**Fixed costs** are the same each month: rent, phone plan, transport pass, insurance, loan repayments.\n\n**Variable costs** change: groceries, going out, clothes, fun.\n\nGo through the last two months of bank statements and sort every payment into one of the two groups. Most people find at least two or three costs they forgot about."
+  ],
+  [
+   "s",
+   "Sort it: need or want?",
+   "Tap the right label for each item.",
+   [
+    "Need",
+    "Want"
+   ],
+   [
+    [
+     "Rent",
+     0
+    ],
+    [
+     "Streaming subscription",
+     1
+    ],
+    [
+     "Groceries",
+     0
+    ],
+    [
+     "Concert tickets",
+     1
+    ],
+    [
+     "Phone plan",
+     0
+    ],
+    [
+     "New sneakers when your current pair is fine",
+     1
+    ]
+   ],
+   "Needs are things you cannot do without. Wants are things you choose. Grey areas, like a phone plan, depend on how essential it is for your work or study."
+  ],
+  [
+   "i",
+   "Step 3: choose a method",
+   "Three popular methods:\n\n- **50/30/20:** about 50% needs, 30% wants, 20% savings and debt. Simple and flexible.\n- **Zero-based:** every unit of income gets a job until nothing is left unassigned. Precise, and great for tight budgets.\n- **Pay yourself first:** savings leave your account on payday, and you spend what remains. Best if you struggle to save.\n\nNone is the best. Pick the one you will actually keep doing, and adjust after a month."
+  ],
+  [
+   "e",
+   "Worked example: a 1,800 monthly budget",
+   "Net income is 1,800. Using 50/30/20:\n\n1. Needs (50%): 900 for rent share, food, transport and phone\n2. Wants (30%): 540 for going out, hobbies and subscriptions\n3. Savings and debt (20%): 360 moved on payday\n\nIf rent alone is 800, needs are already above 50%. That is common. Adjust: needs 60%, wants 25%, savings 15% is a healthy, realistic plan."
+  ],
+  [
+   "c",
+   "Try it: what steady saving builds",
+   "Change how much you save, for how long, and the interest rate. Notice how time does much of the work.",
+   "compound"
+  ],
+  [
+   "i",
+   "The emergency fund",
+   "An emergency fund is money set aside for surprises: a phone repair, a medical bill, a gap between jobs. Without one, a single surprise becomes debt.\n\nBuild it in stages. First goal: one month of essential costs. Then three months. Keep it in a separate savings account you do not touch for wants.\n\nEven a starter fund of 200 changes how stressful small emergencies feel."
+  ],
+  [
+   "i",
+   "Tracking without the misery",
+   "You do not need a fancy app. Once a week, spend ten minutes checking your bank account against your plan. Ask: did I stay inside my categories? If not, why?\n\nSmall adjustments beat strict rules. If groceries keep going over, raise that category and lower another, rather than abandoning the whole budget."
+  ],
+  [
+   "i",
+   "Why budgets fail",
+   "- Making it too strict, so one slip makes you quit.\n- Forgetting yearly costs like insurance, gifts and holidays. Divide them by 12 and save monthly.\n- Having no buffer category for the unexpected.\n- Never reviewing it. Your life changes, and your budget should too.\n- Comparing yourself to someone else's income and lifestyle."
+  ],
+  [
+   "k",
+   [
+    "A budget is a plan made before the month, not a record afterwards.",
+    "Use net income, and your lowest typical month if pay varies.",
+    "Sort costs into fixed and variable, then pick one method you will keep using.",
+    "50/30/20 is a starting point. Adjust it to your real costs.",
+    "Build an emergency fund in stages and review your budget weekly."
+   ]
+  ],
+  [
+   "q",
+   "When your income varies from month to month, which figure should you plan around?",
+   [
+    "Your best month",
+    "Your lowest typical month",
+    "An average of your hopes",
+    "Last year's total"
+   ],
+   1,
+   "Planning on your lowest typical month keeps the plan safe. Treat extra as a bonus."
+  ],
+  [
+   "q",
+   "Which of these is a fixed cost?",
+   [
+    "Groceries",
+    "A streaming subscription at a set price",
+    "Takeaway dinners",
+    "Clothes"
+   ],
+   1,
+   "A fixed cost is the same every month. Groceries and dinners vary."
+  ],
+  [
+   "q",
+   "Net income is 2,000. Using 50/30/20, how much is for savings and debt?",
+   [
+    "200",
+    "400",
+    "600",
+    "1,000"
+   ],
+   1,
+   "20% of 2,000 is 400."
+  ],
+  [
+   "q",
+   "Which method moves savings out of your account first, before you spend?",
+   [
+    "Zero-based",
+    "Pay yourself first",
+    "Cash envelopes only",
+    "Tracking only"
+   ],
+   1,
+   "Paying yourself first removes the temptation to spend what you meant to save."
+  ],
+  [
+   "t",
+   "If rent takes more than 50% of your income, budgeting does not work for you.",
+   false,
+   "Many people's needs exceed 50%. Adjust the percentages to your real costs and keep saving something."
+  ],
+  [
+   "q",
+   "Insurance costs 240 a year, billed once. How much should you save each month so it never surprises you?",
+   [
+    "10",
+    "20",
+    "24",
+    "120"
+   ],
+   1,
+   "240 ÷ 12 = 20 per month."
+  ],
+  [
+   "q",
+   "You overspend on groceries two months running. What is the smartest response?",
+   [
+    "Quit budgeting",
+    "Adjust the grocery category and take the difference from another one",
+    "Ignore it",
+    "Borrow to cover it"
+   ],
+   1,
+   "A budget is a living plan. Adjust the categories to match reality."
+  ],
+  [
+   "q",
+   "What is a sensible first emergency-fund goal?",
+   [
+    "One month of essential costs",
+    "A year of salary",
+    "Nothing until you are rich",
+    "Exactly 50"
+   ],
+   0,
+   "One month of essentials is achievable and covers most small emergencies. Build to three months after that."
+  ]
+ ]
+}

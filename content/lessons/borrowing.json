@@ -1,0 +1,67 @@
+{
+  "id": "borrowing",
+  "title": "Borrowing Smart",
+  "blurb": "Loans, APR and how to avoid expensive mistakes.",
+  "xp": 150,
+  "cash": 190,
+  "cards": [
+    [
+      "i",
+      "Ways to borrow",
+      "Common options: credit cards, personal loans, buy-now-pay-later and overdrafts. They all cost money, but the cost can be very different."
+    ],
+    [
+      "q",
+      "Which statement about borrowing is true?",
+      [
+        "It is free if you pay later",
+        "You repay what you borrowed plus the cost of borrowing",
+        "Only banks charge interest",
+        "Small loans cost nothing"
+      ],
+      1,
+      "The cost is interest and sometimes fees."
+    ],
+    [
+      "i",
+      "APR: the real price tag",
+      "APR is the yearly cost of a loan including interest and some fees. Use it to compare offers: a lower APR means a cheaper loan."
+    ],
+    [
+      "q",
+      "Loan A has 8% APR and Loan B has 22% APR, same amount. Which is cheaper?",
+      [
+        "Loan A",
+        "Loan B",
+        "They cost the same",
+        "Cannot tell"
+      ],
+      0,
+      "Lower APR means you pay less to borrow."
+    ],
+    [
+      "t",
+      "Buy-now-pay-later is always free because there is no interest.",
+      false,
+      "Late fees and overspending can make it expensive. Treat it like any other debt."
+    ],
+    [
+      "i",
+      "Borrow with an exit plan",
+      "Before borrowing ask: what is the monthly payment, how many months, and can I afford it if my income dips? If you cannot answer, wait."
+    ],
+    [
+      "q",
+      "Which is the best reason to borrow?",
+      [
+        "To keep up with friends",
+        "To pay for something that helps you earn more, like a needed tool or course",
+        "Because the offer is limited",
+        "To pay a small bill you could cover"
+      ],
+      1,
+      "Borrowing makes most sense when it builds earning power and you can afford the repayments."
+    ]
+  ],
+  "example": "Two loans offer the same amount but different total repayments. Compare the full amount repaid and all fees, not only which monthly payment looks smaller."
+}

@@ -1,0 +1,55 @@
+{
+  "id": "digital-privacy",
+  "title": "Protect Your Digital Money Life",
+  "blurb": "Use safer sign-ins, devices, and account habits.",
+  "xp": 190,
+  "cash": 220,
+  "cards": [
+    [
+      "i",
+      "Make account access harder to steal",
+      "Use unique passwords and a password manager where appropriate. Turn on multi-factor authentication, preferably a phishing-resistant method when offered."
+    ],
+    [
+      "i",
+      "Secure devices and connections",
+      "Keep your operating system and apps updated. Use a device lock, avoid sensitive transactions on shared devices, and be cautious on public Wi-Fi."
+    ],
+    [
+      "i",
+      "Limit what you share",
+      "Financial screenshots can expose names, balances, account numbers or transaction details. Share only what is needed, remove private details, and use secure channels."
+    ],
+    [
+      "q",
+      "Why use a unique password for each financial account?",
+      [
+        "It makes every password easier to guess",
+        "A breach of one service is less likely to expose all accounts",
+        "It replaces all security checks",
+        "It makes phishing impossible"
+      ],
+      1,
+      "Unique passwords reduce the damage if one service is compromised."
+    ],
+    [
+      "t",
+      "A bank employee needs your full password to verify your identity.",
+      false,
+      "Do not share your password. Contact the institution using its official details if a request seems real."
+    ],
+    [
+      "q",
+      "You receive an unexpected login approval prompt. What should you do?",
+      [
+        "Approve it to make it go away",
+        "Deny it and check your account through the official app",
+        "Send the prompt to a stranger",
+        "Share the new code"
+      ],
+      1,
+      "Deny unexpected prompts and investigate through a trusted route; change credentials if you suspect compromise."
+    ]
+  ],
+  "example": "A password reused on a game site appears in a breach. Unique passwords mean someone who finds it cannot automatically use it to sign in to your bank."
+}

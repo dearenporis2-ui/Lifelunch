@@ -1,0 +1,45 @@
+{
+  "id": "intro",
+  "title": "Money Basics",
+  "blurb": "Start here: what money is for and the three habits that matter.",
+  "xp": 100,
+  "cash": 120,
+  "cards": [
+    [
+      "i",
+      "Money is a tool",
+      "Money is a tool for trading your time and skills for what you need. How you use it matters more than how much you have. The three basics: earn it, spend it wisely, and keep some for later."
+    ],
+    [
+      "q",
+      "Which describes the three basics of money?",
+      [
+        "Earn, spend wisely, save",
+        "Borrow, borrow, borrow",
+        "Spend, spend, spend",
+        "Hide, lose, find"
+      ],
+      0,
+      "Earning, spending wisely and saving are the foundation of every money skill you will learn here."
+    ],
+    [
+      "t",
+      "Saving a small amount regularly can matter more than saving a lot once.",
+      true,
+      "Habits beat one-off efforts. Small, regular saving builds up and teaches you to pay yourself first."
+    ],
+    [
+      "q",
+      "You get 100 as a gift. Which choice is best for your future self?",
+      [
+        "Spend all of it today",
+        "Spend some and save some",
+        "Lend it to a stranger",
+        "Leave it in your pocket and forget it"
+      ],
+      1,
+      "Balancing enjoyment now with savings for later is the heart of smart money habits."
+    ]
+  ],
+  "example": "You receive $100. You might spend $30 on something you enjoy, put $50 toward a goal, and keep $20 for a future need. The right split depends on your priorities."
+}

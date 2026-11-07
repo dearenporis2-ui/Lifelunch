@@ -1,0 +1,76 @@
+{
+  "id": "phishing",
+  "title": "Spot Phishing and Payment Scams",
+  "blurb": "Pause, verify, and protect your login and money.",
+  "xp": 190,
+  "cash": 220,
+  "cards": [
+    [
+      "i",
+      "Scams create pressure",
+      "Unexpected messages may pretend to be a bank, delivery company, employer or friend. Urgency, secrecy, strange links and requests for codes are warning signs."
+    ],
+    [
+      "i",
+      "Verify out of band",
+      "Do not use the link or phone number in a suspicious message. Open the official app or type a known address yourself, then contact the organization through its published channel."
+    ],
+    [
+      "i",
+      "Protect security codes",
+      "Never share passwords, PINs or one-time codes with a caller or message sender. A real-looking logo or caller ID can be faked."
+    ],
+    [
+      "d",
+      "A message says your account closes in ten minutes",
+      "Choose what to do.",
+      [
+        [
+          "Open the official app yourself and check for alerts",
+          "You avoid the message link and check through a known channel.",
+          true
+        ],
+        [
+          "Click its link and enter your password",
+          "A suspicious link can lead to a fake sign-in page.",
+          false
+        ],
+        [
+          "Reply with the one-time code",
+          "Codes can let someone access your account.",
+          false
+        ],
+        [
+          "Pay a fee with gift cards",
+          "Gift cards are not a safe way to pay a claimed bank fee.",
+          false
+        ]
+      ]
+    ],
+    [
+      "q",
+      "What is the safest way to check a surprising bank message?",
+      [
+        "Click its link",
+        "Use the bank's official app or contact details you already trust",
+        "Reply with your PIN",
+        "Call the number in the message"
+      ],
+      1,
+      "Verify separately through a known official channel."
+    ],
+    [
+      "q",
+      "A caller asks for the code just sent to your phone. What should you do?",
+      [
+        "Read it out",
+        "Refuse and end the call, then contact the organization independently",
+        "Send a screenshot",
+        "Give a different code"
+      ],
+      1,
+      "One-time codes are for you to use; sharing them can let someone access your account."
+    ]
+  ],
+  "example": "A message warns that a parcel is stuck and asks for a small card payment. Check the delivery company using its official app or website, not the message link."
+}

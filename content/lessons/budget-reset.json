@@ -1,0 +1,66 @@
+{
+  "id": "budget-reset",
+  "title": "Review and Reset Your Budget",
+  "blurb": "Use a short monthly review to keep your plan useful.",
+  "xp": 190,
+  "cash": 220,
+  "cards": [
+    [
+      "i",
+      "A budget is a loop",
+      "Plan the month, track a few key categories, then review what happened. The review is where you learn whether the plan matched your real costs."
+    ],
+    [
+      "i",
+      "Ask three calm questions",
+      "What went as expected? What changed? What is one adjustment for next month? Keep what worked and change only what needs changing."
+    ],
+    [
+      "d",
+      "A category keeps going over",
+      "Choose a response.",
+      [
+        [
+          "Adjust the amount and rebalance another category",
+          "A realistic adjustment helps the plan match life.",
+          true
+        ],
+        [
+          "Ignore the pattern",
+          "The same mismatch will likely continue.",
+          false
+        ],
+        [
+          "Stop checking the budget",
+          "You lose useful information.",
+          false
+        ]
+      ]
+    ],
+    [
+      "q",
+      "When is a budget review most useful?",
+      [
+        "Only when you make a mistake",
+        "Regularly, so you can respond to changes",
+        "Never",
+        "Only at the end of the year"
+      ],
+      1,
+      "A regular quick review helps you catch changes while there is still time to adjust."
+    ],
+    [
+      "q",
+      "What is a good next step after noticing a realistic plan was too strict?",
+      [
+        "Revise it and try again",
+        "Erase all your goals",
+        "Hide spending from yourself",
+        "Assume you cannot learn"
+      ],
+      0,
+      "Small revisions make a budget more sustainable."
+    ]
+  ],
+  "example": "Your grocery plan was $250, but recent receipts show $300 is more realistic. Raise groceries by $50 and choose another flexible category to adjust."
+}

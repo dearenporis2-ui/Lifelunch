@@ -1,0 +1,62 @@
+{
+  "id": "side-hustle",
+  "title": "Side Hustles",
+  "blurb": "Turn a skill into income, and keep it legal.",
+  "xp": 130,
+  "cash": 170,
+  "cards": [
+    [
+      "i",
+      "Earning outside a job",
+      "A side hustle is income from something you do on the side: tutoring, design, reselling, content, repairs. The skill is turning something you are good at into something people pay for."
+    ],
+    [
+      "q",
+      "What should you work out before pricing a service?",
+      [
+        "What your friends charge",
+        "Your costs and the time it takes",
+        "The highest price you can imagine",
+        "Nothing, just guess"
+      ],
+      1,
+      "Your price must cover your costs and your time, or you are paying to work."
+    ],
+    [
+      "t",
+      "Money from a side hustle is usually still taxable income.",
+      true,
+      "Many places expect you to declare self-employed income. Check your local rules and keep records."
+    ],
+    [
+      "i",
+      "Keep records from day one",
+      "Save invoices, receipts and a simple sheet of money in and out. It makes taxes easy, proves your income when you apply for loans, and shows which work is worth doing."
+    ],
+    [
+      "q",
+      "You sell 500 of items and spent 350 on supplies. What is your profit?",
+      [
+        "500",
+        "350",
+        "150",
+        "850"
+      ],
+      2,
+      "Profit = income minus costs: 500 − 350 = 150."
+    ],
+    [
+      "q",
+      "A client asks you to start before agreeing a price. What is the smart move?",
+      [
+        "Start anyway to be nice",
+        "Agree price and scope first, ideally in writing",
+        "Charge double later",
+        "Wait a year for payment"
+      ],
+      1,
+      "A clear agreement prevents unpaid work and arguments."
+    ]
+  ],
+  "example": "If a weekend service brings in $200 but supplies and travel cost $55, track those costs too. Revenue is not the same as money left to use."
+}

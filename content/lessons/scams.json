@@ -1,0 +1,62 @@
+{
+  "id": "scams",
+  "title": "Spotting Scams",
+  "blurb": "The tricks behind fake messages and fake deals.",
+  "xp": 140,
+  "cash": 180,
+  "cards": [
+    [
+      "i",
+      "How scams work",
+      "Scammers create urgency, fear or excitement so you act before you think. They pretend to be banks, delivery firms, friends or people offering prizes."
+    ],
+    [
+      "q",
+      "A message says your account closes in 1 hour unless you click a link. What is the red flag?",
+      [
+        "It mentions your account",
+        "The extreme urgency and the link",
+        "It is about a bank",
+        "It is short"
+      ],
+      1,
+      "Pressure to act fast is the scammer's main tool."
+    ],
+    [
+      "t",
+      "A real bank will never ask you for your full PIN or password.",
+      true,
+      "No genuine bank asks for them, ever. Hang up and call the number on your card."
+    ],
+    [
+      "i",
+      "Too good to be true",
+      "Guaranteed returns, free money and easy jobs that pay a lot for little work are classic bait. If it sounds amazing, slow down and check independently."
+    ],
+    [
+      "q",
+      "Someone online offers to double your money if you send it first. What do you do?",
+      [
+        "Send a small amount to test",
+        "Refuse, it is a scam pattern",
+        "Ask for a discount",
+        "Tell friends to join"
+      ],
+      1,
+      "Anyone asking you to send money first for a big return is almost certainly scamming you."
+    ],
+    [
+      "q",
+      "You think you have been scammed. What is the best first move?",
+      [
+        "Hide it out of embarrassment",
+        "Contact your bank immediately and stop replying",
+        "Send more to get it back",
+        "Delete all messages"
+      ],
+      1,
+      "Speed matters. Banks can sometimes block payments, and keeping the messages helps."
+    ]
+  ],
+  "example": "A stranger promises to double your money by tonight if you transfer funds now. Guaranteed fast returns and pressure to act are warning signs; pause and verify independently."
+}

@@ -1,0 +1,179 @@
+{
+ "id": "inflation",
+ "title": "Inflation: The Silent Thief",
+ "blurb": "Why prices rise, why cash loses power, and how to protect your money.",
+ "xp": 320,
+ "cash": 380,
+ "cards": [
+  [
+   "i",
+   "Prices rise over time",
+   "Inflation is the general rise in prices over time. If inflation is 3% a year, something that costs 100 today costs about 103 next year, and about 106 the year after.\n\nThe flip side is that the same money buys a little less each year. Nothing is taken from your account, yet your buying power quietly shrinks. That is why people call inflation a silent thief."
+  ],
+  [
+   "p",
+   "Guess first",
+   "With 3% inflation every year, what will something that costs 100 today cost in 20 years?",
+   {
+    "min": 100,
+    "max": 300,
+    "step": 5,
+    "def": 140,
+    "pre": "",
+    "post": ""
+   },
+   181,
+   "Prices compound, just like interest. 100 × 1.03 to the power of 20 is about 181. Prices nearly double in 20 years, even at a modest rate."
+  ],
+  [
+   "i",
+   "Why prices rise",
+   "Prices rise when demand outpaces supply, when costs go up (wages, energy, materials), and when people expect prices to keep rising.\n\nCentral banks usually aim for low, steady inflation, often around 2% a year. Real rates vary a lot between countries and between years, so check the current figure where you live."
+  ],
+  [
+   "c",
+   "Try it: what inflation does to savings",
+   "Change the amount, the years and the inflation rate. See what your savings will really buy.",
+   "inflation"
+  ],
+  [
+   "e",
+   "Worked example: nominal vs real growth",
+   "You keep 5,000 in an account paying 1% a year for 10 years, while inflation runs at 3%.\n\n1. After 10 years the balance is about 5,000 × 1.01 to the power of 10 = 5,523\n2. Prices have risen about 1.34 times over the same period\n3. In today's money your balance is worth 5,523 ÷ 1.34 = about 4,110\n\nYour balance went up, but your buying power fell by roughly 890."
+  ],
+  [
+   "i",
+   "Real return",
+   "The **real return** is roughly the interest rate minus the inflation rate. Savings paying 2% while inflation is 4% have a real return of about minus 2%: you have more money, but less power.\n\nThis does not make savings accounts bad. They are perfect for short-term goals and emergencies, where safety matters more than growth. The problem is money you will not need for many years."
+  ],
+  [
+   "s",
+   "Sort it: who does inflation hurt?",
+   "Tap the label that fits each situation.",
+   [
+    "Hurts you",
+    "Helps or protects you"
+   ],
+   [
+    [
+     "Cash kept under the mattress for 10 years",
+     0
+    ],
+    [
+     "A fixed-rate loan you owe, with repayments that never change",
+     1
+    ],
+    [
+     "Savings paying 0.5% while inflation is 4%",
+     0
+    ],
+    [
+     "A salary that rises with prices each year",
+     1
+    ],
+    [
+     "A long-term spread of shares in strong companies (historically)",
+     1
+    ]
+   ],
+   "Inflation hurts money that sits still and helps people who owe fixed amounts. Assets and incomes that grow with the economy tend to keep their power, though nothing is guaranteed."
+  ],
+  [
+   "i",
+   "What can beat inflation",
+   "Over long periods, things that tend to grow with the economy have beaten inflation: shares in companies, property and inflation-linked bonds. Growing your income through skills matters most of all.\n\nNone of these is guaranteed, and all of them can fall in the short term. The longer your time horizon, the more sensible it is to hold some of them."
+  ],
+  [
+   "d",
+   "What would you do?",
+   "You have 3,000 saved for a trip in 6 months, and a separate 3,000 you will not need for 15 years.",
+   [
+    [
+     "Keep both in cash at home",
+     "The trip money is safe from market swings, but the 15-year money loses buying power every year for no reason.",
+     false
+    ],
+    [
+     "Trip money in a savings account, long-term money in a spread-out investment",
+     "Safety for the short-term goal, growth potential for the long-term one. Each pot is matched to its time horizon.",
+     true
+    ],
+    [
+     "Put both into one company's shares",
+     "A bad six months could wipe out your trip money, and one company is a very concentrated bet.",
+     false
+    ]
+   ]
+  ],
+  [
+   "k",
+   [
+    "Inflation is a general rise in prices, so the same money buys less over time.",
+    "Even 3% a year nearly doubles prices in 20 years.",
+    "Real return is roughly interest minus inflation.",
+    "Savings are right for short-term goals. Long-term money needs growth.",
+    "Match each pot of money to when you will need it."
+   ]
+  ],
+  [
+   "q",
+   "Something costs 200 and inflation is 5% for one year. What does it cost next year?",
+   [
+    "205",
+    "210",
+    "215",
+    "250"
+   ],
+   1,
+   "200 × 1.05 = 210."
+  ],
+  [
+   "t",
+   "If your savings earn 2% and inflation is 4%, your buying power is shrinking.",
+   true,
+   "Your balance grows 2% but prices grow 4%, so your real return is about minus 2%."
+  ],
+  [
+   "q",
+   "Which is most exposed to inflation over 20 years?",
+   [
+    "Cash kept at home",
+    "A fixed-rate loan you owe",
+    "A growing income",
+    "Shares in many companies"
+   ],
+   0,
+   "Cash earns nothing and loses buying power every year."
+  ],
+  [
+   "q",
+   "A savings account pays 5% while inflation is 3%. What is the real return, roughly?",
+   [
+    "8%",
+    "2%",
+    "Minus 2%",
+    "5%"
+   ],
+   1,
+   "Real return is about interest minus inflation: 5% − 3% = 2%."
+  ],
+  [
+   "t",
+   "Inflation only matters when it is very high.",
+   false,
+   "Even 3% a year nearly doubles prices in 20 years. Small rates add up quietly."
+  ],
+  [
+   "q",
+   "You need money for a deposit in 8 months. Where is it best kept?",
+   [
+    "A savings account",
+    "One company's shares",
+    "A new cryptocurrency",
+    "Under the mattress"
+   ],
+   0,
+   "For short-term goals, safety comes first. Inflation barely matters over 8 months, but a market fall could."
+  ]
+ ]
+}

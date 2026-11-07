@@ -1,0 +1,54 @@
+{
+  "id": "build-a-buffer",
+  "title": "Build a Financial Buffer",
+  "blurb": "Create breathing room for small surprises and changing plans.",
+  "xp": 190,
+  "cash": 220,
+  "cards": [
+    [
+      "i",
+      "A buffer is a first line of defense",
+      "A small accessible amount can help with an unexpected essential cost without immediately relying on expensive credit. The right target depends on your circumstances."
+    ],
+    [
+      "i",
+      "Pick a first milestone",
+      "Start with an amount that is possible and useful, such as one common repair or a week of essential costs. Build toward a larger reserve over time."
+    ],
+    [
+      "e",
+      "Make the amount repeatable",
+      "If your first target is 300 and you can set aside 25 each month, it takes 12 months before any interest. If that is too much, choose a smaller amount you can maintain."
+    ],
+    [
+      "q",
+      "What makes a starter savings goal more achievable?",
+      [
+        "A clear target and a realistic regular contribution",
+        "A goal based on somebody else's income",
+        "Waiting until you can save a huge amount",
+        "Using money needed for rent"
+      ],
+      0,
+      "A specific target and sustainable amount make progress easier to track."
+    ],
+    [
+      "t",
+      "Your first savings goal must cover every possible emergency.",
+      false,
+      "Start with a helpful milestone and grow the buffer as your situation allows."
+    ],
+    [
+      "q",
+      "Your budget is tight this month. What is sensible?",
+      [
+        "Skip essential bills to save more",
+        "Choose a small affordable amount or pause and revisit the plan",
+        "Use high-cost credit to fund savings",
+        "Give up forever"
+      ],
+      1,
+      "Protect essential needs and set a contribution that fits your real situation."
+    ]
+  ]
+}

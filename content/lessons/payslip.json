@@ -1,0 +1,62 @@
+{
+  "id": "payslip",
+  "title": "Reading a Payslip",
+  "blurb": "Gross, net and every line in between.",
+  "xp": 130,
+  "cash": 160,
+  "cards": [
+    [
+      "i",
+      "Anatomy of a payslip",
+      "Your payslip lists gross pay at the top, then deductions such as income tax and pension or social contributions, and finally net pay. Check it every month, because mistakes happen."
+    ],
+    [
+      "q",
+      "Which number should you compare against your budget?",
+      [
+        "Gross pay",
+        "Net pay",
+        "Employer cost",
+        "Tax-free allowance"
+      ],
+      1,
+      "Your budget runs on money that actually arrives: net pay."
+    ],
+    [
+      "t",
+      "A pension or social contribution on your payslip is money lost forever.",
+      false,
+      "Those contributions fund your future income, and many employers add their own on top."
+    ],
+    [
+      "i",
+      "Hourly, salary and overtime",
+      "Hourly pay depends on hours worked. A salary is a fixed yearly amount split into pay periods. Overtime is often paid at a higher rate, so check how your workplace handles extra hours."
+    ],
+    [
+      "q",
+      "You earn 12 an hour and work 30 hours. What is your gross pay for the week?",
+      [
+        "300",
+        "360",
+        "390",
+        "420"
+      ],
+      1,
+      "12 × 30 = 360 before any deductions."
+    ],
+    [
+      "q",
+      "Your payslip shows 40 less than you expected. What is the best first step?",
+      [
+        "Ignore it",
+        "Check each deduction against your contract and ask payroll",
+        "Quit",
+        "Post about it online"
+      ],
+      1,
+      "Ask payroll to explain each line. Errors are common and fixable."
+    ]
+  ],
+  "example": "A payslip shows $2,500 gross pay and $400 in deductions. Your take-home amount is $2,100, which is the amount to start a monthly spending plan with."
+}

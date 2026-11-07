@@ -1,0 +1,62 @@
+{
+  "id": "accounts-safety",
+  "title": "Protecting Your Accounts",
+  "blurb": "Passwords, two-step login and safe habits.",
+  "xp": 140,
+  "cash": 180,
+  "cards": [
+    [
+      "i",
+      "Passwords that hold up",
+      "Long beats clever. A phrase of several random words is strong and easy to remember. Never reuse a password, because one leak then opens every account."
+    ],
+    [
+      "q",
+      "Which password is strongest?",
+      [
+        "password123",
+        "Your birthday",
+        "correct horse battery staple",
+        "Qwerty!1"
+      ],
+      2,
+      "Length and randomness win. Four or more random words is hard to crack."
+    ],
+    [
+      "t",
+      "Using the same password everywhere is fine if it is strong.",
+      false,
+      "If one site leaks it, attackers try it everywhere. Use a different one for each account."
+    ],
+    [
+      "i",
+      "Turn on two-step login",
+      "Two-step verification asks for a code or approval on your phone as well as your password. Even if someone steals your password, they still cannot get in."
+    ],
+    [
+      "q",
+      "What does two-step login protect against?",
+      [
+        "Forgetting your password",
+        "Someone getting in with only a stolen password",
+        "Slow internet",
+        "Bank fees"
+      ],
+      1,
+      "A stolen password is not enough without the second step."
+    ],
+    [
+      "q",
+      "You are on public Wi-Fi. What should you avoid?",
+      [
+        "Reading the news",
+        "Logging in to your bank without extra protection",
+        "Listening to music",
+        "Checking the weather"
+      ],
+      1,
+      "Use mobile data for banking when you can, since public networks are easier to snoop on."
+    ]
+  ],
+  "example": "You get a text saying your bank account is locked. Open the bank app you already use instead of tapping the message link, and check alerts there."
+}

@@ -1,0 +1,62 @@
+{
+  "id": "banking",
+  "title": "Banking Basics",
+  "blurb": "Accounts, cards and fees in plain language.",
+  "xp": 140,
+  "cash": 180,
+  "cards": [
+    [
+      "i",
+      "What a bank account does",
+      "A current or checking account holds money for daily use. A savings account is for money you do not touch and often pays interest. Keep them separate."
+    ],
+    [
+      "q",
+      "Which account is best for money you want to grow and not spend?",
+      [
+        "Current account",
+        "Savings account",
+        "Wallet",
+        "Prepaid card"
+      ],
+      1,
+      "Savings accounts earn interest and discourage spending."
+    ],
+    [
+      "i",
+      "Fees can eat your balance",
+      "Some accounts charge monthly fees, ATM fees or overdraft charges. Read the fee list and pick an account that fits how you use money."
+    ],
+    [
+      "t",
+      "Overdrafts are a free safety net.",
+      false,
+      "They are borrowing, often with fees or high interest."
+    ],
+    [
+      "q",
+      "Debit vs credit card: what is the main difference?",
+      [
+        "Debit spends your own money, credit borrows from the lender",
+        "They are identical",
+        "Credit is interest-free forever",
+        "Debit has no limit"
+      ],
+      0,
+      "A debit card draws on your balance. A credit card borrows money you must repay."
+    ],
+    [
+      "q",
+      "You lose your card. What do you do first?",
+      [
+        "Wait a week",
+        "Freeze or cancel it right away through your bank",
+        "Post about it",
+        "Order pizza"
+      ],
+      1,
+      "Freeze it immediately to stop misuse, then ask for a replacement."
+    ]
+  ],
+  "example": "An account charges $3 each month and another charges $24 a year. Their base fee can be the same over a full year, but check transaction and ATM fees too."
+}

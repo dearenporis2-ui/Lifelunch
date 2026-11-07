@@ -1,0 +1,67 @@
+[
+ {
+  "id": "earn",
+  "title": "Earning and Taxes",
+  "blurb": "Where money comes from and where some of it goes.",
+  "lessons": [
+   "intro",
+   "taxes",
+   "payslip",
+   "side-hustle",
+   "payday-plan",
+   "variable-income"
+  ]
+ },
+ {
+  "id": "budget",
+  "title": "Budgeting and Saving",
+  "blurb": "Plan it, track it, keep it.",
+  "lessons": [
+   "budgeting",
+   "spending-habits",
+   "savings-goals",
+   "expense-audit",
+   "sinking-funds",
+   "budget-reset",
+   "build-a-buffer",
+   "spending-tradeoffs",
+   "monthly-budget-project",
+   "budget-capstone"
+  ]
+ },
+ {
+  "id": "credit",
+  "title": "Credit and Debt",
+  "blurb": "Borrow without getting burned.",
+  "lessons": [
+   "credit",
+   "borrowing",
+   "credit-reports",
+   "debt-payoff"
+  ]
+ },
+ {
+  "id": "grow",
+  "title": "Investing and Growing Money",
+  "blurb": "Beat inflation, start investing, and understand risk.",
+  "lessons": [
+   "inflation",
+   "investing-basics",
+   "risk-diversification",
+   "compound-growth",
+   "investment-plan"
+  ]
+ },
+ {
+  "id": "safety",
+  "title": "Banking and Staying Safe",
+  "blurb": "Accounts, cards and not getting scammed.",
+  "lessons": [
+   "banking",
+   "scams",
+   "accounts-safety",
+   "phishing",
+   "digital-privacy"
+  ]
+ }
+]

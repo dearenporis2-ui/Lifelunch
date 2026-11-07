@@ -559,6 +559,15 @@ main:has(.dashboard){max-width:1480px;padding-top:clamp(28px,4vw,54px)}
 .penny-tip{margin-top:-5px!important;color:#698176!important;font-size:.79rem!important;line-height:1.35!important}
 @keyframes pennyFloat{0%,100%{translate:0 0}50%{translate:0 -5px}}
 @keyframes pennyWave{0%,75%,100%{transform:rotate(0)}82%{transform:rotate(-22deg)}89%{transform:rotate(15deg)}95%{transform:rotate(-12deg)}}
+.session-scroll-cue{display:none}
+.session-scroll-cue[hidden]{display:none!important}
+@media(max-width:720px){
+  .s-foot.has-scroll-cue{min-height:100px;flex-direction:column;gap:7px;padding-top:9px}
+  .session-scroll-cue{display:flex;align-items:center;justify-content:center;gap:7px;color:#577A6A;font-size:.74rem;font-weight:700;line-height:1.2}
+  .scroll-cue-arrow{color:#0A9677;transform:rotate(90deg);animation:scrollCueNudge 1.35s ease-in-out infinite}
+  .s-foot.has-scroll-cue .btn{min-height:50px}
+}
+@keyframes scrollCueNudge{0%,100%{translate:0 -1px}50%{translate:0 3px}}
 .next-icon{color:#0B9B78;background:#E0F7EB}
 .next-card .section-kicker{color:#0B9B78}
 .time-pill{margin-left:auto;padding:5px 9px;border-radius:8px;background:#F0F4F2;color:#7C8B83;font-size:.74rem;font-weight:700}
@@ -914,5 +923,5 @@ body.menu-open{overflow:hidden}
 }
 @media(prefers-reduced-motion:reduce){
   .mobile-menu-scrim,.mobile-menu-panel,.nav-toggle,.nav-toggle span,.mobile-menu-item,.mobile-menu-icon,.quick-link{transition:none!important;animation:none!important}
-  .path-buddy,.penny-dashboard,.penny-svg .penny-wave-arm,.penny-talk>span{animation:none!important}
+  .path-buddy,.penny-dashboard,.penny-svg .penny-wave-arm,.penny-talk>span,.scroll-cue-arrow{animation:none!important}
 }

@@ -80,7 +80,7 @@ async function startNode(root, ctx, idx, id, k) {
 /* ---------- the session ---------- */
 export function runSession(root, ctx, o) {
   const queue = o.cards.map(c => ({ c, retry: false })), totalQ = o.cards.filter(c => c.type === 'quiz').length, useHearts = o.hearts !== false;
-  let i = 0, firstRight = 0, combo = 0, best = 0, tipI = o.coach, tipQ = o.coach;
+  let i = 0, firstRight = 0, combo = 0, best = 0, tipI = o.coach, tipQ = o.coach, scrollCueDismissed = false;
   document.body.classList.add('in-session'); root.onclick = root.oninput = root.onchange = null; ctx.audio.play('lessonStart');
   const exit = () => { document.body.classList.remove('in-session'); bump(root); (o.back || renderLearn)(root, ctx); };
   const shell = (body, foot) => {
@@ -98,7 +98,19 @@ export function runSession(root, ctx, o) {
       <div class="s-progress"><div class="s-progress-label"><strong>${o.title}</strong><span>STEP ${i + 1} OF ${queue.length}</span></div>
       <div class="s-bar" role="progressbar" aria-label="Session progress" aria-valuemin="0" aria-valuemax="${queue.length}" aria-valuenow="${i}"><i style="width:${i / queue.length * 100}%"></i></div></div>
       ${useHearts ? `<span class="s-hearts" aria-label="Hearts">♥ ${heartsNow(ctx.state)}</span>` : ''}</div>
-      <div class="s-body"><div class="lesson-stage"><section class="lesson-main">${body}</section>${rail}</div></div><div class="s-foot" id="foot">${foot}</div></div>`;
+      <div class="s-body"><div class="lesson-stage"><section class="lesson-main">${body}</section>${rail}</div></div><div class="s-foot" id="foot"><div class="session-scroll-cue" hidden>${icon('arrow',15,'scroll-cue-arrow')}<span>Scroll for Penny’s examples &amp; tips</span></div>${foot}</div></div>`;
+    const sBody = root.querySelector('.s-body'), sFoot = root.querySelector('#foot'), cue = root.querySelector('.session-scroll-cue');
+    const showScrollCue = () => {
+      if (scrollCueDismissed || !sBody || !cue) return;
+      const canScroll = sBody.scrollHeight > sBody.clientHeight + 18;
+      cue.hidden = !canScroll; sFoot.classList.toggle('has-scroll-cue', canScroll);
+    };
+    sBody.addEventListener('scroll', () => {
+      if (sBody.scrollTop > 12 && !scrollCueDismissed) {
+        scrollCueDismissed = true; cue.hidden = true; sFoot.classList.remove('has-scroll-cue');
+      }
+    }, { passive: true });
+    requestAnimationFrame(() => requestAnimationFrame(showScrollCue));
     root.querySelector('.s-close').onclick = () => { if (confirm('Quit this session? You will lose your progress in it.')) exit(); };
   };
   const outOfHearts = () => {

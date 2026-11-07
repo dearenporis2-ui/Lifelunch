@@ -11,7 +11,7 @@ import { startTutorial } from './modules/tutorial.js';
 import { icon } from './modules/icons.js';
 
 const KEY = 'lifelaunch.v1';
-const fresh = () => ({ name: 'Player One', cash: 500, savings: 0, xp: 0, streak: 0, lastDay: null, lessons: {}, studied: {}, path: {}, hearts: 5, heartsAt: Date.now(), goal: null, badges: [], month: 1, draft: null, daily: null, dailyDone: 0, perfects: 0, tutorialSeen: false, tutorialDone: false, bestScore: 0, history: [] });
+const fresh = () => ({ name: 'Player One', cash: 500, savings: 0, xp: 0, streak: 0, lastDay: null, lessons: {}, studied: {}, path: {}, hearts: 5, heartsAt: Date.now(), goal: null, badges: [], month: 1, draft: null, daily: null, dailyDone: 0, perfects: 0, testNoticeSeen: false, tutorialSeen: false, tutorialDone: false, bestScore: 0, history: [] });
 const load = () => { try { return { ...fresh(), ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { return fresh(); } };
 const state = load();
 
@@ -137,6 +137,44 @@ async function renderDashboard(root) {
   requestAnimationFrame(() => requestAnimationFrame(() => { const f = $('#rf'); if (f) f.style.strokeDashoffset = C * (1 - d.pct / 100); }));
 }
 
+function showTestNotice() {
+  if (state.testNoticeSeen || current() === 'p' || document.querySelector('.preview-overlay')) return;
+  const overlay = document.createElement('div');
+  overlay.className = 'preview-overlay';
+  overlay.innerHTML = `<section class="preview-card" role="dialog" aria-modal="true" aria-labelledby="preview-title" aria-describedby="preview-summary">
+    <div class="preview-mark" aria-hidden="true">${icon('sparkles',25)}</div>
+    <span class="preview-badge">EARLY ACCESS <i></i> TEST BUILD</span>
+    <h1 id="preview-title">You’re trying LifeLaunch early!</h1>
+    <p id="preview-summary" class="preview-summary">This is a test version of the platform. A few important things to know before you jump in:</p>
+    <ul class="preview-facts">
+      <li><span class="preview-fact-icon">${icon('device',18)}</span><span><strong>Your progress stays here</strong><small>It’s saved in this browser on this device. It won’t sync to another device, and clearing browser data may erase it.</small></span></li>
+      <li><span class="preview-fact-icon">${icon('user',18)}</span><span><strong>No accounts or database yet</strong><small>Account linking and cloud saves aren’t connected in this test build.</small></span></li>
+      <li><span class="preview-fact-icon">${icon('shield',18)}</span><span><strong>Use pretend details</strong><small>LifeLaunch is a learning prototype. Don’t enter sensitive personal or financial information.</small></span></li>
+    </ul>
+    <button class="btn primary preview-continue" type="button">Got it — show me around ${icon('arrow',18)}</button>
+    <p class="preview-footnote">Thanks for helping us test LifeLaunch. Things may change as we build.</p>
+  </section>`;
+  document.body.append(overlay);
+  const button = overlay.querySelector('.preview-continue'), hud = $('#hud'), view = $('#view');
+  hud?.setAttribute('inert', ''); view?.setAttribute('inert', ''); document.body.classList.add('preview-open');
+  const acknowledge = () => {
+    document.removeEventListener('keydown', onKey);
+    overlay.classList.remove('is-visible');
+    state.testNoticeSeen = true; save();
+    setTimeout(() => {
+      overlay.remove(); hud?.removeAttribute('inert'); view?.removeAttribute('inert'); document.body.classList.remove('preview-open');
+      if (!state.tutorialSeen) ctx.tour();
+    }, 220);
+  };
+  const onKey = e => {
+    if (e.key === 'Escape') e.preventDefault();
+    if (e.key === 'Tab') { e.preventDefault(); button.focus(); }
+  };
+  button.addEventListener('click', acknowledge, { once: true });
+  document.addEventListener('keydown', onKey);
+  requestAnimationFrame(() => { overlay.classList.add('is-visible'); button.focus(); });
+}
+
 let rc = 0;
 function route() {
   const root = $('#view'), h = location.hash.replace(/^#\/?/, '') || 'dashboard', name = h.split('/')[0];
@@ -152,7 +190,10 @@ function route() {
     else { renderHud(); Promise.resolve((ROUTES[name] || ROUTES.dashboard).fn(root, ctx)).catch(fail); }
   } catch (err) { fail(err); }
   window.scrollTo(0, 0);
-  if (name !== 'p' && !state.tutorialSeen) setTimeout(ctx.tour, 900);
+  if (name !== 'p') {
+    if (!state.testNoticeSeen) setTimeout(showTestNotice, 650);
+    else if (!state.tutorialSeen) setTimeout(ctx.tour, 900);
+  }
 }
 
 document.addEventListener('click', e => {

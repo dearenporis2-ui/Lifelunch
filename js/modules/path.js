@@ -93,14 +93,19 @@ async function startNode(root, ctx, idx, id, k) {
 /* ---------- the session ---------- */
 export function runSession(root, ctx, o) {
   const queue = o.cards.map(c => ({ c, retry: false })), totalQ = o.cards.filter(c => c.type === 'quiz').length, useHearts = o.hearts !== false;
-  let i = 0, firstRight = 0, combo = 0, best = 0, tipI = o.coach, tipQ = o.coach, scrollCueDismissed = false;
+  let i = 0, firstRight = 0, combo = 0, best = 0, tipI = o.coach, tipQ = o.coach, scrollCueDismissed = false, lastGuideLine = '';
   const sessionSeed = Date.now();
+  const nextGuideLine = lines => {
+    const choices = lines.filter(line => line !== lastGuideLine);
+    lastGuideLine = choices[Math.floor(Math.random() * choices.length)] || lines[0];
+    return lastGuideLine;
+  };
   document.body.classList.add('in-session'); root.onclick = root.oninput = root.onchange = null; ctx.audio.play('lessonStart');
   const exit = () => { document.body.classList.remove('in-session'); bump(root); (o.back || renderLearn)(root, ctx); };
   const shell = (body, foot) => {
     const c = queue[i]?.c || {}, stage = c.type === 'quiz' || c.kind === 'calc' || ACTIVITY_KINDS.includes(c.kind) ? 2 : c.kind === 'example' ? 1 : 0;
     const cheerSet = c.type === 'quiz' ? PENNY_LINES.question : c.kind === 'example' ? PENNY_LINES.example : c.kind === 'calc' ? PENNY_LINES.calculator : ACTIVITY_KINDS.includes(c.kind) ? PENNY_LINES.activity : PENNY_LINES.lesson;
-    const cheer = pennyLine(cheerSet, sessionSeed + i);
+    const cheer = nextGuideLine(cheerSet);
     const stages = ['Get the idea', 'See it in real life', 'Try it yourself'];
     const examplePanel = c.kind === 'example'
       ? `<div class="rail-example-note"><span>LOOK CLOSER</span><h3>What makes this work?</h3><p>Notice the choice, the tradeoff, and what happens next. That is the useful part of the example.</p></div>`

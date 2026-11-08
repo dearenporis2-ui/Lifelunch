@@ -118,6 +118,7 @@ function quiz(root, ctx, l, next) {
 function run(root, ctx, { title, cards, done, coach, lastLabel }) {
   let i = 0, right = 0, combo = 0, best = 0, tipI = coach, tipQ = coach;
   const total = cards.filter(c => c.type === 'quiz').length;
+  document.body.classList.add('lesson-active');
   ctx.audio.pauseMusic();
   ctx.audio.play('lessonStart');
   root.onclick = null;
@@ -125,7 +126,7 @@ function run(root, ctx, { title, cards, done, coach, lastLabel }) {
     <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${cards.length}" aria-valuenow="${i}"><i style="width:${i / cards.length * 100}%"></i></div>
     <h1>${title}</h1>${tip ? `<p class="coach">${tip}</p>` : ''}${label ? `<p class="part">${label}</p>` : ''}${inner}</div>`; };
   function step() {
-    if (i >= cards.length) { ctx.audio.resumeAfterSession(); return done({ right, total, best }); }
+    if (i >= cards.length) { document.body.classList.remove('lesson-active'); ctx.audio.resumeAfterSession(); return done({ right, total, best }); }
     const c = cards[i];
     if (c.type === 'info') {
       const act = ACTIVITY_KINDS.includes(c.kind);

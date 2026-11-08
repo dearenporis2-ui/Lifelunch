@@ -23,38 +23,78 @@ const routeName = () => (location.hash.replace(/^#\/?/, '') || 'dashboard').spli
 
 export function mountRocket(audio) {
   const rocket = document.createElement('div');
-  rocket.className = 'menu-rocket'; rocket.setAttribute('aria-hidden', 'true'); rocket.innerHTML = ROCKET;
+  rocket.className = 'menu-rocket rocket-hidden'; rocket.setAttribute('aria-hidden', 'true'); rocket.innerHTML = ROCKET;
   document.body.append(rocket);
-  let lastRoute = routeName(), frame = 0;
-
-  const move = () => {
-    cancelAnimationFrame(frame);
-    frame = requestAnimationFrame(() => {
-      if (document.body.classList.contains('in-session')) { rocket.classList.add('rocket-hidden'); return; }
+  let lastRoute = routeName(), timer = 0, raf = 0, resizeTimer = 0, positioned = false;
+  const size = () => matchMedia('(max-width: 420px)').matches ? 43 : matchMedia('(max-width: 720px)').matches ? 48 : 56;
+  const visible = el => { const r = el.getBoundingClientRect(); return r.width > 20 && r.height > 12 && r.bottom > 74 && r.top < innerHeight - 12 && r.right > 0 && r.left < innerWidth; };
+  const surfaces = () => [...document.querySelectorAll('#view .dashboard-hero,#view .dashboard-tiles .tile,#view .dashboard-panels>.card,#view .page-intro,#view .unit-head,#view .lesson-label,#view .node-wrap,#view .card,#view .tile')].filter(visible);
+  const waypoints = () => {
+    const s = size(), gap = 8, hudBottom = document.querySelector('#hud')?.getBoundingClientRect().bottom || 0;
+    const cards = surfaces(), points = [];
+    for (const el of cards) {
+      const r = el.getBoundingClientRect();
+      points.push(
+        { x: r.right + gap, y: r.top + Math.min(36, r.height * .22) },
+        { x: r.left - s - gap, y: r.top + Math.min(58, r.height * .38) },
+        { x: r.right - s - Math.min(14, r.width * .08), y: r.top - s - gap },
+        { x: r.left + Math.min(18, r.width * .08), y: r.bottom + gap }
+      );
+    }
+    points.push(
+      { x: 12, y: hudBottom + 18 }, { x: innerWidth - s - 12, y: hudBottom + 18 },
+      { x: 12, y: innerHeight - s - 18 }, { x: innerWidth - s - 12, y: innerHeight - s - 18 }
+    );
+    return points.filter(p => p.x >= 6 && p.y >= Math.max(6, hudBottom + 3) && p.x + s <= innerWidth - 6 && p.y + s <= innerHeight - 6)
+      .filter(p => !cards.some(el => { const r = el.getBoundingClientRect(); return p.x < r.right + 5 && p.x + s > r.left - 5 && p.y < r.bottom + 5 && p.y + s > r.top - 5; }));
+  };
+  const fly = ({ sound = true } = {}) => {
+    cancelAnimationFrame(raf); clearTimeout(timer);
+    raf = requestAnimationFrame(() => {
+      if (document.body.classList.contains('in-session') || document.body.classList.contains('lesson-active')) { rocket.classList.add('rocket-hidden'); return; }
+      const points = waypoints();
+      if (!points.length) points.push({ x: innerWidth - size() - 10, y: Math.min(innerHeight - size() - 10, Math.max(88, (document.querySelector('#hud')?.getBoundingClientRect().bottom || 0) + 12)) });
       rocket.classList.remove('rocket-hidden');
-      const mobile = matchMedia('(max-width: 720px)').matches;
-      const target = mobile
-        ? document.querySelector('#view .dashboard-hero, #view .page-intro, #view .unit-head, #view h1')
-        : document.querySelector('#hud .tab[aria-current="page"]');
-      if (!target) return;
-      const rect = target.getBoundingClientRect(), size = mobile ? 52 : 50;
-      const left = mobile ? rect.right - size * .58 : rect.left + rect.width * .72 - size / 2;
-      const top = mobile ? rect.top - size * .64 : rect.top - size * .83;
-      rocket.style.left = `${Math.max(8, Math.min(innerWidth - size - 8, left))}px`;
-      rocket.style.top = `${Math.max(8, Math.min(innerHeight - size - 12, top))}px`;
+      const currentX = parseFloat(rocket.style.left) || -100, currentY = parseFloat(rocket.style.top) || -100;
+      const spaced = points.filter(p => Math.hypot(p.x - currentX, p.y - currentY) > Math.max(95, size() * 1.8));
+      const candidates = spaced.length ? spaced : points, cards = surfaces();
+      const clearPath = p => {
+        if (!positioned) return true;
+        for (let t = .15; t < 1; t += .15) {
+          const x = currentX + (p.x - currentX) * t, y = currentY + (p.y - currentY) * t;
+          if (cards.some(el => { const r = el.getBoundingClientRect(); return x < r.right + 4 && x + size() > r.left - 4 && y < r.bottom + 4 && y + size() > r.top - 4; })) return false;
+        }
+        return true;
+      };
+      const clearCandidates = candidates.filter(clearPath);
+      const choices = clearCandidates.length ? clearCandidates : [...candidates].sort((a,b) => Math.hypot(a.x-currentX,a.y-currentY)-Math.hypot(b.x-currentX,b.y-currentY)).slice(0,Math.min(3,candidates.length));
+      const point = choices[Math.floor(Math.random() * choices.length)], heading = Math.atan2(point.y - currentY, point.x - currentX) * 180 / Math.PI + 52;
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      rocket.style.setProperty('--rocket-heading', `${heading}deg`);
+      if (positioned && !reduced) rocket.classList.add('rocket-flying');
+      else rocket.classList.remove('rocket-flying');
+      rocket.style.left = `${point.x}px`; rocket.style.top = `${point.y}px`; positioned = true;
+      if (sound && !reduced) audio.play('rocketFly');
+      if (reduced) rocket.classList.remove('rocket-flying');
+      timer = setTimeout(() => {
+        rocket.classList.remove('rocket-flying');
+        if (!reduced && !document.body.classList.contains('in-session') && !document.body.classList.contains('lesson-active')) timer = setTimeout(() => fly({ sound: true }), 5000 + Math.random() * 3000);
+      }, reduced ? 0 : 1550);
     });
   };
-  const observer = new MutationObserver(move);
-  ['view', 'hud'].forEach(id => { const root = document.getElementById(id); if (root) observer.observe(root, { childList: true, subtree: true }); });
-  window.addEventListener('resize', move, { passive: true });
-  window.addEventListener('scroll', move, { passive: true });
-  window.addEventListener('hashchange', () => {
-    const next = routeName();
-    if (next !== lastRoute) {
-      lastRoute = next; rocket.classList.remove('rocket-hidden'); rocket.classList.add('rocket-flying');
-      audio.play('rocketFly'); setTimeout(() => rocket.classList.remove('rocket-flying'), 850);
+  const observer = new MutationObserver(records => {
+    if (records.some(r => r.target === document.body && r.attributeName === 'class') && (document.body.classList.contains('in-session') || document.body.classList.contains('lesson-active'))) {
+      clearTimeout(timer); rocket.classList.add('rocket-hidden'); return;
     }
-    move();
+    clearTimeout(resizeTimer); resizeTimer = setTimeout(() => fly({ sound: false }), 140);
   });
-  requestAnimationFrame(move);
+  ['view', 'hud'].forEach(id => { const root = document.getElementById(id); if (root) observer.observe(root, { childList: true, subtree: true }); });
+  observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => fly({ sound: false }), 160); }, { passive: true });
+  window.addEventListener('scroll', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => fly({ sound: false }), 220); }, { passive: true });
+  window.addEventListener('hashchange', () => {
+    const next = routeName(); if (next === lastRoute) return;
+    lastRoute = next; fly({ sound: true });
+  });
+  fly({ sound: false });
 }

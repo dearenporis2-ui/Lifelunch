@@ -81,7 +81,7 @@ class AudioManager {
     if (this.muted) return;
     const a = this.cache[name];
     if (!a || this.failed.has(name)) return this.beep(name);
-    a.volume = this.volume;
+    a.volume = name === 'rocketFly' ? this.volume * 0.35 : this.volume;
     try { a.currentTime = 0; } catch {}
     a.play().catch(() => this.beep(name));
   }
@@ -92,7 +92,8 @@ class AudioManager {
       (TONES[name] || [440]).forEach((f, i) => {
         const o = this.ctx.createOscillator(), g = this.ctx.createGain(), t = this.ctx.currentTime + i * 0.09;
         o.type = 'sine'; o.frequency.value = f;
-        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.12 * this.volume, t + 0.02);
+        const level = name === 'rocketFly' ? 0.035 : 0.12;
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(level * this.volume, t + 0.02);
         g.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
         o.connect(g).connect(this.ctx.destination); o.start(t); o.stop(t + 0.16);
       });

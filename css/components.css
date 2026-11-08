@@ -1025,7 +1025,7 @@ html[data-theme="dark"] .music-switch small,html[data-theme="dark"] .music-hint,
 @media(prefers-reduced-motion:reduce){.celebration-overlay,.celebration-card{transition:none!important}.celebration-burst i,.celebration-emblem,.level-orbit,.streak-flame{animation:none!important}}
 
 /* Coin-powered rocket guide that glides to the current destination. */
-.menu-rocket{position:fixed;left:-100px;top:-100px;z-index:19;width:56px;height:56px;pointer-events:none;opacity:0;filter:drop-shadow(0 8px 12px rgba(7,73,59,.22));transition:left .78s cubic-bezier(.18,.82,.22,1),top .78s cubic-bezier(.18,.82,.22,1),opacity .24s ease;animation:rocketCruise 3.6s ease-in-out infinite}
+.menu-rocket{position:fixed;left:-100px;top:-100px;z-index:19;width:56px;height:56px;pointer-events:none;opacity:0;filter:drop-shadow(0 8px 12px rgba(7,73,59,.22));transform:rotate(var(--rocket-heading,0deg));transition:left 1.1s cubic-bezier(.18,.82,.22,1),top 1.1s cubic-bezier(.18,.82,.22,1),transform .62s ease,opacity .24s ease;animation:rocketCruise 3.6s ease-in-out infinite}
 .menu-rocket.rocket-hidden{opacity:0!important;visibility:hidden}
 .menu-rocket:not(.rocket-hidden){opacity:1}
 .rocket-art{display:block;width:100%;height:100%;overflow:visible}

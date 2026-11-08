@@ -232,7 +232,9 @@ function route() {
   const root = $('#view'), h = location.hash.replace(/^#\/?/, '') || 'dashboard', name = h.split('/')[0];
   document.body.classList.toggle('public', name === 'p');
   document.body.classList.remove('menu-open');
-  document.body.classList.remove('in-session');
+  const leavingSession = document.body.classList.contains('in-session') || document.body.classList.contains('lesson-active');
+  document.body.classList.remove('in-session', 'lesson-active');
+  if (leavingSession) audio.resumeAfterSession();
   root.onclick = root.oninput = root.onchange = null;
   root.dataset.rid = String(++rc);
   root.innerHTML = '<p class="lede">Loading…</p>';

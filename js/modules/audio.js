@@ -8,14 +8,14 @@ export const SFX = {
   lessonStart: 'lesson-start.mp3', lessonComplete: 'lesson-complete.mp3',
   goal: 'goal.mp3', heart: 'heart.mp3', challenge: 'challenge.mp3',
   friendRequest: 'friend-request.mp3', friendAccepted: 'friend-accepted.mp3',
-  friendChallenge: 'friend-challenge.mp3', rankUp: 'rank-up.mp3', rocketFly: 'rocket-fly.mp3'
+  friendChallenge: 'friend-challenge.mp3', rankUp: 'rank-up.mp3'
 };
 const TONES = {
   click: [520], correct: [660, 880], wrong: [220, 160], reward: [660, 880, 1100],
   levelup: [440, 660, 880, 1320], badge: [880, 1175], streak: [523, 659, 784],
   lessonStart: [392, 523], lessonComplete: [523, 659, 784], goal: [659, 784, 988],
   heart: [392, 587], challenge: [523, 659, 880], friendRequest: [587, 784],
-  friendAccepted: [523, 659, 784], friendChallenge: [659, 784], rankUp: [523, 659, 784, 1047], rocketFly: [330, 440, 587, 784]
+  friendAccepted: [523, 659, 784], friendChallenge: [659, 784], rankUp: [523, 659, 784, 1047]
 };
 
 class AudioManager {
@@ -81,7 +81,7 @@ class AudioManager {
     if (this.muted) return;
     const a = this.cache[name];
     if (!a || this.failed.has(name)) return this.beep(name);
-    a.volume = name === 'rocketFly' ? this.volume * 0.35 : this.volume;
+    a.volume = this.volume;
     try { a.currentTime = 0; } catch {}
     a.play().catch(() => this.beep(name));
   }
@@ -92,8 +92,7 @@ class AudioManager {
       (TONES[name] || [440]).forEach((f, i) => {
         const o = this.ctx.createOscillator(), g = this.ctx.createGain(), t = this.ctx.currentTime + i * 0.09;
         o.type = 'sine'; o.frequency.value = f;
-        const level = name === 'rocketFly' ? 0.035 : 0.12;
-        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(level * this.volume, t + 0.02);
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.12 * this.volume, t + 0.02);
         g.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
         o.connect(g).connect(this.ctx.destination); o.start(t); o.stop(t + 0.16);
       });

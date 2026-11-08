@@ -1023,3 +1023,23 @@ html[data-theme="dark"] .music-settings.music-on .music-summary{background:#2446
 html[data-theme="dark"] .music-panel{background:#1B2D32;border-color:#3A5053;color:#E5F0EB;box-shadow:0 16px 40px rgba(0,0,0,.42)}
 html[data-theme="dark"] .music-switch small,html[data-theme="dark"] .music-hint,html[data-theme="dark"] .music-volume span{color:#A9BCB3}
 @media(prefers-reduced-motion:reduce){.celebration-overlay,.celebration-card{transition:none!important}.celebration-burst i,.celebration-emblem,.level-orbit,.streak-flame{animation:none!important}}
+
+/* Coin-powered rocket guide that glides to the current destination. */
+.menu-rocket{position:fixed;left:-100px;top:-100px;z-index:19;width:56px;height:56px;pointer-events:none;opacity:0;filter:drop-shadow(0 8px 12px rgba(7,73,59,.22));transition:left .78s cubic-bezier(.18,.82,.22,1),top .78s cubic-bezier(.18,.82,.22,1),opacity .24s ease;animation:rocketCruise 3.6s ease-in-out infinite}
+.menu-rocket.rocket-hidden{opacity:0!important;visibility:hidden}
+.menu-rocket:not(.rocket-hidden){opacity:1}
+.rocket-art{display:block;width:100%;height:100%;overflow:visible}
+.rocket-body{transform-box:view-box;transform-origin:48px 48px;animation:rocketTilt 4.2s ease-in-out infinite}
+.rocket-flame{transform-origin:52px 77px;animation:rocketThruster .24s ease-in-out infinite alternate}
+.rocket-sparkles{animation:rocketTwinkle 1.4s ease-in-out infinite alternate}
+.menu-rocket.rocket-flying{z-index:22;filter:drop-shadow(0 10px 15px rgba(8,139,105,.32))}
+.menu-rocket.rocket-flying .rocket-art{animation:rocketDash .82s cubic-bezier(.2,.8,.25,1)}
+@keyframes rocketCruise{0%,100%{translate:0 0}50%{translate:2px -6px}}
+@keyframes rocketTilt{0%,100%{rotate:-3deg}50%{rotate:3deg}}
+@keyframes rocketThruster{from{scale:.88 .82;opacity:.78}to{scale:1.08 1.12;opacity:1}}
+@keyframes rocketTwinkle{from{opacity:.55}to{opacity:1}}
+@keyframes rocketDash{0%{scale:.82;rotate:-12deg}45%{scale:1.18;rotate:14deg}100%{scale:1;rotate:0}}
+html[data-theme="dark"] .menu-rocket{filter:drop-shadow(0 8px 16px rgba(0,0,0,.42))}
+@media(max-width:720px){.menu-rocket{width:48px;height:48px}}
+@media(max-width:420px){.menu-rocket{width:43px;height:43px}}
+@media(prefers-reduced-motion:reduce){.menu-rocket,.rocket-body,.rocket-flame,.rocket-sparkles,.menu-rocket.rocket-flying .rocket-art{animation:none!important;transition:none!important}}

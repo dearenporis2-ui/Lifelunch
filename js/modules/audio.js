@@ -8,14 +8,14 @@ export const SFX = {
   lessonStart: 'lesson-start.mp3', lessonComplete: 'lesson-complete.mp3',
   goal: 'goal.mp3', heart: 'heart.mp3', challenge: 'challenge.mp3',
   friendRequest: 'friend-request.mp3', friendAccepted: 'friend-accepted.mp3',
-  friendChallenge: 'friend-challenge.mp3', rankUp: 'rank-up.mp3'
+  friendChallenge: 'friend-challenge.mp3', rankUp: 'rank-up.mp3', rocketFly: 'rocket-fly.mp3'
 };
 const TONES = {
   click: [520], correct: [660, 880], wrong: [220, 160], reward: [660, 880, 1100],
   levelup: [440, 660, 880, 1320], badge: [880, 1175], streak: [523, 659, 784],
   lessonStart: [392, 523], lessonComplete: [523, 659, 784], goal: [659, 784, 988],
   heart: [392, 587], challenge: [523, 659, 880], friendRequest: [587, 784],
-  friendAccepted: [523, 659, 784], friendChallenge: [659, 784], rankUp: [523, 659, 784, 1047]
+  friendAccepted: [523, 659, 784], friendChallenge: [659, 784], rankUp: [523, 659, 784, 1047], rocketFly: [330, 440, 587, 784]
 };
 
 class AudioManager {

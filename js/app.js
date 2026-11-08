@@ -10,6 +10,7 @@ import { heartsNow, GOAL_XP } from './modules/hearts.js';
 import { startTutorial } from './modules/tutorial.js';
 import { icon } from './modules/icons.js';
 import { pennySvg, pennyTalk } from './modules/mascot.js';
+import { mountRocket } from './modules/rocket.js';
 
 const KEY = 'lifelaunch.v1';
 const fresh = () => ({ name: 'Player One', cash: 500, savings: 0, xp: 0, streak: 0, lastDay: null, lessons: {}, studied: {}, path: {}, hearts: 5, heartsAt: Date.now(), goal: null, badges: [], month: 1, draft: null, daily: null, dailyDone: 0, perfects: 0, testNoticeSeen: false, tutorialSeen: false, tutorialDone: false, bestScore: 0, history: [] });
@@ -319,6 +320,7 @@ await audio.preload((done, total) => {
   if (done === total) bootMessage.textContent = audio.failed.size ? 'A few sounds will use the built-in tones.' : 'Your sound library is ready!';
 });
 checkIn();
+mountRocket(audio);
 route();
 setInterval(() => { if (!document.body.classList.contains('in-session') && heartsNow(state) < 5) renderHud(); }, 60000);
 setTimeout(() => { boot.classList.add('boot-exit'); setTimeout(() => boot.remove(), 700); }, 260);

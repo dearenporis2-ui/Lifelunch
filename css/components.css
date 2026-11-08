@@ -1028,6 +1028,16 @@ html[data-theme="dark"] .music-summary{background:#20333A;border-color:#38514F;c
 html[data-theme="dark"] .music-settings.music-on .music-summary{background:#24463D;border-color:#36735E;color:#78E2BB}
 html[data-theme="dark"] .music-panel{background:#1B2D32;border-color:#3A5053;color:#E5F0EB;box-shadow:0 16px 40px rgba(0,0,0,.42)}
 html[data-theme="dark"] .music-switch small,html[data-theme="dark"] .music-hint,html[data-theme="dark"] .music-volume span{color:#A9BCB3}
+.music-track-picker{display:grid;gap:7px}.music-picker-label{color:#8A9A90;font-size:.62rem;font-weight:900;letter-spacing:.1em}
+.music-track-list{display:grid;gap:6px}
+.music-track-choice{width:100%;min-height:48px;display:flex;align-items:center;gap:9px;padding:7px 9px;border:1px solid #E1EAE3;border-radius:13px;background:#F9FCF9;color:#536B5E;text-align:left;cursor:pointer;transition:background .18s,border-color .18s,transform .18s}
+.music-track-choice:hover:not(:disabled){transform:translateY(-1px);border-color:#B8DCC5;background:#F0FAF3}
+.music-track-choice[aria-pressed="true"]{border-color:#77C9A1;background:#E8F8EE;color:#147C60;box-shadow:inset 0 0 0 1px rgba(35,157,104,.08)}
+.music-track-choice:disabled{cursor:wait;opacity:.72}
+.music-track-number{width:28px;height:28px;flex:none;display:grid;place-items:center;border-radius:9px;background:#E7F2E9;color:#16876A;font-size:.72rem;font-weight:900}
+.music-track-copy{min-width:0;display:grid;gap:1px;flex:1}.music-track-copy b{font-size:.76rem}.music-track-copy small{color:#87968D;font-size:.62rem}.music-track-choice>.lucide{color:#0D9B74}
+.music-hint{display:block}
+html[data-theme="dark"] .music-picker-label{color:#A1B8AA}html[data-theme="dark"] .music-track-choice{background:#203238;border-color:#3A5050;color:#D1E1D7}html[data-theme="dark"] .music-track-choice:hover:not(:disabled){background:#253C36;border-color:#47745E}html[data-theme="dark"] .music-track-choice[aria-pressed="true"]{background:#24463A;border-color:#4BAE7D;color:#95E2B9}html[data-theme="dark"] .music-track-number{background:#2C4940;color:#83DDB4}html[data-theme="dark"] .music-track-copy small{color:#A6B9AE}
 @media(prefers-reduced-motion:reduce){.celebration-overlay,.celebration-card{transition:none!important}.celebration-burst i,.celebration-emblem,.level-orbit,.streak-flame{animation:none!important}}
 
 /* Money Garden: a small, lesson-grown world on the home dashboard. */

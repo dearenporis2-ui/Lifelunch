@@ -1,6 +1,6 @@
 import { BADGES, TIERS, CURRENCY, levelOf } from './data/gameData.js';
 import { loadIndex } from './modules/content.js';
-import { audio } from './modules/audio.js';
+import { audio, MUSIC_TRACKS } from './modules/audio.js';
 import { renderLessons, renderQuizzes, renderDaily, studied } from './modules/lessons.js';
 import { renderBudget } from './modules/economy.js';
 import { renderProfile, renderPublic } from './modules/profile.js';
@@ -119,7 +119,7 @@ function renderHud() {
   <nav class="tabs" aria-label="Main">${menuItems.map(([k, r]) => `<a class="tab" href="#/${k}" ${k === cur ? 'aria-current="page"' : ''}>${icon(navIcons[k],18)}<span>${r.label}</span></a>`).join('')}</nav>
   <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span><span></span></button>
   <div class="hud-stats"><span class="chip hearts" title="Hearts">♥ ${heartsNow(state)}</span><span class="chip cash">${money(state.cash)}</span><span class="chip xp hud-xp"><b>Lv ${d.level}</b>${state.xp} XP</span>
-  <details class="music-settings ${audio.musicEnabled ? 'music-on' : ''}"><summary class="icon music-summary" title="Music settings" aria-label="Music settings">${icon('music',18)}</summary><div class="music-panel"><label class="music-switch"><span><b>Menu music</b><small>Soft background soundtrack</small></span><input id="music-toggle" type="checkbox" ${audio.musicEnabled ? 'checked' : ''}></label><label class="music-volume"><span>Volume</span><input id="music-volume" type="range" min="0" max="0.35" step="0.01" value="${audio.musicVolume}"></label><small class="music-hint">Music pauses during lessons.</small></div></details>
+  <details class="music-settings ${audio.musicEnabled ? 'music-on' : ''}"><summary class="icon music-summary" title="Music settings" aria-label="Music settings">${icon('music',18)}</summary><div class="music-panel"><label class="music-switch"><span><b>Menu music</b><small>Choose a soundtrack</small></span><input id="music-toggle" type="checkbox" ${audio.musicEnabled ? 'checked' : ''}></label><div class="music-track-picker"><span class="music-picker-label">YOUR SOUNDTRACK</span><div class="music-track-list" role="group" aria-label="Choose menu music">${MUSIC_TRACKS.map(track => `<button type="button" class="music-track-choice" data-music-track="${track.id}" aria-pressed="${audio.musicTrackId === track.id}"><span class="music-track-number">${track.id.slice(-1)}</span><span class="music-track-copy"><b>${track.name}</b><small>${audio.loadedMusicTracks.has(track.id) ? 'Ready to play' : 'Tap to download'}</small></span>${audio.musicTrackId === track.id ? icon('check',15) : ''}</button>`).join('')}</div></div><label class="music-volume"><span>Volume</span><input id="music-volume" type="range" min="0" max="0.35" step="0.01" value="${audio.musicVolume}"></label><small class="music-hint">Only a chosen soundtrack downloads. Music pauses during lessons.</small></div></details>
   <button class="icon theme-toggle" id="theme-toggle" title="${darkTheme ? 'Switch to light theme' : 'Switch to dark theme'}" aria-label="${darkTheme ? 'Switch to light theme' : 'Switch to dark theme'}" aria-pressed="${darkTheme}"><span class="theme-icon">${icon(darkTheme ? 'sun' : 'moon',18)}</span></button><button class="icon" id="mute" title="${audio.muted ? 'Turn sound on' : 'Turn sound off'}" aria-label="${audio.muted ? 'Turn sound on' : 'Turn sound off'}" aria-pressed="${audio.muted}">${icon(audio.muted ? 'volumeX' : 'volume',18)}</button></div>
   <div class="mobile-menu" id="mobile-menu" hidden>
     <button class="mobile-menu-scrim" type="button" data-menu-close aria-label="Close navigation menu"></button>
@@ -254,6 +254,26 @@ function route() {
 }
 
 document.addEventListener('click', e => {
+  const musicTrack = e.target.closest('[data-music-track]');
+  if (musicTrack) {
+    const settings = musicTrack.closest('.music-settings'), buttons = [...settings.querySelectorAll('[data-music-track]')], hint = settings.querySelector('.music-hint');
+    buttons.forEach(button => { button.disabled = true; }); hint.textContent = `Downloading ${MUSIC_TRACKS.find(track => track.id === musicTrack.dataset.musicTrack)?.name || 'soundtrack'}…`;
+    audio.selectMusicTrack(musicTrack.dataset.musicTrack).then(ok => {
+      buttons.forEach(button => {
+        button.disabled = false;
+        const selected = button.dataset.musicTrack === audio.musicTrackId;
+        button.setAttribute('aria-pressed', String(selected));
+        button.querySelector('.lucide')?.remove();
+        if (selected && ok) button.insertAdjacentHTML('beforeend', icon('check',15));
+        const track = MUSIC_TRACKS.find(item => item.id === button.dataset.musicTrack);
+        button.querySelector('.music-track-copy small').textContent = audio.loadedMusicTracks.has(track.id) ? 'Ready to play' : 'Tap to download';
+      });
+      settings.classList.toggle('music-on', ok);
+      settings.querySelector('#music-toggle').checked = ok;
+      hint.textContent = ok ? `${MUSIC_TRACKS.find(track => track.id === audio.musicTrackId).name} selected. Music pauses during lessons.` : `Couldn’t load the file. Check assets/audio/${MUSIC_TRACKS.find(track => track.id === audio.musicTrackId).file}.`;
+    });
+    return;
+  }
   const toggle = e.target.closest('#nav-toggle');
   if (toggle) {
     const menu = $('#mobile-menu'), opening = menu?.hidden;
@@ -290,8 +310,15 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('change', e => {
   if (e.target.matches('#music-toggle')) {
-    audio.setMusicEnabled(e.target.checked);
-    document.querySelector('.music-settings')?.classList.toggle('music-on', e.target.checked);
+    const enabled = e.target.checked, settings = e.target.closest('.music-settings'), hint = settings?.querySelector('.music-hint');
+    settings?.classList.toggle('music-on', enabled);
+    if (enabled) {
+      if (hint) hint.textContent = 'Loading your selected soundtrack…';
+      audio.setMusicEnabled(true).then(ok => {
+        if (!ok) { e.target.checked = false; settings?.classList.remove('music-on'); }
+        if (hint) hint.textContent = ok ? 'Music pauses during lessons.' : `Couldn’t load ${MUSIC_TRACKS.find(track => track.id === audio.musicTrackId)?.file}. Check assets/audio/.`;
+      });
+    } else { audio.setMusicEnabled(false); if (hint) hint.textContent = 'Music pauses during lessons.'; }
   }
 });
 document.addEventListener('input', e => { if (e.target.matches('#music-volume')) audio.setMusicVolume(e.target.value); });

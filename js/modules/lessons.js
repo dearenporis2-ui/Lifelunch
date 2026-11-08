@@ -3,6 +3,7 @@ import { mountCalc } from './calc.js';
 import { mountActivity, ACTIVITY_KINDS } from './activities.js';
 import { lessonCard, questionCard } from './lesson-ui.js';
 import { icon } from './icons.js';
+import { guardSessionFocus } from './focus-guard.js';
 
 const ERR = '<div class="empty">Could not load content. Check your connection and refresh.</div>';
 const STUDY_XP = 20;
@@ -75,10 +76,16 @@ function learn(root, ctx, l, next) {
   const cards = l.cards.filter(c => c.type === 'info');
   if (l.example && !l.cards.some(c => c.kind === 'example')) cards.splice(Math.min(1, cards.length), 0, { type: 'info', kind: 'example', title: 'Put it into practice', body: l.example });
   run(root, ctx, { title: l.title, cards, coach: l.id === 'intro' && !ctx.state.tutorialDone, lastLabel: 'Finish lesson',
-    done: () => finishStudy(root, ctx, l, next) });
+    done: result => finishStudy(root, ctx, l, next, result) });
 }
 
-function finishStudy(root, ctx, l, next) {
+function finishStudy(root, ctx, l, next, { focusBreached = false } = {}) {
+  if (focusBreached) {
+    root.innerHTML = `<div class="lesson-view"><h1>Lesson not counted</h1><div class="card"><p>LifeLaunch was in the background during this session, so this attempt did not earn XP or unlock the quiz. Start again when you’re ready.</p></div><div class="actions"><button class="btn primary" id="retry">Try the lesson again</button><button class="btn ghost" id="bk">Back to lessons</button></div></div>`;
+    root.querySelector('#retry').onclick = () => learn(root, ctx, l, next);
+    root.querySelector('#bk').onclick = () => goto('#/lessons', renderLessons, root, ctx);
+    return;
+  }
   const first = !studied(ctx.state, l.id), qn = l.cards.filter(c => c.type === 'quiz').length;
   ctx.update(s => { (s.studied ||= {})[l.id] = true; if (first) s.xp += STUDY_XP; });
   if (first) ctx.audio.play('lessonComplete');
@@ -118,6 +125,7 @@ function quiz(root, ctx, l, next) {
 function run(root, ctx, { title, cards, done, coach, lastLabel }) {
   let i = 0, right = 0, combo = 0, best = 0, tipI = coach, tipQ = coach;
   const total = cards.filter(c => c.type === 'quiz').length;
+  const focusGuard = guardSessionFocus();
   document.body.classList.add('lesson-active');
   ctx.audio.pauseMusic();
   ctx.audio.play('lessonStart');
@@ -126,7 +134,7 @@ function run(root, ctx, { title, cards, done, coach, lastLabel }) {
     <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${cards.length}" aria-valuenow="${i}"><i style="width:${i / cards.length * 100}%"></i></div>
     <h1>${title}</h1>${tip ? `<p class="coach">${tip}</p>` : ''}${label ? `<p class="part">${label}</p>` : ''}${inner}</div>`; };
   function step() {
-    if (i >= cards.length) { document.body.classList.remove('lesson-active'); ctx.audio.resumeAfterSession(); return done({ right, total, best }); }
+    if (i >= cards.length) { const focusBreached = focusGuard.breached; focusGuard.dispose(); document.body.classList.remove('lesson-active'); ctx.audio.resumeAfterSession(); return done({ right, total, best, focusBreached }); }
     const c = cards[i];
     if (c.type === 'info') {
       const act = ACTIVITY_KINDS.includes(c.kind);
@@ -155,7 +163,13 @@ function run(root, ctx, { title, cards, done, coach, lastLabel }) {
   step();
 }
 
-function finishQuiz(root, ctx, l, next, { right, total, best }) {
+function finishQuiz(root, ctx, l, next, { right, total, best, focusBreached = false }) {
+  if (focusBreached) {
+    root.innerHTML = `<div class="lesson-view"><h1>Quiz not counted</h1><div class="card"><p>LifeLaunch was in the background during this quiz, so the score and rewards were not saved. Try it again when you’re ready.</p></div><div class="actions"><button class="btn primary" id="again">Retry quiz</button><button class="btn ghost" id="back">Back to quizzes</button></div></div>`;
+    root.querySelector('#again').onclick = () => quiz(root, ctx, l, next);
+    root.querySelector('#back').onclick = () => goto('#/quizzes', renderQuizzes, root, ctx);
+    return;
+  }
   const coach = l.id === 'intro' && !ctx.state.tutorialDone;
   const pct = total ? Math.round(right / total * 100) : 100, first = !ctx.state.lessons[l.id], scale = .5 + .5 * pct / 100;
   const bonus = (best >= 3 ? best * 3 : 0) + (pct === 100 ? 20 : 0);
@@ -194,7 +208,12 @@ export async function renderDaily(root, ctx) {
     cards = shuffle(lessons.flatMap(l => l.cards.filter(c => c.type === 'quiz')), rnd).slice(0, 3);
   } catch { if (root.dataset.rid === rid) root.innerHTML = ERR; return; }
   if (root.dataset.rid !== rid) return;
-  run(root, ctx, { title: 'Mystery vault', cards, done: ({ right, total }) => {
+  run(root, ctx, { title: 'Mystery vault', cards, done: ({ right, total, focusBreached }) => {
+    if (focusBreached) {
+      root.innerHTML = `<div class="vault-page"><span class="vault-mark" aria-hidden="true">▣</span><span class="section-kicker">VAULT STILL LOCKED</span><h1>Try again to open it</h1><p>LifeLaunch was in the background during this puzzle, so no rewards were added. Your vault is still waiting today.</p><button type="button" class="btn primary" id="vault-retry">Retry today’s puzzle</button></div>`;
+      root.querySelector('#vault-retry').onclick = () => renderDaily(root, ctx);
+      return;
+    }
     const xp = 30 + right * 5, cash = 20 + right * 10;
     const vaultRewards = [
       ['coin-tree', 'Coin tree'], ['firefly-jar', 'Firefly jar'], ['rainbow', 'Rainbow arch'], ['fountain', 'Little fountain']

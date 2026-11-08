@@ -7,6 +7,7 @@ import { lessonCard, questionCard } from './lesson-ui.js';
 import { heartsNow, loseHeart, addHeart, msToNext, fmtWait, MAX_HEARTS, REFILL_COST, GOAL_XP } from './hearts.js';
 import { icon } from './icons.js';
 import { pennySvg, pennyTalk } from './mascot.js';
+import { guardSessionFocus } from './focus-guard.js';
 
 const COLORS = ['#0F7B5F', '#A8741A', '#3E4C59', '#6B5EA8', '#C4452F'];
 const OFFSETS = [0, 44, 68, 44, 0, -44, -68, -44];
@@ -93,6 +94,7 @@ async function startNode(root, ctx, idx, id, k) {
 /* ---------- the session ---------- */
 export function runSession(root, ctx, o) {
   const queue = o.cards.map(c => ({ c, retry: false })), totalQ = o.cards.filter(c => c.type === 'quiz').length, useHearts = o.hearts !== false;
+  const focusGuard = guardSessionFocus();
   let i = 0, firstRight = 0, combo = 0, best = 0, tipI = o.coach, tipQ = o.coach, scrollCueDismissed = false, lastGuideLine = '';
   const sessionSeed = Date.now();
   const nextGuideLine = lines => {
@@ -101,7 +103,7 @@ export function runSession(root, ctx, o) {
     return lastGuideLine;
   };
   document.body.classList.add('in-session'); ctx.audio.pauseMusic(); root.onclick = root.oninput = root.onchange = null; ctx.audio.play('lessonStart');
-  const exit = () => { document.body.classList.remove('in-session'); ctx.audio.resumeAfterSession(); bump(root); (o.back || renderLearn)(root, ctx); };
+  const exit = () => { focusGuard.dispose(); document.body.classList.remove('in-session'); ctx.audio.resumeAfterSession(); bump(root); (o.back || renderLearn)(root, ctx); };
   const shell = (body, foot) => {
     const c = queue[i]?.c || {}, stage = c.type === 'quiz' || c.kind === 'calc' || ACTIVITY_KINDS.includes(c.kind) ? 2 : c.kind === 'example' ? 1 : 0;
     const cheerSet = c.type === 'quiz' ? PENNY_LINES.question : c.kind === 'example' ? PENNY_LINES.example : c.kind === 'calc' ? PENNY_LINES.calculator : ACTIVITY_KINDS.includes(c.kind) ? PENNY_LINES.activity : PENNY_LINES.lesson;
@@ -139,11 +141,11 @@ export function runSession(root, ctx, o) {
       <div class="actions" style="justify-content:center"><button class="btn primary big" id="refill" ${ctx.state.cash < REFILL_COST ? 'disabled' : ''}>Refill hearts for ${REFILL_COST} cash</button><button class="btn big" id="qp">Practice to win a heart</button><button class="btn ghost" id="leave">Leave</button></div></div></div>`;
     root.querySelector('#leave').onclick = exit;
     root.querySelector('#refill').onclick = () => { ctx.update(s => { s.cash -= REFILL_COST; addHeart(s, MAX_HEARTS); }); ctx.toast('Hearts refilled', 'good'); ctx.audio.play('heart'); exit(); };
-    root.querySelector('#qp').onclick = () => { document.body.classList.remove('in-session'); startPractice(root, ctx, o.back || renderLearn); };
+    root.querySelector('#qp').onclick = () => { focusGuard.dispose(); document.body.classList.remove('in-session'); startPractice(root, ctx, o.back || renderLearn); };
   };
 
   function step() {
-    if (i >= queue.length) { ctx.audio.resumeAfterSession(); return o.onFinish({ acc: totalQ ? firstRight / totalQ : 1, best, exit, seed: sessionSeed }); }
+    if (i >= queue.length) { const focusBreached = focusGuard.breached; focusGuard.dispose(); ctx.audio.resumeAfterSession(); return o.onFinish({ acc: totalQ ? firstRight / totalQ : 1, best, exit, seed: sessionSeed, focusBreached }); }
     const { c, retry } = queue[i], $ = s => root.querySelector(s);
     if (c.type === 'info') {
       const act = ACTIVITY_KINDS.includes(c.kind), tip = tipI && !act ? 'Tip: read the card, then tap Continue.' : '';
@@ -188,8 +190,12 @@ function endScreen(root, { head, sub = '', stats, note = '', pennyLine: guideLin
   root.querySelector('#cont').onclick = exit; root.querySelector('#cont').focus();
 }
 
-function finishNode(root, ctx, lesson, k, n, coach, { acc, best, exit, seed }) {
+function finishNode(root, ctx, lesson, k, n, coach, { acc, best, exit, seed, focusBreached = false }) {
   const st = ctx.state, pct = Math.round(acc * 100), totalQ = lesson.cards.filter(c => c.type === 'quiz').length;
+  if (focusBreached) {
+    endScreen(root, { head: 'Session not counted', sub: 'LifeLaunch was in the background during this session, so no XP, cash, or lesson progress was saved. Try again when you’re ready.', pennyLine: 'Your place is safe. Come back when you can focus and earn the reward.', stats: [['Rewards', 'Not added'], ['Accuracy', `${pct}%`], ['Best streak', best]], exit });
+    return;
+  }
   const first = !(studied(st, lesson.id) || (st.path?.[lesson.id] || 0) > k), complete = k + 1 >= n;
   const bonus = (acc === 1 && totalQ ? 10 : 0) + (best >= 3 ? best * 2 : 0);
   const xp = first ? Math.round(lesson.xp / n * (.5 + .5 * acc)) + bonus : 10, cash = first ? Math.round(lesson.cash / n * (.5 + .5 * acc)) : 0;
@@ -216,8 +222,12 @@ export async function startPractice(root, ctx, back) {
     lessons = await Promise.all(shuffle(known).slice(0, 3).map(l => loadLesson(l.id)));
   } catch { ctx.toast('Could not load practice. Check your connection.', 'bad'); return; }
   const cards = shuffle(lessons.flatMap(l => l.cards.filter(c => c.type === 'quiz'))).slice(0, 5);
-  runSession(root, ctx, { title: 'Practice', cards, hearts: false, back, onFinish: ({ acc, best, exit }) => {
+  runSession(root, ctx, { title: 'Practice', cards, hearts: false, back, onFinish: ({ acc, best, exit, focusBreached = false }) => {
     const pct = Math.round(acc * 100), win = pct >= 60 && heartsNow(ctx.state) < MAX_HEARTS;
+    if (focusBreached) {
+      endScreen(root, { head: 'Practice not counted', sub: 'LifeLaunch was in the background during this practice, so it did not earn XP or a heart. Try again when you’re ready.', pennyLine: pennyLine(PENNY_LINES.practice, Date.now()), stats: [['XP earned', '0'], ['Accuracy', `${pct}%`], ['Hearts', `♥ ${heartsNow(ctx.state)}`]], exit });
+      return;
+    }
     ctx.update(s => { s.xp += 10; if (win) addHeart(s); });
     ctx.audio.play('reward');
     endScreen(root, { head: 'Practice complete!', sub: win ? 'You won a heart back.' : pct < 60 ? 'Score 60% or more to win a heart back. Try again any time.' : '', pennyLine: pennyLine(PENNY_LINES.practice, Date.now()), stats: [['XP earned', '+10'], ['Accuracy', `${pct}%`], ['Hearts', `♥ ${heartsNow(ctx.state)}`]], exit });

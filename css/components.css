@@ -950,6 +950,12 @@ body.menu-open{overflow:hidden}
 .celebration-goal .celebration-emblem b{align-self:end;margin-bottom:24px;font-size:1.15rem;letter-spacing:0;color:#AE7920}
 .celebration-badge .celebration-emblem{border:4px solid #E6B64C;outline:1px solid rgba(182,127,27,.28);background:radial-gradient(circle,#FFFDF5 0 47%,#F8E8B8 48% 100%);box-shadow:inset 0 0 0 5px rgba(213,165,57,.16),0 12px 26px rgba(176,126,35,.18);color:#A66D18;animation:badgeStamp .76s cubic-bezier(.2,.85,.25,1.35) both}
 .badge-icon{z-index:1;width:91px;height:91px;display:grid;place-items:center;border:1px solid rgba(178,127,35,.18);border-radius:50%;background:linear-gradient(145deg,#FFF9E6,#F3D98C);font:800 4.2rem/1 var(--display);color:#A66D18;text-shadow:0 2px 0 rgba(255,255,255,.7);box-shadow:0 5px 12px rgba(150,103,26,.12)}
+.celebration-streak .streak-flame,.celebration-goal .milestone-symbol,.celebration-milestone .milestone-symbol{left:50%;top:15px;display:grid;place-items:center;width:76px;height:76px;transform:translateX(-50%);line-height:1}
+.celebration-streak .streak-flame{font-size:52px;animation:streakMedalPop .76s cubic-bezier(.2,.8,.2,1) both}
+.celebration-streak .celebration-emblem b,.celebration-goal .celebration-emblem b,.celebration-milestone .celebration-emblem b{position:absolute;left:50%;bottom:25px;align-self:auto;margin:0;transform:translateX(-50%);font-size:1.08rem;line-height:1;letter-spacing:0;white-space:nowrap}
+.celebration-goal .milestone-symbol,.celebration-milestone .milestone-symbol{top:20px;color:#D29A2B;font-size:46px;animation:milestoneMedalPop .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes streakMedalPop{0%{opacity:0;transform:translateX(-50%) translateY(15px) scale(.45)}70%{opacity:1;transform:translateX(-50%) translateY(-4px) scale(1.1)}100%{transform:translateX(-50%) translateY(0) scale(1)}}
+@keyframes milestoneMedalPop{0%{opacity:0;transform:translateX(-50%) translateY(15px) scale(.45)}70%{opacity:1;transform:translateX(-50%) translateY(-4px) scale(1.1)}100%{transform:translateX(-50%) translateY(0) scale(1)}}
 @keyframes badgeStamp{0%{opacity:0;transform:scale(.38) rotate(-16deg)}68%{opacity:1;transform:scale(1.1) rotate(5deg)}100%{transform:scale(1) rotate(0)}}
 .celebration-burst{position:absolute;inset:0;z-index:-1;pointer-events:none}
 .celebration-burst i{position:absolute;left:50%;top:48%;width:7px;height:13px;border-radius:3px;background:hsl(var(--h),78%,57%);opacity:0;animation:confettiFly 1.15s calc(var(--i)*.018s) cubic-bezier(.1,.7,.3,1) both;transform:rotate(calc(var(--i)*31deg))}
@@ -1131,3 +1137,14 @@ html[data-theme="dark"] .garden-choice{background:rgba(25,48,41,.8);border-color
 @keyframes prizeReveal{0%{opacity:0;transform:translateY(18px) scale(.5) rotate(-12deg)}65%{opacity:1;transform:translateY(-5px) scale(1.12) rotate(5deg)}100%{transform:none}}@keyframes vaultSpark{0%{opacity:0;translate:0 0;scale:.4}15%{opacity:1}100%{opacity:0;translate:var(--dx) var(--dy);scale:1.3;rotate:180deg}}@keyframes vaultHover{0%,100%{translate:0 0}50%{translate:0 -7px}}
 html[data-theme="dark"] .vault-page h1{color:#E7F5EC}html[data-theme="dark"] .vault-already,html[data-theme="dark"] .vault-prize{background:linear-gradient(145deg,#20352E,#192A25);border-color:#345044}html[data-theme="dark"] .vault-prize strong{color:#E3F1E8}
 @media(prefers-reduced-motion:reduce){.vault-mark,.vault-prize>span,.vault-burst i{animation:none!important}}
+
+.session-exit-overlay{position:fixed;inset:0;z-index:220;display:grid;place-items:center;padding:20px calc(20px + env(safe-area-inset-right)) 20px calc(20px + env(safe-area-inset-left));background:rgba(8,22,23,.68);backdrop-filter:blur(8px);animation:exitOverlayIn .18s ease-out both}
+.session-exit-card{width:min(440px,100%);display:grid;justify-items:center;gap:11px;padding:30px 28px 26px;border:1px solid rgba(255,255,255,.75);border-radius:28px;background:radial-gradient(ellipse at 50% 0%,#F4FFF9,#fff 68%);box-shadow:0 28px 90px rgba(0,0,0,.3);text-align:center;animation:exitCardIn .32s cubic-bezier(.2,.85,.25,1.1) both}
+.session-exit-mark{width:58px;height:58px;display:grid;place-items:center;border:1px solid #CFE9D9;border-radius:19px;background:linear-gradient(145deg,#EAF9F0,#D9F1E3);color:#12886C;font-size:2rem;line-height:1}
+.session-exit-card h2{color:#193D32;font:800 1.75rem/1.1 var(--display);letter-spacing:-.03em}
+.session-exit-card>p{max-width:35ch;color:#6C8076;font-size:.95rem;line-height:1.5}
+.session-exit-actions{width:100%;display:flex;justify-content:center;gap:10px;margin-top:7px}.session-exit-actions .btn{min-height:48px;min-width:145px}
+@keyframes exitOverlayIn{from{opacity:0}to{opacity:1}}@keyframes exitCardIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
+html[data-theme="dark"] .session-exit-card{background:radial-gradient(ellipse at 50% 0%,#263E35,#1B2A27 68%);border-color:#3B554A}html[data-theme="dark"] .session-exit-card h2{color:#E8F5ED}html[data-theme="dark"] .session-exit-card>p{color:#B2C8BC}html[data-theme="dark"] .session-exit-mark{background:linear-gradient(145deg,#25463A,#1E392F);border-color:#3E6551;color:#83E2B8}
+@media(max-width:480px){.session-exit-overlay{padding:18px calc(16px + env(safe-area-inset-right)) 18px calc(16px + env(safe-area-inset-left))}.session-exit-card{padding:25px 20px 21px;border-radius:24px}.session-exit-actions{flex-direction:column-reverse}.session-exit-actions .btn{width:100%}}
+@media(prefers-reduced-motion:reduce){.session-exit-overlay,.session-exit-card{animation:none!important}}

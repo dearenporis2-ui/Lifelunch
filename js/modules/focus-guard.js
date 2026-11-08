@@ -14,5 +14,9 @@ export function guardSessionFocus() {
   document.addEventListener('visibilitychange', onVisibility);
   window.addEventListener('blur', onBlur);
   window.addEventListener('hashchange', dispose);
-  return { get breached() { return breached; }, dispose };
+  return { get breached() {
+    const sessionActive = document.body.classList.contains('in-session') || document.body.classList.contains('lesson-active');
+    if (active && sessionActive && (document.visibilityState === 'hidden' || (document.hasFocus && !document.hasFocus()))) breached = true;
+    return breached;
+  }, dispose };
 }

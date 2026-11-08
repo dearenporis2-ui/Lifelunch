@@ -104,6 +104,22 @@ export function runSession(root, ctx, o) {
   };
   document.body.classList.add('in-session'); ctx.audio.pauseMusic(); root.onclick = root.oninput = root.onchange = null; ctx.audio.play('lessonStart');
   const exit = () => { focusGuard.dispose(); document.body.classList.remove('in-session'); ctx.audio.resumeAfterSession(); bump(root); (o.back || renderLearn)(root, ctx); };
+  const askToExit = () => {
+    const restore = root.querySelector('.s-close');
+    const modal = document.createElement('div'); modal.className = 'session-exit-overlay';
+    modal.innerHTML = `<section class="session-exit-card" role="dialog" aria-modal="true" aria-labelledby="session-exit-title" aria-describedby="session-exit-copy"><span class="session-exit-mark" aria-hidden="true">↶</span><span class="section-kicker">YOUR LEARNING SESSION</span><h2 id="session-exit-title">Heading back?</h2><p id="session-exit-copy">This session’s unfinished progress won’t be saved. You can pick up again whenever you’re ready.</p><div class="session-exit-actions"><button type="button" class="btn ghost" data-stay>Keep learning</button><button type="button" class="btn danger-solid" data-leave>Leave session</button></div></section>`;
+    document.body.append(modal);
+    const stay = modal.querySelector('[data-stay]'), leave = modal.querySelector('[data-leave]');
+    const close = () => { document.removeEventListener('keydown', onKey); modal.remove(); restore?.focus(); };
+    const onKey = e => {
+      if (e.key === 'Escape') { e.preventDefault(); close(); }
+      if (e.key === 'Tab') { e.preventDefault(); (document.activeElement === stay ? leave : stay).focus(); }
+    };
+    stay.onclick = close;
+    leave.onclick = () => { document.removeEventListener('keydown', onKey); modal.remove(); exit(); };
+    modal.onclick = e => { if (e.target === modal) close(); };
+    document.addEventListener('keydown', onKey); stay.focus();
+  };
   const shell = (body, foot) => {
     const c = queue[i]?.c || {}, stage = c.type === 'quiz' || c.kind === 'calc' || ACTIVITY_KINDS.includes(c.kind) ? 2 : c.kind === 'example' ? 1 : 0;
     const cheerSet = c.type === 'quiz' ? PENNY_LINES.question : c.kind === 'example' ? PENNY_LINES.example : c.kind === 'calc' ? PENNY_LINES.calculator : ACTIVITY_KINDS.includes(c.kind) ? PENNY_LINES.activity : PENNY_LINES.lesson;
@@ -133,7 +149,7 @@ export function runSession(root, ctx, o) {
       }
     }, { passive: true });
     requestAnimationFrame(() => requestAnimationFrame(showScrollCue));
-    root.querySelector('.s-close').onclick = () => { if (confirm('Quit this session? You will lose your progress in it.')) exit(); };
+    root.querySelector('.s-close').onclick = askToExit;
   };
   const outOfHearts = () => {
     root.innerHTML = `<div class="session"><div class="s-body center"><h1>You are out of hearts</h1>

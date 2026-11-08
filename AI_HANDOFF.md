@@ -12,6 +12,7 @@ The current app has 30 lessons across five learning paths: Earning and Taxes; Bu
 
 - The app has a dashboard, learning path, lesson library and quizzes, practice activities, budgeting and investing simulations, a profile, badges, streaks, hearts, XP, and a guided tutorial.
 - The dashboard has a colorful gradient welcome panel, level progress, wallet and learning stat cards, and dedicated daily goal, next lesson, and challenge panels. Its motion respects reduced-motion preferences.
+- The dashboard includes an optional LifeLaunch tester-community banner linking to the WhatsApp group; it opens in a new tab.
 - The dashboard Money Garden grows as lessons are studied. Garden themes unlock through lesson progress, streaks, and daily vaults; collectible decorations are earned from daily vault rewards. The selection and collection live in the existing local save.
 - Learn, Practice, Library, Quizzes, Budget, and Profile share the same colorful card language, responsive layouts, and inline Lucide-style SVG icon set in `js/modules/icons.js` (no added runtime dependency).
 - The global page canvas now uses a soft mint-to-sky gradient with warm glows, faint orbital arcs, and sparse stars; the motion is slow and disabled for reduced-motion preferences. Content cards remain light for readability.

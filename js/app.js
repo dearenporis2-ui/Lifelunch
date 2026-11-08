@@ -13,7 +13,7 @@ import { pennySvg, pennyTalk } from './modules/mascot.js';
 import { renderMoneyGarden } from './modules/garden.js';
 
 const KEY = 'lifelaunch.v1';
-const fresh = () => ({ name: 'Player One', cash: 500, savings: 0, xp: 0, streak: 0, lastDay: null, lessons: {}, studied: {}, path: {}, hearts: 5, heartsAt: Date.now(), goal: null, badges: [], month: 1, draft: null, daily: null, dailyDone: 0, perfects: 0, testNoticeSeen: false, tutorialSeen: false, tutorialDone: false, bestScore: 0, history: [] });
+const fresh = () => ({ name: 'Player One', cash: 500, savings: 0, xp: 0, streak: 0, lastDay: null, lessons: {}, studied: {}, path: {}, hearts: 5, heartsAt: Date.now(), goal: null, badges: [], month: 1, draft: null, daily: null, dailyDone: 0, dailyVaults: 0, gardenItems: [], gardenTheme: 'meadow', gardenDecoration: '', perfects: 0, testNoticeSeen: false, tutorialSeen: false, tutorialDone: false, bestScore: 0, history: [] });
 const load = () => { try { return { ...fresh(), ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { return fresh(); } };
 const state = load();
 
@@ -128,7 +128,7 @@ function renderHud() {
       <div class="mobile-menu-heading"><div><span class="section-kicker">YOUR NEXT MOVE</span><h2>Where to?</h2></div><span class="menu-level">${icon('sparkles',15)} LV ${d.level}</span></div>
       <nav class="mobile-menu-grid" aria-label="Main navigation">${mobileLink('dashboard','Home','home','Your launchpad','menu-home')}${mobileLink('learn','Learn','route','Pick up your path','menu-learn')}${mobileLink('practice','Practice','game','Play and build skills','menu-practice')}${mobileLink('lessons','Library','book','Browse all lessons','menu-library')}${mobileLink('profile','Profile','user','Your progress and badges','menu-profile')}</nav>
       <div class="mobile-quick-title"><span class="section-kicker">QUICK PLAYS</span><span>Little wins, right now</span></div>
-      <div class="mobile-quick-links"><a href="#/daily" class="quick-link">${icon('trophy',18)} Daily challenge ${icon('arrow',15)}</a><a href="#/budget" class="quick-link">${icon('wallet',18)} Budget month ${icon('arrow',15)}</a><a href="#/invest" class="quick-link">${icon('chart',18)} Invest years ${icon('arrow',15)}</a></div>
+      <div class="mobile-quick-links"><a href="#/daily" class="quick-link">${icon('trophy',18)} Mystery vault ${icon('arrow',15)}</a><a href="#/budget" class="quick-link">${icon('wallet',18)} Budget month ${icon('arrow',15)}</a><a href="#/invest" class="quick-link">${icon('chart',18)} Invest years ${icon('arrow',15)}</a></div>
       <div class="mobile-menu-footer"><span class="menu-spark">${icon('sparkles',16)}</span><span>Small steps. Big future energy.</span><span class="menu-xp">${state.xp} XP</span><button class="menu-theme-toggle" id="theme-toggle-menu" type="button" aria-label="${darkTheme ? 'Switch to light theme' : 'Switch to dark theme'}" aria-pressed="${darkTheme}"><span class="theme-icon">${icon(darkTheme ? 'sun' : 'moon',17)}</span><span class="theme-label">${darkTheme ? 'Light theme' : 'Dark theme'}</span></button></div>
     </section>
   </div>`;
@@ -152,8 +152,9 @@ async function renderDashboard(root) {
   if (root.dataset.rid !== rid) return;
   const celebrateStreak = streakCelebration;
   streakCelebration = false;
-  const d = derive(state), C = 326.7, doneN = Object.keys(state.lessons).length;
+  const d = derive(state), C = 326.7;
   const all = idx ? idx.tracks.flatMap(t => t.lessons.map((l, i) => ({ ...l, open: i === 0 || studied(state, t.lessons[i - 1].id) }))) : [];
+  const doneN = all.filter(l => studied(state, l.id)).length;
   const next = all.find(l => !studied(state, l.id) && l.open);
   const earned = BADGES.filter(b => state.badges.includes(b.id)), dailyDone = state.daily?.day === day(0);
   const gl = state.goal?.day === day(0) ? state.goal : { xp: 0, done: false };
@@ -166,7 +167,7 @@ async function renderDashboard(root) {
         : ['Take it one short lesson at a time. You’ve got this!', 'Ready when you are—let’s make one money idea click.', 'Small steps today, stronger money choices tomorrow.', 'Pick up one useful idea to take into your day.', 'A few minutes of learning can make future-you smile.', 'No rush. We’ll make progress one clear step at a time.', 'Your next win could be just one lesson away.'];
   const pennyTip = pennyLines[Math.floor(Math.random() * pennyLines.length)];
   const lessonPct = idx?.total ? Math.round(doneN / idx.total * 100) : 0;
-  const moneyGarden = renderMoneyGarden(doneN, idx?.total || 30);
+  const moneyGarden = renderMoneyGarden(doneN, idx?.total || 30, state);
   root.innerHTML = `<div class="stack dashboard">
   <section class="hero dashboard-hero"><div class="hero-copy"><span class="hero-eyebrow"><i aria-hidden="true">✦</i> YOUR MONEY JOURNEY</span><h1>Welcome back, ${esc(state.name)} <span class="hero-wave" aria-hidden="true">✦</span></h1><p class="lede">Every small lesson is a step toward a more confident future.</p><a class="btn hero-cta" href="#/learn">Continue learning <span aria-hidden="true">→</span></a></div>
     <div class="hero-progress"><div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-track" cx="60" cy="60" r="52"/>
@@ -184,7 +185,7 @@ async function renderDashboard(root) {
     ? `<h2>${next.title}</h2><p>${next.blurb}</p><p class="penny-tip penny-talk">${pennyTalk(pennyTip)}</p><a class="btn primary next-cta" href="#/learn">Continue your path ${icon('arrow',18)}</a>`
     : idx ? `<h2>Ready for your next milestone?</h2><p>All lessons cleared. Close more budget months to keep growing your net worth.</p><a class="btn primary next-cta" href="#/budget">Plan month ${state.month} ${icon('arrow',18)}</a>`
     : '<p>Lessons could not load. Check your connection and refresh.</p>'}</section>
-  <section class="card challenge-card"><div class="panel-heading"><span class="panel-icon challenge-icon">${icon('trophy',20)}</span><h2>Daily challenge</h2><span class="bonus-pill">BONUS XP</span></div><strong class="challenge-title">${dailyDone ? 'Challenge complete!' : 'Ready for a quick win?'}</strong><p>${dailyDone ? 'Brilliant work. Come back tomorrow for a fresh challenge.' : 'Three quick questions to sharpen your money skills.'}</p>${dailyDone ? `<div class="challenge-done">${icon('check',16)} Completed today</div>` : `<a class="btn challenge-cta" href="#/daily">Take the challenge ${icon('arrow',18)}</a>`}</section></div>
+  <section class="card challenge-card"><div class="panel-heading"><span class="panel-icon challenge-icon">${icon('trophy',20)}</span><h2>Mystery vault</h2><span class="bonus-pill">BONUS XP</span></div><strong class="challenge-title">${dailyDone ? 'Vault opened today!' : 'A little mystery awaits'}</strong><p>${dailyDone ? 'A fresh vault and collectible arrive tomorrow.' : 'Solve three quick money questions to reveal a garden collectible.'}</p>${dailyDone ? `<div class="challenge-done">${icon('check',16)} ${state.gardenItems?.length || 0} keepsakes collected</div>` : `<a class="btn challenge-cta" href="#/daily">Open today’s vault ${icon('arrow',18)}</a>`}</section></div>
   <section class="dashboard-badges"><div class="section-title-row"><div><span class="section-kicker">MILESTONES</span><h2>Your badges</h2></div><a href="#/profile" class="text-link">View profile →</a></div>${earned.length
     ? `<div class="badges">${earned.map(b => `<div class="badge"><i>${b.icon}</i><div>${b.name}<small>${b.desc}</small></div></div>`).join('')}</div>`
     : '<p class="empty">No badges yet. Finish a lesson to earn your first.</p>'}</section></div>`;
@@ -277,6 +278,10 @@ document.addEventListener('click', e => {
     audio.play('click');
     return;
   }
+  const gardenTheme = e.target.closest('[data-garden-theme]');
+  if (gardenTheme && !gardenTheme.disabled) { update(s => { s.gardenTheme = gardenTheme.dataset.gardenTheme; }); route(); audio.play('reward'); return; }
+  const gardenDecoration = e.target.closest('[data-garden-decoration]');
+  if (gardenDecoration && !gardenDecoration.disabled) { update(s => { s.gardenDecoration = gardenDecoration.dataset.gardenDecoration; }); route(); audio.play('reward'); return; }
   if (e.target.closest('#theme-toggle,#theme-toggle-menu')) { darkTheme = !darkTheme; applyTheme(); audio.play('click'); return; }
   if (e.target.closest('#mute')) { audio.setMuted(!audio.muted); renderHud(); return; }
   const tab = e.target.closest('a.tab'); // tapping the tab you are already on resets that page (e.g. leave a quiz)

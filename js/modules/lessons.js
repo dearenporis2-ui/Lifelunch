@@ -180,7 +180,7 @@ function finishQuiz(root, ctx, l, next, { right, total, best }) {
 export async function renderDaily(root, ctx) {
   const rid = root.dataset.rid, { state } = ctx, day = today();
   if (state.daily?.day === day) {
-    root.innerHTML = `<h1>Daily challenge</h1><div class="card"><h2>Done for today</h2><p>You banked today's reward. A fresh set unlocks tomorrow. Your streak is ${state.streak} ${state.streak === 1 ? 'day' : 'days'}.</p><a class="btn primary" href="#/lessons">Keep learning</a></div>`;
+    root.innerHTML = `<div class="vault-page"><span class="vault-mark" aria-hidden="true">▣</span><span class="section-kicker">TODAY’S MYSTERY VAULT</span><h1>Already opened!</h1><p>You solved today’s money puzzle. A fresh vault arrives tomorrow.</p><div class="card vault-already"><span>YOUR STREAK</span><strong>${state.streak} ${state.streak === 1 ? 'day' : 'days'}</strong><small>${state.gardenItems?.length || 0} garden keepsakes collected</small></div><div class="actions"><a class="btn primary" href="#/dashboard">Visit your garden</a><a class="btn ghost" href="#/lessons">Keep learning</a></div></div>`;
     return;
   }
   let cards;
@@ -194,10 +194,21 @@ export async function renderDaily(root, ctx) {
     cards = shuffle(lessons.flatMap(l => l.cards.filter(c => c.type === 'quiz')), rnd).slice(0, 3);
   } catch { if (root.dataset.rid === rid) root.innerHTML = ERR; return; }
   if (root.dataset.rid !== rid) return;
-  run(root, ctx, { title: 'Daily challenge', cards, done: ({ right, total }) => {
+  run(root, ctx, { title: 'Mystery vault', cards, done: ({ right, total }) => {
     const xp = 30 + right * 5, cash = 20 + right * 10;
-    ctx.update(s => { s.daily = { day }; s.dailyDone = (s.dailyDone || 0) + 1; s.xp += xp; s.cash += cash; });
+    const vaultRewards = [
+      ['coin-tree', 'Coin tree'], ['firefly-jar', 'Firefly jar'], ['rainbow', 'Rainbow arch'], ['fountain', 'Little fountain']
+    ];
+    let reward;
+    ctx.update(s => {
+      s.daily = { day }; s.dailyDone = (s.dailyDone || 0) + 1; s.dailyVaults = (s.dailyVaults || 0) + 1;
+      s.gardenItems ||= [];
+      const next = vaultRewards.find(([id]) => !s.gardenItems.includes(id));
+      reward = next || ['coin-tree', 'A garden sparkle'];
+      if (next) s.gardenItems.push(next[0]); else s.xp += 10;
+      s.xp += xp; s.cash += cash;
+    });
     ctx.audio.play('challenge');
-    root.innerHTML = `<div class="lesson-view"><h1>Daily challenge</h1><div class="card"><h2>${right} of ${total} correct</h2><p>You earned ${xp} XP and ${ctx.money(cash)}. Come back tomorrow for a new set.</p></div><a class="btn primary" href="#/dashboard">Back home</a></div>`;
+    root.innerHTML = `<div class="vault-page vault-opened"><div class="vault-burst" aria-hidden="true">${Array.from({ length: 12 }, (_, i) => `<i style="--dx:${Math.cos(i * Math.PI / 6) * 100}px;--dy:${Math.sin(i * Math.PI / 6) * -100}px;--spark:${i}"></i>`).join('')}</div><span class="vault-mark" aria-hidden="true">▣</span><span class="section-kicker">MYSTERY VAULT OPENED</span><h1>${reward[1]} unlocked!</h1><p>${right} of ${total} correct. You earned ${xp} XP and ${ctx.money(cash)}${reward[1] === 'A garden sparkle' ? ', plus 10 bonus XP for opening every collectible' : ` and a new garden decoration`}.</p><div class="vault-prize" aria-label="${reward[1]} garden decoration"><span>${reward[1] === 'Coin tree' ? '◉' : reward[1] === 'Firefly jar' ? '✧' : reward[1] === 'Rainbow arch' ? '⌒' : reward[1] === 'Little fountain' ? '♧' : '✦'}</span><strong>${reward[1]}</strong><small>Added to your Money Garden</small></div><div class="actions"><a class="btn primary" href="#/dashboard">Place it in your garden</a><a class="btn ghost" href="#/lessons">Keep learning</a></div></div>`;
   } });
 }

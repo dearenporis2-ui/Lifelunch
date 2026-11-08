@@ -12,6 +12,7 @@ The current app has 30 lessons across five learning paths: Earning and Taxes; Bu
 
 - The app has a dashboard, learning path, lesson library and quizzes, practice activities, budgeting and investing simulations, a profile, badges, streaks, hearts, XP, and a guided tutorial.
 - The dashboard has a colorful gradient welcome panel, level progress, wallet and learning stat cards, and dedicated daily goal, next lesson, and challenge panels. Its motion respects reduced-motion preferences.
+- The dashboard Money Garden grows as lessons are studied. Garden themes unlock through lesson progress, streaks, and daily vaults; collectible decorations are earned from daily vault rewards. The selection and collection live in the existing local save.
 - Learn, Practice, Library, Quizzes, Budget, and Profile share the same colorful card language, responsive layouts, and inline Lucide-style SVG icon set in `js/modules/icons.js` (no added runtime dependency).
 - The global page canvas now uses a soft mint-to-sky gradient with warm glows, faint orbital arcs, and sparse stars; the motion is slow and disabled for reduced-motion preferences. Content cards remain light for readability.
 - Mobile is the primary target: the header uses an animated hamburger that opens a springy navigation sheet with colorful destination cards and quick links; the desktop tab navigation stays in place. The menu supports Escape and keyboard focus looping, respects reduced-motion preferences, and uses safe-area padding. The sound control is icon-only with an accessible label, and cards and controls use thumb-sized targets.
@@ -24,6 +25,8 @@ The current app has 30 lessons across five learning paths: Earning and Taxes; Bu
 - The first run tutorial has nine steps and explains the dashboard, path, library, practice, hearts, profile, and first session.
 - On a browser’s first visit, a one-time early access notice explains this is a test build, progress stays in that browser/device, account linking and cloud saves are not available, and testers should use pretend details. Acknowledge it to begin the tutorial; `testNoticeSeen` is stored with local progress.
 - Each lesson has a worked example, either as a lesson card or as an `example` field in its lesson JSON. The path session displays a real life example beside the lesson.
+- Selected worked examples include compact animated visuals for take-home pay and compound growth. These are inline UI illustrations, keep the lesson’s example amounts, and label investment growth as illustrative rather than guaranteed.
+- The daily challenge is presented as a Mystery Vault: solving its three questions reveals XP, cash, and one of four garden decorations. After all four decorations are collected, additional vaults give bonus XP.
 - The path session now uses a wider learning scene with a large lesson or quiz panel, a friendly SVG mascot named Penny, the real life example, and a three step mini mission. Mobile layout stacks the side rail below the lesson.
 - Penny is an original dollar-bill character drawn as one shared inline SVG in `js/modules/mascot.js`. She appears beside the next open learning-path step, in the lesson side rail, and as a small guide on the dashboard’s next-step card. Only the first unfinished path node is marked current.
 - Penny acts as a lightweight guide: she points to the next lesson, gives varied lesson, example, question, calculator, and activity prompts, reacts differently to answers and streaks, and celebrates session completion. Her dialogue reveals word by word with a soft rise/fade and respects reduced-motion settings; she is not an AI mentor.
@@ -36,7 +39,8 @@ The current app has 30 lessons across five learning paths: Earning and Taxes; Bu
 - `js/app.js` — routing, shared state, dashboard, save/load, navigation and tutorial wiring.
 - `js/modules/path.js` — learning path and full screen session runner; this is the main place to change the active lesson-taking experience.
 - `js/modules/lesson-ui.js` — reusable lesson and question card HTML.
-- `js/modules/lessons.js` — lesson library, reading sessions and quizzes.
+- `js/modules/lessons.js` — lesson library, reading sessions, quizzes and the daily Mystery Vault.
+- `js/modules/garden.js` — progress-based Money Garden, unlockable themes, and collectible decoration controls.
 - `js/modules/content.js` — loads lesson JSON and converts its compact card format to UI data.
 - `js/modules/tutorial.js` — onboarding tour.
 - `js/modules/profile.js` — profile, display name, share card and reset controls.

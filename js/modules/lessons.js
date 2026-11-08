@@ -39,7 +39,7 @@ export async function renderLessons(root, ctx) {
   const rid = root.dataset.rid, { state } = ctx;
   let idx; try { idx = await loadIndex(); } catch { root.innerHTML = ERR; return; }
   if (root.dataset.rid !== rid) return;
-  root.innerHTML = `<div class="page-shell"><header class="page-intro"><span class="page-mark library-mark">${icon('book',26)}</span><div><span class="section-kicker">YOUR LEARNING LIBRARY</span><h1>Lessons</h1><p class="lede">${idx.total} lessons across ${idx.tracks.length} subjects. Finish a lesson to unlock the next one, then test yourself in Quizzes.</p></div></header>` +
+  root.innerHTML = `<div class="page-shell"><header class="page-intro"><span class="page-mark library-mark">${icon('book',26)}</span><div><span class="section-kicker">YOUR LEARNING LIBRARY</span><h1>Lessons</h1><p class="lede">${idx.total} lessons across ${idx.tracks.length} subjects. Start with any subject that interests you; finish its lessons in order to unlock what comes next. Quizzes unlock after each lesson.</p></div></header>` +
     idx.tracks.map(t => `<section class="track">${trackHead(t, t.lessons.filter(l => studied(state, l.id)).length, 'studied')}
       <div class="lessons">${t.lessons.map((l, i) => {
         const open = i === 0 || studied(state, t.lessons[i - 1].id);

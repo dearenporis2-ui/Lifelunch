@@ -39,7 +39,7 @@ export async function renderLearn(root, ctx) {
   heartsNow(state);
   const trackIcons = ['coins', 'wallet', 'bank', 'chart', 'shield'];
   let curSeen = false;
-  root.innerHTML = `<div class="page-shell"><header class="page-intro"><span class="page-mark path-mark">${icon('route',26)}</span><div><span class="section-kicker">YOUR LEARNING JOURNEY</span><h1>Your path</h1><p class="lede">Short sessions that teach, then test you. Finish one to unlock the next.</p></div></header>` +
+  root.innerHTML = `<div class="page-shell"><header class="page-intro"><span class="page-mark path-mark">${icon('route',26)}</span><div><span class="section-kicker">GUIDED LEARNING PATH</span><h1>Your path</h1><p class="lede">Short sessions that teach, then test you. Follow this recommended route one step at a time, or choose a subject freely from the Library.</p></div></header>` +
     idx.tracks.map((t, u) => {
       let gi = 0;
       const body = t.lessons.map(l => {

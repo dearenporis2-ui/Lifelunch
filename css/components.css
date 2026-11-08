@@ -1158,3 +1158,17 @@ html[data-theme="dark"] .vault-page h1{color:#E7F5EC}html[data-theme="dark"] .va
 html[data-theme="dark"] .session-exit-card{background:radial-gradient(ellipse at 50% 0%,#263E35,#1B2A27 68%);border-color:#3B554A}html[data-theme="dark"] .session-exit-card h2{color:#E8F5ED}html[data-theme="dark"] .session-exit-card>p{color:#B2C8BC}html[data-theme="dark"] .session-exit-mark{background:linear-gradient(145deg,#25463A,#1E392F);border-color:#3E6551;color:#83E2B8}
 @media(max-width:480px){.session-exit-overlay{padding:18px calc(16px + env(safe-area-inset-right)) 18px calc(16px + env(safe-area-inset-left))}.session-exit-card{padding:25px 20px 21px;border-radius:24px}.session-exit-actions{flex-direction:column-reverse}.session-exit-actions .btn{width:100%}}
 @media(prefers-reduced-motion:reduce){.session-exit-overlay,.session-exit-card{animation:none!important}}
+
+/* A gentle living canvas: slow ambient light, with a little dashboard arrival motion. */
+body::before{will-change:transform,opacity;animation:canvasGlowDrift 34s ease-in-out infinite alternate}
+@keyframes canvasGlowDrift{0%{transform:translate3d(-.6%,-.25%,0) scale(1);opacity:.68}50%{transform:translate3d(.15%,.2%,0) scale(1.025);opacity:.88}100%{transform:translate3d(.65%,-.15%,0) scale(1.045);opacity:.74}}
+body.in-session::before,body.lesson-active::before{animation:none;will-change:auto;opacity:.42}
+.dashboard>.dashboard-hero,.dashboard>.dashboard-tiles,.dashboard>.money-garden,.dashboard>.dashboard-panels,.dashboard>.dashboard-badges{animation:dashboardDriftIn .58s cubic-bezier(.2,.8,.2,1) both}
+.dashboard>.dashboard-tiles{animation-delay:.07s}.dashboard>.money-garden{animation-delay:.13s}.dashboard>.dashboard-panels{animation-delay:.19s}.dashboard>.dashboard-badges{animation-delay:.25s}
+.dashboard-tiles>.tile{animation:dashboardDriftIn .48s cubic-bezier(.2,.8,.2,1) both}
+.dashboard-tiles>.tile:nth-child(1){animation-delay:.12s}.dashboard-tiles>.tile:nth-child(2){animation-delay:.18s}.dashboard-tiles>.tile:nth-child(3){animation-delay:.24s}.dashboard-tiles>.tile:nth-child(4){animation-delay:.3s}
+.dashboard-panels>.card:nth-child(1){animation:dashboardDriftIn .48s .22s cubic-bezier(.2,.8,.2,1) both}.dashboard-panels>.card:nth-child(2){animation:dashboardDriftIn .48s .28s cubic-bezier(.2,.8,.2,1) both}.dashboard-panels>.card:nth-child(3){animation:dashboardDriftIn .48s .34s cubic-bezier(.2,.8,.2,1) both}
+.dashboard-tiles .tile-icon{transition:transform .24s cubic-bezier(.2,.8,.2,1)}.dashboard-tiles .tile:hover .tile-icon{transform:translateY(-2px) rotate(-4deg)}
+@keyframes dashboardDriftIn{from{opacity:0;translate:0 12px}to{opacity:1;translate:0 0}}
+@media(max-width:720px){body::before{animation-duration:42s}.dashboard>.dashboard-hero,.dashboard>.dashboard-tiles,.dashboard>.money-garden,.dashboard>.dashboard-panels,.dashboard>.dashboard-badges{animation-duration:.46s}}
+@media(prefers-reduced-motion:reduce){body::before{animation:none!important;will-change:auto}.dashboard>.dashboard-hero,.dashboard>.dashboard-tiles,.dashboard>.money-garden,.dashboard>.dashboard-panels,.dashboard>.dashboard-badges,.dashboard-tiles>.tile,.dashboard-panels>.card{animation:none!important}.dashboard-tiles .tile-icon{transition:none!important}}

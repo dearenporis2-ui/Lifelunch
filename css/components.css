@@ -1065,3 +1065,34 @@ html[data-theme="dark"] .garden-eyebrow{color:#80E3B9}html[data-theme="dark"] .g
 @media(max-width:760px){.money-garden{grid-template-columns:1fr;gap:18px;min-height:0;padding:23px;border-radius:24px}.garden-copy{max-width:none}.garden-copy>p{max-width:520px}.garden-meter{margin-top:17px}.garden-art{margin:0 -3px}.garden-landscape{max-height:none}.garden-art-caption{right:7px;bottom:7px}}
 @media(max-width:420px){.money-garden{padding:19px;gap:15px}.garden-copy h2{margin-top:12px;font-size:1.45rem}.garden-meter-label{font-size:.66rem}.garden-meter-label strong{font-size:.64rem}.garden-cta{margin-top:16px}.garden-art-caption{font-size:.56rem}}
 @media(prefers-reduced-motion:reduce){.garden-sky-sun,.garden-cloud,.garden-bloom,.garden-tree,.garden-firefly,.garden-coin{animation:none!important}.garden-track>i,.garden-cta,.garden-cta span{transition:none!important}}
+
+/* Keep the entire mobile header, including the menu control, inside narrow viewports. */
+@media(max-width:440px){
+  .hud{width:100%;max-width:100vw;padding-left:10px;padding-right:10px;gap:5px}
+  .brand{min-width:0;gap:6px;font-size:1.03rem;white-space:nowrap}
+  .brand-mark{width:32px;height:32px;flex:none}
+  .hud-stats{min-width:0;flex:none;margin-left:auto;gap:4px}
+  .hud-stats .cash{display:none}
+  .hud-stats .chip{padding:5px 7px;font-size:.7rem}
+  .hud-stats .icon,.hud-stats .theme-toggle,.hud-stats #mute,.music-summary{width:32px;height:32px;min-width:32px;padding:0}
+  .nav-toggle{width:38px;height:38px;min-width:38px;border-radius:13px;margin-left:1px}
+}
+@media(max-width:360px){
+  .hud{padding-left:8px;padding-right:8px;gap:4px}
+  .brand{font-size:.96rem;gap:5px}
+  .brand-mark{width:29px;height:29px}
+  .hud-stats{gap:3px}
+  .hud-stats .chip{padding:4px 6px;font-size:.67rem}
+  .hud-stats .icon,.hud-stats .theme-toggle,.hud-stats #mute,.music-summary{width:29px;height:29px;min-width:29px}
+  .nav-toggle{width:35px;height:35px;min-width:35px}
+}
+/* SVG glyphs and achievement marks share a true centered box on every screen. */
+.dashboard-tiles .tile>span{min-width:0}
+.dashboard-tiles .tile-icon{flex:0 0 34px;padding:0;line-height:0}
+.dashboard-tiles .tile-icon .lucide{display:block;flex:none}
+.streak-card .tile-icon .lucide{transform:translateY(-1px) scale(1.04)}
+.dashboard-tiles .tile-icon{flex-basis:29px}
+.badge{min-width:0}
+.badge>i{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border:1px solid rgba(197,151,57,.2);border-radius:11px;background:linear-gradient(145deg,#FFF8E7,#F5E7BE);line-height:1}
+html[data-theme="dark"] .badge>i{border-color:#5A4D32;background:linear-gradient(145deg,#3C3426,#302A21)}
+@media(max-width:720px){.dashboard-tiles .tile-icon{flex-basis:29px}}

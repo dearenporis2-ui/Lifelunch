@@ -10,6 +10,7 @@ import { heartsNow, GOAL_XP } from './modules/hearts.js';
 import { startTutorial } from './modules/tutorial.js';
 import { icon } from './modules/icons.js';
 import { pennySvg, pennyTalk } from './modules/mascot.js';
+import { renderMoneyGarden } from './modules/garden.js';
 
 const KEY = 'lifelaunch.v1';
 const fresh = () => ({ name: 'Player One', cash: 500, savings: 0, xp: 0, streak: 0, lastDay: null, lessons: {}, studied: {}, path: {}, hearts: 5, heartsAt: Date.now(), goal: null, badges: [], month: 1, draft: null, daily: null, dailyDone: 0, perfects: 0, testNoticeSeen: false, tutorialSeen: false, tutorialDone: false, bestScore: 0, history: [] });
@@ -165,6 +166,7 @@ async function renderDashboard(root) {
         : ['Take it one short lesson at a time. You’ve got this!', 'Ready when you are—let’s make one money idea click.', 'Small steps today, stronger money choices tomorrow.', 'Pick up one useful idea to take into your day.', 'A few minutes of learning can make future-you smile.', 'No rush. We’ll make progress one clear step at a time.', 'Your next win could be just one lesson away.'];
   const pennyTip = pennyLines[Math.floor(Math.random() * pennyLines.length)];
   const lessonPct = idx?.total ? Math.round(doneN / idx.total * 100) : 0;
+  const moneyGarden = renderMoneyGarden(doneN, idx?.total || 30);
   root.innerHTML = `<div class="stack dashboard">
   <section class="hero dashboard-hero"><div class="hero-copy"><span class="hero-eyebrow"><i aria-hidden="true">✦</i> YOUR MONEY JOURNEY</span><h1>Welcome back, ${esc(state.name)} <span class="hero-wave" aria-hidden="true">✦</span></h1><p class="lede">Every small lesson is a step toward a more confident future.</p><a class="btn hero-cta" href="#/learn">Continue learning <span aria-hidden="true">→</span></a></div>
     <div class="hero-progress"><div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-track" cx="60" cy="60" r="52"/>
@@ -175,6 +177,7 @@ async function renderDashboard(root) {
     <div class="tile violet"><span><i class="tile-icon">${icon('chart',19)}</i> NET WORTH</span><strong>${money(d.netWorth)}</strong><small>Cash + savings</small></div>
     <div class="tile coral streak-card ${celebrateStreak ? 'streak-ignite' : ''}"><span><i class="tile-icon">${icon('flame',19)}</i> DAILY STREAK</span><strong>${state.streak} ${state.streak === 1 ? 'day' : 'days'}</strong><small>${celebrateStreak ? (state.streak > 1 ? 'Streak kept alive today!' : 'Your new streak starts today!') : 'Keep your rhythm going'}</small></div>
     <div class="tile mint"><span><i class="tile-icon">${icon('cap',19)}</i> LESSONS FINISHED</span><strong>${all.filter(l => studied(state, l.id)).length}<em> / ${idx ? idx.total : '–'}</em></strong><small>${lessonPct}% of your path explored</small></div></div>
+  ${moneyGarden}
   <div class="grid dashboard-panels">
   <section class="card daily-goal-card"><div class="panel-heading"><span class="panel-icon goal-icon">${icon('target',21)}</span><h2>Daily goal</h2><span class="reward-pill">+${GOAL_XP} XP</span></div><p>${gl.done ? 'Goal reached. Nice work!' : 'A little progress today goes a long way.'}</p><div class="bar goal-bar" role="progressbar" aria-label="Daily XP goal" aria-valuenow="${Math.min(gl.xp, GOAL_XP)}" aria-valuemin="0" aria-valuemax="${GOAL_XP}"><i style="width:${Math.min(100, gl.xp / GOAL_XP * 100)}%"></i></div><small class="goal-caption">${gl.xp} of ${GOAL_XP} XP ${gl.done ? 'earned today — you did it!' : 'earned today'}</small><div class="goal-status ${gl.done ? 'complete' : ''}"><span>${icon(gl.done ? 'check' : 'sparkles',16)}</span>${gl.done ? 'You showed up for yourself today.' : 'Complete a lesson or practice to reach your goal.'}</div></section>
   <section class="card next-card"><div class="panel-heading"><span class="next-penny" aria-hidden="true">${pennySvg('penny-dashboard')}</span><span class="section-kicker">PENNY’S PICK</span><span class="time-pill">5 min</span></div>${next

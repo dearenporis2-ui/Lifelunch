@@ -9,8 +9,11 @@ const ERR = '<div class="empty">Could not load content. Check your connection an
 const STUDY_XP = 20;
 export const shuffle = (a, rnd = Math.random) => a.map(v => [rnd(), v]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
 const today = () => new Date().toLocaleDateString('en-CA');
-// A lesson counts as studied once finished, or if its quiz was already passed (older saves).
-export const studied = (s, id) => !!(s.studied?.[id] || s.lessons[id]);
+// Keep lesson completion and quiz attempts separate. Older saves used `lessons`
+// for both; path progress identifies those legacy path records so they aren't
+// mistaken for a quiz attempt.
+export const quizResult = (s, id) => s.quizResults?.[id] || (!s.path?.[id] ? s.lessons?.[id] : null) || null;
+export const studied = (s, id) => !!(s.studied?.[id] || s.quizResults?.[id] || s.lessons?.[id]);
 const goto = (hash, fn, root, ctx) => { if ((location.hash || '#/dashboard') === hash) { root.dataset.rid = String(+root.dataset.rid + 1000); fn(root, ctx); } else location.hash = hash; };
 
 // Lesson text: blank line = new paragraph, "- " lines = bullets, "1. " lines = numbered steps, **bold** inline. Everything is escaped first.
@@ -63,7 +66,7 @@ async function openLesson(root, ctx, id) {
     ${infos.length ? `<div class="card"><h2>The lesson</h2><p>${infos.length} short ${infos.length === 1 ? 'part' : 'parts'}${done ? ', finished' : `. Finish it to unlock the quiz and earn ${STUDY_XP} XP`}.</p>
       <button class="btn ${done ? 'ghost' : 'primary'}" id="learn">${done ? 'Review the lesson' : 'Start learning'}</button></div>` : ''}
     ${done ? `<div class="card"><h2>Quiz ready</h2><p>${qn} ${qn === 1 ? 'question' : 'questions'}. Earn up to ${l.xp} XP and ${ctx.money(l.cash)}.</p>
-      <button class="btn primary" id="quiz">${ctx.state.lessons[id] ? 'Retake the quiz' : 'Take the quiz'}</button></div>` : ''}</div>`;
+      <button class="btn primary" id="quiz">${quizResult(ctx.state, id) ? 'Retake the quiz' : 'Take the quiz'}</button></div>` : ''}</div>`;
   const $ = s => root.querySelector(s);
   $('#bk').onclick = () => goto('#/lessons', renderLessons, root, ctx);
   if ($('#learn')) $('#learn').onclick = () => learn(root, ctx, l, next);
@@ -104,9 +107,9 @@ export async function renderQuizzes(root, ctx) {
   const dailyDone = state.daily?.day === today();
   root.innerHTML = `<div class="page-shell"><header class="page-intro"><span class="page-mark quiz-mark">${icon('target',26)}</span><div><span class="section-kicker">CHECK WHAT STUCK</span><h1>Quizzes</h1><p class="lede">Test what you have learned. Each quiz unlocks when you finish its lesson.</p></div></header>
     <section class="card daily-quiz-card"><span class="panel-icon challenge-icon">${icon('trophy',21)}</span><div><h2>Daily challenge</h2><p>${dailyDone ? 'Done for today. A new set arrives tomorrow.' : 'Three quick questions for bonus XP and cash.'}</p></div>${dailyDone ? '' : `<a class="btn primary" href="#/daily">Start challenge ${icon('arrow',17)}</a>`}</section>` +
-    idx.tracks.map(t => `<section class="track" style="margin-top:28px">${trackHead(t, t.lessons.filter(l => state.lessons[l.id]).length, 'passed')}
+    idx.tracks.map(t => `<section class="track" style="margin-top:28px">${trackHead(t, t.lessons.filter(l => quizResult(state, l.id)).length, 'passed')}
       <div class="lessons">${t.lessons.map(l => {
-        const d = state.lessons[l.id], ok = studied(state, l.id);
+        const d = quizResult(state, l.id), ok = studied(state, l.id);
         return `<button class="lrow" data-quiz="${l.id}" ${ok ? '' : 'disabled'}><span class="lesson-row-icon">${icon(ok ? 'target' : 'lock',19)}</span><span class="lesson-row-copy"><strong>${l.title}</strong><small>${l.n} questions${ok ? '' : '. Study the lesson first.'}</small></span>
         <span class="meta lesson-row-meta"><span>${d ? `${icon('trophy',14)} Best ${d.best}%` : ok ? `${icon('sparkles',14)} Up to ${l.xp} XP` : `${icon('lock',14)} Locked`}</span></span></button>`;
       }).join('')}</div></section>`).join('') + '</div>';
@@ -171,11 +174,12 @@ function finishQuiz(root, ctx, l, next, { right, total, best, focusBreached = fa
     return;
   }
   const coach = l.id === 'intro' && !ctx.state.tutorialDone;
-  const pct = total ? Math.round(right / total * 100) : 100, first = !ctx.state.lessons[l.id], scale = .5 + .5 * pct / 100;
+  const pct = total ? Math.round(right / total * 100) : 100, first = !quizResult(ctx.state, l.id), scale = .5 + .5 * pct / 100;
   const bonus = (best >= 3 ? best * 3 : 0) + (pct === 100 ? 20 : 0);
   const xp = Math.round(l.xp * scale) + bonus, cash = Math.round(l.cash * scale);
   ctx.update(s => {
-    s.lessons[l.id] = { best: Math.max(pct, s.lessons[l.id]?.best || 0), at: Date.now() };
+    (s.quizResults ||= {})[l.id] = { best: Math.max(pct, s.quizResults[l.id]?.best || 0), at: Date.now() };
+    (s.studied ||= {})[l.id] = true;
     if (pct === 100) s.perfects = (s.perfects || 0) + 1;
     if (first) { s.xp += xp; s.cash += cash; }
   });

@@ -6,7 +6,7 @@ const dec = s => JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g, '+').
 const num = v => Math.max(0, Math.min(1e9, Number(v) || 0));
 
 function snapshot(state, d) {
-  return { n: state.name, l: d.level, t: d.tier, xp: state.xp, nw: Math.round(d.netWorth), st: state.streak, b: state.badges, ls: Object.keys(state.lessons).length };
+  return { n: state.name, l: d.level, t: d.tier, xp: state.xp, nw: Math.round(d.netWorth), st: state.streak, b: state.badges, ls: Object.keys({ ...state.lessons, ...state.studied, ...state.quizResults }).length };
 }
 
 function cardHtml(p, ctx) {

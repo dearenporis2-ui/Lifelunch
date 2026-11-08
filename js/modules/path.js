@@ -217,7 +217,7 @@ function finishNode(root, ctx, lesson, k, n, coach, { acc, best, exit, seed, foc
   const xp = first ? Math.round(lesson.xp / n * (.5 + .5 * acc)) + bonus : 10, cash = first ? Math.round(lesson.cash / n * (.5 + .5 * acc)) : 0;
   ctx.update(s => {
     (s.path ||= {})[lesson.id] = Math.max(s.path[lesson.id] || 0, k + 1);
-    if (complete) { (s.studied ||= {})[lesson.id] = true; s.lessons[lesson.id] = { best: Math.max(pct, s.lessons[lesson.id]?.best || 0), at: Date.now() }; }
+    if (complete) (s.studied ||= {})[lesson.id] = true;
     if (acc === 1 && totalQ) s.perfects = (s.perfects || 0) + 1;
     s.xp += xp; s.cash += cash;
   });

@@ -13,7 +13,7 @@ import { pennySvg, pennyTalk } from './modules/mascot.js';
 import { renderMoneyGarden } from './modules/garden.js';
 
 const KEY = 'lifelaunch.v1';
-const fresh = () => ({ name: 'Player One', cash: 500, savings: 0, xp: 0, streak: 0, lastDay: null, lessons: {}, studied: {}, path: {}, hearts: 5, heartsAt: Date.now(), goal: null, badges: [], month: 1, draft: null, daily: null, dailyDone: 0, dailyVaults: 0, gardenItems: [], gardenTheme: 'meadow', gardenDecoration: '', perfects: 0, testNoticeSeen: false, tutorialSeen: false, tutorialDone: false, bestScore: 0, history: [] });
+const fresh = () => ({ name: 'Player One', cash: 500, savings: 0, xp: 0, streak: 0, lastDay: null, lessons: {}, quizResults: {}, studied: {}, path: {}, hearts: 5, heartsAt: Date.now(), goal: null, badges: [], month: 1, draft: null, daily: null, dailyDone: 0, dailyVaults: 0, gardenItems: [], gardenTheme: 'meadow', gardenDecoration: '', perfects: 0, testNoticeSeen: false, tutorialSeen: false, tutorialDone: false, bestScore: 0, history: [] });
 const load = () => { try { return { ...fresh(), ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { return fresh(); } };
 const state = load();
 

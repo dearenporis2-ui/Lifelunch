@@ -1,6 +1,7 @@
 // SFX manager. Plays files from assets/audio/; if a file is missing or blocked, falls back to a short synthesized tone.
 const BASE = 'assets/audio/';
 const AUDIO_CACHE = 'lifelaunch-audio-v1'; // bump the version if shipped sound files change
+const MUSIC_FILE = 'menu-music.mp3'; // optional looping menu ambience; loaded only when enabled
 export const SFX = {
   click: 'click.mp3', correct: 'correct.mp3', wrong: 'wrong.mp3', reward: 'reward.mp3',
   levelup: 'levelup.mp3', badge: 'badge.mp3', streak: 'streak.mp3',
@@ -21,6 +22,10 @@ class AudioManager {
   constructor() {
     this.muted = localStorage.getItem('ll.muted') === '1';
     this.volume = 0.7; this.cache = {}; this.urls = {}; this.failed = new Set(); this.ctx = null;
+    this.musicEnabled = localStorage.getItem('ll.music') === '1';
+    this.musicVolume = Math.min(.35, Math.max(0, Number(localStorage.getItem('ll.musicVolume') ?? 0.18)));
+    this.musicSuspended = false;
+    this.music = new Audio(); this.music.preload = 'none'; this.music.loop = true; this.music.volume = this.musicVolume;
   }
   async preload(onProgress = () => {}) {
     const entries = Object.entries(SFX), total = entries.length;
@@ -55,6 +60,23 @@ class AudioManager {
     }));
   }
   setMuted(m) { this.muted = m; try { localStorage.setItem('ll.muted', m ? '1' : '0'); } catch {} }
+  setMusicEnabled(enabled) {
+    this.musicEnabled = enabled;
+    try { localStorage.setItem('ll.music', enabled ? '1' : '0'); } catch {}
+    if (enabled) { this.musicSuspended = false; this.resumeMusic(); } else this.music.pause();
+  }
+  setMusicVolume(volume) {
+    this.musicVolume = Math.max(0, Math.min(.35, Number(volume)));
+    this.music.volume = this.musicVolume;
+    try { localStorage.setItem('ll.musicVolume', String(this.musicVolume)); } catch {}
+  }
+  pauseMusic() { this.musicSuspended = true; this.music.pause(); }
+  resumeAfterSession() { this.musicSuspended = false; this.resumeMusic(); }
+  resumeMusic() {
+    if (!this.musicEnabled || this.musicSuspended) return;
+    if (!this.music.src) this.music.src = new URL(BASE + MUSIC_FILE, document.baseURI).href;
+    if (this.music.paused) this.music.play().catch(() => {});
+  }
   play(name) {
     if (this.muted) return;
     const a = this.cache[name];

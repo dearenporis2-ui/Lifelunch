@@ -118,6 +118,7 @@ function renderHud() {
   <nav class="tabs" aria-label="Main">${menuItems.map(([k, r]) => `<a class="tab" href="#/${k}" ${k === cur ? 'aria-current="page"' : ''}>${icon(navIcons[k],18)}<span>${r.label}</span></a>`).join('')}</nav>
   <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span><span></span></button>
   <div class="hud-stats"><span class="chip hearts" title="Hearts">♥ ${heartsNow(state)}</span><span class="chip cash">${money(state.cash)}</span><span class="chip xp hud-xp"><b>Lv ${d.level}</b>${state.xp} XP</span>
+  <details class="music-settings ${audio.musicEnabled ? 'music-on' : ''}"><summary class="icon music-summary" title="Music settings" aria-label="Music settings">${icon('music',18)}</summary><div class="music-panel"><label class="music-switch"><span><b>Menu music</b><small>Soft background soundtrack</small></span><input id="music-toggle" type="checkbox" ${audio.musicEnabled ? 'checked' : ''}></label><label class="music-volume"><span>Volume</span><input id="music-volume" type="range" min="0" max="0.35" step="0.01" value="${audio.musicVolume}"></label><small class="music-hint">Music pauses during lessons.</small></div></details>
   <button class="icon theme-toggle" id="theme-toggle" title="${darkTheme ? 'Switch to light theme' : 'Switch to dark theme'}" aria-label="${darkTheme ? 'Switch to light theme' : 'Switch to dark theme'}" aria-pressed="${darkTheme}"><span class="theme-icon">${icon(darkTheme ? 'sun' : 'moon',18)}</span></button><button class="icon" id="mute" title="${audio.muted ? 'Turn sound on' : 'Turn sound off'}" aria-label="${audio.muted ? 'Turn sound on' : 'Turn sound off'}" aria-pressed="${audio.muted}">${icon(audio.muted ? 'volumeX' : 'volume',18)}</button></div>
   <div class="mobile-menu" id="mobile-menu" hidden>
     <button class="mobile-menu-scrim" type="button" data-menu-close aria-label="Close navigation menu"></button>
@@ -277,6 +278,14 @@ document.addEventListener('click', e => {
   if (tab && tab.getAttribute('href') === (location.hash || '#/dashboard') && !document.querySelector('.tour')) route();
   if (e.target.closest('.tab,.btn,.icon') && !e.target.closest('[data-silent]')) audio.play('click');
 });
+document.addEventListener('change', e => {
+  if (e.target.matches('#music-toggle')) {
+    audio.setMusicEnabled(e.target.checked);
+    document.querySelector('.music-settings')?.classList.toggle('music-on', e.target.checked);
+  }
+});
+document.addEventListener('input', e => { if (e.target.matches('#music-volume')) audio.setMusicVolume(e.target.value); });
+document.addEventListener('pointerdown', () => audio.resumeMusic(), { passive: true });
 document.addEventListener('keydown', e => {
   const menu = $('#mobile-menu');
   if (!menu || menu.hidden) return;

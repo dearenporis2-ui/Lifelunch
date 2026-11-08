@@ -118,13 +118,14 @@ function quiz(root, ctx, l, next) {
 function run(root, ctx, { title, cards, done, coach, lastLabel }) {
   let i = 0, right = 0, combo = 0, best = 0, tipI = coach, tipQ = coach;
   const total = cards.filter(c => c.type === 'quiz').length;
+  ctx.audio.pauseMusic();
   ctx.audio.play('lessonStart');
   root.onclick = null;
   const frame = (inner, tip = '', label = '') => { root.innerHTML = `<div class="lesson-view">
     <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${cards.length}" aria-valuenow="${i}"><i style="width:${i / cards.length * 100}%"></i></div>
     <h1>${title}</h1>${tip ? `<p class="coach">${tip}</p>` : ''}${label ? `<p class="part">${label}</p>` : ''}${inner}</div>`; };
   function step() {
-    if (i >= cards.length) return done({ right, total, best });
+    if (i >= cards.length) { ctx.audio.resumeAfterSession(); return done({ right, total, best }); }
     const c = cards[i];
     if (c.type === 'info') {
       const act = ACTIVITY_KINDS.includes(c.kind);

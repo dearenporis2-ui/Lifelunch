@@ -100,8 +100,8 @@ export function runSession(root, ctx, o) {
     lastGuideLine = choices[Math.floor(Math.random() * choices.length)] || lines[0];
     return lastGuideLine;
   };
-  document.body.classList.add('in-session'); root.onclick = root.oninput = root.onchange = null; ctx.audio.play('lessonStart');
-  const exit = () => { document.body.classList.remove('in-session'); bump(root); (o.back || renderLearn)(root, ctx); };
+  document.body.classList.add('in-session'); ctx.audio.pauseMusic(); root.onclick = root.oninput = root.onchange = null; ctx.audio.play('lessonStart');
+  const exit = () => { document.body.classList.remove('in-session'); ctx.audio.resumeAfterSession(); bump(root); (o.back || renderLearn)(root, ctx); };
   const shell = (body, foot) => {
     const c = queue[i]?.c || {}, stage = c.type === 'quiz' || c.kind === 'calc' || ACTIVITY_KINDS.includes(c.kind) ? 2 : c.kind === 'example' ? 1 : 0;
     const cheerSet = c.type === 'quiz' ? PENNY_LINES.question : c.kind === 'example' ? PENNY_LINES.example : c.kind === 'calc' ? PENNY_LINES.calculator : ACTIVITY_KINDS.includes(c.kind) ? PENNY_LINES.activity : PENNY_LINES.lesson;
@@ -143,7 +143,7 @@ export function runSession(root, ctx, o) {
   };
 
   function step() {
-    if (i >= queue.length) return o.onFinish({ acc: totalQ ? firstRight / totalQ : 1, best, exit, seed: sessionSeed });
+    if (i >= queue.length) { ctx.audio.resumeAfterSession(); return o.onFinish({ acc: totalQ ? firstRight / totalQ : 1, best, exit, seed: sessionSeed }); }
     const { c, retry } = queue[i], $ = s => root.querySelector(s);
     if (c.type === 'info') {
       const act = ACTIVITY_KINDS.includes(c.kind), tip = tipI && !act ? 'Tip: read the card, then tap Continue.' : '';

@@ -130,6 +130,7 @@ transform:scale(.96);transition:top .6s var(--ease),left .6s var(--ease),transfo
 .node{width:68px;height:68px;border-radius:50%;border:0;font-size:1.6rem;font-weight:700;cursor:pointer;color:#fff;background:var(--u);box-shadow:0 6px 0 rgba(0,0,0,.22);transition:transform .12s,box-shadow .12s}
 .node:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.22)}
 .node.done{background:var(--cash)}
+.node.available,.node.quiz-ready{background:linear-gradient(145deg,#20B987,#0F7B5F)}
 .node.locked{background:var(--line);color:var(--muted);box-shadow:0 6px 0 rgba(0,0,0,.08)}
 .start-tip{position:absolute;left:50%;top:-34px;background:#fff;border:2px solid var(--line);border-radius:8px;padding:2px 12px;font-weight:700;color:var(--u);animation:bob 1.4s ease-in-out infinite;pointer-events:none}
 .path-buddy{position:absolute;z-index:3;top:50%;width:102px;height:84px;pointer-events:none;transform:translateY(-50%);animation:pennyFloat 3.2s ease-in-out infinite}

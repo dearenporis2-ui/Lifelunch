@@ -49,11 +49,13 @@ export async function renderLearn(root, ctx) {
         const n = sessionCount(l.s), d = sessionsDone(state, l.id, n);
         const nodes = Array.from({ length: n }, (_, k) => {
           const isDone = k < d, isCur = !isDone && !curSeen; if (isCur) curSeen = true;
-          const quizPending = isCur && studied(state, l.id) && !quizResult(state, l.id);
-          const cls = isDone ? 'done' : isCur ? `current${quizPending ? ' quiz-ready' : ''}` : 'locked';
+          const studiedHere = studied(state, l.id), openedFromLibrary = !isDone && studiedHere && k === d;
+          const isAvailable = isCur || openedFromLibrary;
+          const quizPending = openedFromLibrary && !quizResult(state, l.id);
+          const cls = isDone ? 'done' : isCur ? `current${quizPending ? ' quiz-ready' : ''}` : openedFromLibrary ? 'available quiz-ready' : 'locked';
           const x = OFFSETS[gi++ % OFFSETS.length], buddy = isCur ? `<span class="path-buddy ${x > 0 ? 'side-left' : 'side-right'}">${pennySvg('path-penny')}<span class="path-buddy-bubble"><strong>NEXT UP</strong><small class="penny-talk">${pennyTalk(l.title)}</small></span></span>` : '';
-          const status = isDone ? 'done' : quizPending ? 'lesson finished, quiz not taken' : isCur ? 'up next' : 'locked';
-          return `<div class="node-wrap" style="--x:${x}px"><button class="node ${cls}" data-node="${l.id}:${k}" aria-label="${l.title}, part ${k + 1} of ${n}, ${status}">${icon(isDone ? 'check' : quizPending ? 'target' : isCur ? 'sparkles' : 'lock',isCur ? 25 : 22)}</button>${isCur ? `<span class="start-tip">${quizPending ? 'Quiz next' : 'Start'}</span>` : ''}${buddy}</div>`;
+          const status = isDone ? 'done' : quizPending ? 'lesson finished, quiz not taken' : isCur ? 'up next' : openedFromLibrary ? 'unlocked from your Library lesson' : 'locked';
+          return `<div class="node-wrap" style="--x:${x}px"><button class="node ${cls}" data-node="${l.id}:${k}" aria-label="${l.title}, part ${k + 1} of ${n}, ${status}">${icon(isDone ? 'check' : quizPending ? 'target' : isCur ? 'sparkles' : openedFromLibrary ? 'play' : 'lock',isAvailable ? 25 : 22)}</button>${isAvailable ? `<span class="start-tip">${quizPending ? 'Quiz next' : isCur ? 'Start' : 'Unlocked'}</span>` : ''}${buddy}</div>`;
         }).join('');
         return `<div class="lesson-label">${l.title}</div><div class="nodes">${nodes}</div>`;
       }).join('');

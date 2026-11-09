@@ -1064,6 +1064,7 @@ html[data-theme="dark"] .music-picker-label{color:#A1B8AA}html[data-theme="dark"
 .garden-sky-sun{transform-box:fill-box;transform-origin:center;animation:gardenSunPulse 5s ease-in-out infinite}
 .garden-cloud{animation:gardenCloudDrift 12s ease-in-out infinite alternate}
 .garden-bloom{transform-box:fill-box;transform-origin:center bottom;animation:gardenSway 3.8s var(--delay) ease-in-out infinite}
+.garden-flower{overflow:visible}.garden-stem{fill:none;stroke:url(#gardenLeaf);stroke-width:2.8;stroke-linecap:round}.garden-leaf{fill:url(#gardenLeaf);stroke:#398E68;stroke-width:.7}.garden-flower ellipse{stroke:rgba(255,255,255,.58);stroke-width:.45}.garden-petal-pink ellipse{fill:url(#gardenPetalPink)}.garden-petal-coral ellipse{fill:url(#gardenPetalCoral)}.garden-petal-cream ellipse{fill:url(#gardenPetalCream)}.garden-petal-lavender ellipse{fill:url(#gardenPetalLavender)}.garden-petal-gold ellipse{fill:url(#gardenPetalGold)}.garden-flower-center{fill:url(#gardenFlowerCenter);stroke:#D18A31;stroke-width:.8}.garden-flower-core{fill:#FFF3B0}.garden-trunk{fill:none;stroke:url(#gardenTrunk);stroke-width:9;stroke-linecap:round;stroke-linejoin:round}.garden-canopy{fill:url(#gardenCanopy);stroke:#287F5D;stroke-width:1.5}.garden-canopy-light{fill:url(#gardenCanopyLight);opacity:.88}
 .garden-tree{transform-box:fill-box;transform-origin:center bottom;animation:gardenSway 5s ease-in-out infinite}
 .garden-tree-two{animation-delay:-2s}
 .garden-firefly{animation:gardenFirefly 3.2s ease-in-out infinite}

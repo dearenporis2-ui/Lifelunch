@@ -2,7 +2,7 @@
 import { loadIndex, loadLesson } from './content.js';
 import { mountCalc } from './calc.js';
 import { mountActivity, ACTIVITY_KINDS } from './activities.js';
-import { fmt, shuffle, studied } from './lessons.js';
+import { fmt, shuffle, studied, quizResult } from './lessons.js';
 import { lessonCard, questionCard } from './lesson-ui.js';
 import { heartsNow, loseHeart, addHeart, msToNext, fmtWait, MAX_HEARTS, REFILL_COST, GOAL_XP } from './hearts.js';
 import { icon } from './icons.js';
@@ -27,7 +27,10 @@ const PENNY_LINES = {
 const pennyLine = (lines, seed) => lines[Math.abs(seed) % lines.length];
 const ERR = '<div class="empty">Could not load content. Check your connection and refresh.</div>';
 export const sessionCount = s => Math.max(1, Math.round(s / 4)); // about 4 teaching cards per session
-const sessionsDone = (st, id, n) => (studied(st, id) ? n : Math.min(n, st.path?.[id] || 0));
+const sessionsDone = (st, id, n) => {
+  const pathDone = Math.min(n, st.path?.[id] || 0);
+  return pathDone >= n || (studied(st, id) && !!quizResult(st, id)) ? n : pathDone;
+};
 const bump = root => { root.dataset.rid = String(+root.dataset.rid + 1000); };
 const slice = (a, i, n) => a.slice(Math.floor(i * a.length / n), Math.floor((i + 1) * a.length / n));
 
@@ -46,9 +49,11 @@ export async function renderLearn(root, ctx) {
         const n = sessionCount(l.s), d = sessionsDone(state, l.id, n);
         const nodes = Array.from({ length: n }, (_, k) => {
           const isDone = k < d, isCur = !isDone && !curSeen; if (isCur) curSeen = true;
-          const cls = isDone ? 'done' : isCur ? 'current' : 'locked';
+          const quizPending = isCur && studied(state, l.id) && !quizResult(state, l.id);
+          const cls = isDone ? 'done' : isCur ? `current${quizPending ? ' quiz-ready' : ''}` : 'locked';
           const x = OFFSETS[gi++ % OFFSETS.length], buddy = isCur ? `<span class="path-buddy ${x > 0 ? 'side-left' : 'side-right'}">${pennySvg('path-penny')}<span class="path-buddy-bubble"><strong>NEXT UP</strong><small class="penny-talk">${pennyTalk(l.title)}</small></span></span>` : '';
-          return `<div class="node-wrap" style="--x:${x}px"><button class="node ${cls}" data-node="${l.id}:${k}" aria-label="${l.title}, part ${k + 1} of ${n}${isDone ? ', done' : isCur ? ', up next' : ', locked'}">${icon(isDone ? 'check' : isCur ? 'sparkles' : 'lock',isCur ? 25 : 22)}</button>${isCur ? '<span class="start-tip">Start</span>' : ''}${buddy}</div>`;
+          const status = isDone ? 'done' : quizPending ? 'lesson finished, quiz not taken' : isCur ? 'up next' : 'locked';
+          return `<div class="node-wrap" style="--x:${x}px"><button class="node ${cls}" data-node="${l.id}:${k}" aria-label="${l.title}, part ${k + 1} of ${n}, ${status}">${icon(isDone ? 'check' : quizPending ? 'target' : isCur ? 'sparkles' : 'lock',isCur ? 25 : 22)}</button>${isCur ? `<span class="start-tip">${quizPending ? 'Quiz next' : 'Start'}</span>` : ''}${buddy}</div>`;
         }).join('');
         return `<div class="lesson-label">${l.title}</div><div class="nodes">${nodes}</div>`;
       }).join('');
@@ -63,11 +68,11 @@ export async function renderLearn(root, ctx) {
 
 function openSheet(root, ctx, idx, id, k) {
   const meta = idx.tracks.flatMap(t => t.lessons).find(l => l.id === id), n = sessionCount(meta.s), st = ctx.state;
-  const again = k < sessionsDone(st, id, n), free = id === 'intro' && !st.tutorialDone, hn = heartsNow(st);
+  const again = k < sessionsDone(st, id, n), quizPending = studied(st, id) && !quizResult(st, id), free = id === 'intro' && !st.tutorialDone, hn = heartsNow(st);
   root.querySelector('.sheet-bg')?.remove();
   root.insertAdjacentHTML('beforeend', `<div class="sheet-bg"><div class="sheet" role="dialog" aria-modal="true" aria-label="${meta.title}">
-    <h2>${meta.title}</h2><p>Part ${k + 1} of ${n}. ${again ? 'This lesson session is complete. Its separate quiz is still available in Quizzes. Replay this session for a small XP bonus.' : `Earn up to ${Math.round(meta.xp / n)} XP.`}</p>
-    ${hn > 0 || free ? `<button class="btn primary big" id="sgo">${again ? 'Replay lesson session' : 'Start'}</button>` :
+    <h2>${meta.title}</h2><p>Part ${k + 1} of ${n}. ${again ? 'This path session is complete. Replay it for a small XP bonus.' : quizPending ? 'You’ve finished the lesson material. Its separate quiz is unlocked in Quizzes. Continue this path session to progress along the recommended route.' : `Earn up to ${Math.round(meta.xp / n)} XP.`}</p>
+    ${hn > 0 || free ? `<button class="btn primary big" id="sgo">${again ? 'Replay lesson session' : quizPending ? 'Start path session' : 'Start'}</button>` :
       `<p class="why"><strong>You are out of hearts.</strong> One comes back every 20 minutes. The next one arrives in ${fmtWait(msToNext(st))}.</p>
        <button class="btn primary big" id="refill" ${st.cash < REFILL_COST ? 'disabled' : ''}>Refill hearts for ${REFILL_COST} cash</button>
        <button class="btn big" id="qp">Practice to win a heart</button>`}
@@ -212,7 +217,7 @@ function finishNode(root, ctx, lesson, k, n, coach, { acc, best, exit, seed, foc
     endScreen(root, { head: 'Session not counted', sub: 'LifeLaunch was in the background during this session, so no XP, cash, or lesson progress was saved. Try again when you’re ready.', pennyLine: 'Your place is safe. Come back when you can focus and earn the reward.', stats: [['Rewards', 'Not added'], ['Accuracy', `${pct}%`], ['Best streak', best]], exit });
     return;
   }
-  const first = !(studied(st, lesson.id) || (st.path?.[lesson.id] || 0) > k), complete = k + 1 >= n;
+  const first = (st.path?.[lesson.id] || 0) <= k, complete = k + 1 >= n;
   const bonus = (acc === 1 && totalQ ? 10 : 0) + (best >= 3 ? best * 2 : 0);
   const xp = first ? Math.round(lesson.xp / n * (.5 + .5 * acc)) + bonus : 10, cash = first ? Math.round(lesson.cash / n * (.5 + .5 * acc)) : 0;
   ctx.update(s => {

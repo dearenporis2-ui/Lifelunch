@@ -66,8 +66,8 @@ function openSheet(root, ctx, idx, id, k) {
   const again = k < sessionsDone(st, id, n), free = id === 'intro' && !st.tutorialDone, hn = heartsNow(st);
   root.querySelector('.sheet-bg')?.remove();
   root.insertAdjacentHTML('beforeend', `<div class="sheet-bg"><div class="sheet" role="dialog" aria-modal="true" aria-label="${meta.title}">
-    <h2>${meta.title}</h2><p>Part ${k + 1} of ${n}. ${again ? 'You have finished this one. Replay it for a small XP bonus.' : `Earn up to ${Math.round(meta.xp / n)} XP.`}</p>
-    ${hn > 0 || free ? `<button class="btn primary big" id="sgo">${again ? 'Practice again' : 'Start'}</button>` :
+    <h2>${meta.title}</h2><p>Part ${k + 1} of ${n}. ${again ? 'This lesson session is complete. Its separate quiz is still available in Quizzes. Replay this session for a small XP bonus.' : `Earn up to ${Math.round(meta.xp / n)} XP.`}</p>
+    ${hn > 0 || free ? `<button class="btn primary big" id="sgo">${again ? 'Replay lesson session' : 'Start'}</button>` :
       `<p class="why"><strong>You are out of hearts.</strong> One comes back every 20 minutes. The next one arrives in ${fmtWait(msToNext(st))}.</p>
        <button class="btn primary big" id="refill" ${st.cash < REFILL_COST ? 'disabled' : ''}>Refill hearts for ${REFILL_COST} cash</button>
        <button class="btn big" id="qp">Practice to win a heart</button>`}

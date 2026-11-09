@@ -111,7 +111,7 @@ export async function renderQuizzes(root, ctx) {
       <div class="lessons">${t.lessons.map(l => {
         const d = quizResult(state, l.id), ok = studied(state, l.id);
         return `<button class="lrow" data-quiz="${l.id}" ${ok ? '' : 'disabled'}><span class="lesson-row-icon">${icon(ok ? 'target' : 'lock',19)}</span><span class="lesson-row-copy"><strong>${l.title}</strong><small>${l.n} questions${ok ? '' : '. Study the lesson first.'}</small></span>
-        <span class="meta lesson-row-meta"><span>${d ? `${icon('trophy',14)} Best ${d.best}%` : ok ? `${icon('sparkles',14)} Up to ${l.xp} XP` : `${icon('lock',14)} Locked`}</span></span></button>`;
+        <span class="meta lesson-row-meta"><span>${d ? `${icon('trophy',14)} Best ${d.best}% · Retake` : ok ? `${icon('sparkles',14)} Unlocked · Not taken` : `${icon('lock',14)} Locked`}</span></span></button>`;
       }).join('')}</div></section>`).join('') + '</div>';
   root.onclick = async e => {
     const id = e.target.closest('[data-quiz]')?.dataset.quiz; if (!id) return;

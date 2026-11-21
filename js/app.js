@@ -11,6 +11,7 @@ import { startTutorial } from './modules/tutorial.js';
 import { icon } from './modules/icons.js';
 import { pennySvg, pennyTalk } from './modules/mascot.js';
 import { renderMoneyGarden } from './modules/garden.js';
+import { renderLeaderboard } from './modules/leaderboard.js';
 
 const KEY = 'lifelaunch.v1';
 const fresh = () => ({ name: 'Player One', avatar: { skin: 'warm', hairStyle: 'swoop', hairColor: 'espresso', outfitStyle: 'hoodie', outfitColor: 'lagoon' }, cash: 500, savings: 0, xp: 0, streak: 0, lastDay: null, lessons: {}, quizResults: {}, studied: {}, path: {}, hearts: 5, heartsAt: Date.now(), goal: null, badges: [], month: 1, draft: null, daily: null, dailyDone: 0, dailyVaults: 0, gardenItems: [], gardenTheme: 'meadow', gardenDecoration: '', perfects: 0, testNoticeSeen: false, tutorialSeen: false, tutorialDone: false, bestScore: 0, history: [] });
@@ -129,6 +130,7 @@ ctx.cloud = {
   signInWithGoogle: () => cloudApi?.signInWithGoogle(),
   signOut: () => cloudApi?.signOutAccount(),
   deleteProgress: uid => cloudApi?.deleteProgress(uid),
+  watchLeaderboard: (...args) => cloudApi?.watchLeaderboard(...args),
   useCloud: () => resolveCloudConflict(true),
   useDevice: () => resolveCloudConflict(false)
 };
@@ -225,13 +227,14 @@ const ROUTES = {
     const { renderWorld } = await import('./modules/world-preview.js');
     if (root.dataset.rid === rid) renderWorld(root, ctx);
   } },
-  profile: { label: 'Profile', fn: renderProfile }
+  profile: { label: 'Profile', fn: renderProfile },
+  leaderboard: { label: 'Leaderboard', fn: renderLeaderboard }
 };
 const current = () => (location.hash.replace(/^#\/?/, '') || 'dashboard').split('/')[0];
 
 function renderHud() {
   const d = derive(state), cur = { daily: 'practice', budget: 'practice', invest: 'practice', quizzes: 'lessons' }[current()] || current();
-  const navIcons = { dashboard: 'home', learn: 'route', practice: 'game', lessons: 'book', world: 'sparkles', profile: 'user' };
+  const navIcons = { dashboard: 'home', learn: 'route', practice: 'game', lessons: 'book', world: 'sparkles', profile: 'user', leaderboard: 'trophy' };
   const menuItems = Object.entries(ROUTES).filter(([, r]) => !r.hidden);
   const mobileLink = (key, label, glyph, detail, tone) => `<a class="mobile-menu-item ${tone} ${key === cur ? 'is-current' : ''}" href="#/${key}" ${key === cur ? 'aria-current="page"' : ''}><span class="mobile-menu-icon">${icon(glyph,22)}</span><span class="mobile-menu-copy"><strong>${label}</strong><small>${detail}</small></span>${icon('arrow',17)}</a>`;
   $('#hud').innerHTML = `<a class="brand" href="#/dashboard"><span class="brand-mark">${icon('sparkles',19)}</span><span>LifeLaunch</span></a>

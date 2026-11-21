@@ -1,6 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut } from 'https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, deleteDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, serverTimestamp, collection, query, orderBy, limit, onSnapshot } from 'https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js';
 import { firebaseConfig } from '../firebase-config.js';
 
 const app = initializeApp(firebaseConfig);
@@ -40,4 +40,9 @@ export function writeProgress(uid, progress) {
 
 export function deleteProgress(uid) {
   return deleteDoc(doc(db, 'users', uid));
+}
+
+export function watchLeaderboard(onChange, onError) {
+  const board = query(collection(db, 'leaderboard'), orderBy('xp', 'desc'), limit(50));
+  return onSnapshot(board, snapshot => onChange(snapshot.docs.map(entry => ({ id: entry.id, ...entry.data() }))), onError);
 }

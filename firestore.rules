@@ -11,7 +11,7 @@ service cloud.firestore {
       allow delete: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Leaderboard records will be written by trusted server code in a later step.
+    // Published entries are opt-in and written only by the Admin SDK trigger.
     match /leaderboard/{entryId} {
       allow read: if true;
       allow write: if false;

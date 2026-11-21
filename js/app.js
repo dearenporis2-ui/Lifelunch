@@ -108,7 +108,7 @@ const ROUTES = {
   invest: { label: 'Invest', fn: renderInvest, hidden: true },
   world: { label: 'World', fn: async (root, ctx) => {
     const rid = root.dataset.rid;
-    const { renderWorld } = await import('./modules/world.js');
+    const { renderWorld } = await import('./modules/world-preview.js');
     if (root.dataset.rid === rid) renderWorld(root, ctx);
   } },
   profile: { label: 'Profile', fn: renderProfile }

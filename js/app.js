@@ -12,6 +12,7 @@ import { icon } from './modules/icons.js';
 import { pennySvg, pennyTalk } from './modules/mascot.js';
 import { renderMoneyGarden } from './modules/garden.js';
 import { renderLeaderboard } from './modules/leaderboard.js';
+import { getLanguage, setLanguage, LANGUAGES, t } from './modules/i18n.js';
 
 const KEY = 'lifelaunch.v1';
 const fresh = () => ({ name: 'Player One', avatar: { skin: 'warm', hairStyle: 'swoop', hairColor: 'espresso', outfitStyle: 'hoodie', outfitColor: 'lagoon' }, cash: 500, savings: 0, xp: 0, streak: 0, lastDay: null, lessons: {}, quizResults: {}, studied: {}, path: {}, hearts: 5, heartsAt: Date.now(), goal: null, badges: [], month: 1, draft: null, daily: null, dailyDone: 0, dailyVaults: 0, gardenItems: [], gardenTheme: 'meadow', gardenDecoration: '', perfects: 0, testNoticeSeen: false, tutorialSeen: false, tutorialDone: false, bestScore: 0, history: [] });
@@ -122,7 +123,12 @@ function update(fn) {
   save(); renderHud();
 }
 
-const ctx = { state, update, toast, esc, money, derive, audio };
+const savedLanguage = getLanguage();
+const preferredLanguage = navigator.languages?.some(value => /^fr(?:-|$)/i.test(value)) ? 'fr' : 'en';
+let language = savedLanguage || preferredLanguage;
+let languageChosen = Boolean(savedLanguage);
+document.documentElement.lang = language;
+const ctx = { state, update, toast, esc, money, derive, audio, t: value => t(value, language), get language() { return language; }, setLanguage: value => { language = setLanguage(value); languageChosen = true; route(); } };
 ctx.cloud = {
   state: cloudState,
   createAccount: (...args) => cloudApi?.createAccount(...args),
@@ -238,8 +244,8 @@ function renderHud() {
   const menuItems = Object.entries(ROUTES).filter(([, r]) => !r.hidden);
   const mobileLink = (key, label, glyph, detail, tone) => `<a class="mobile-menu-item ${tone} ${key === cur ? 'is-current' : ''}" href="#/${key}" ${key === cur ? 'aria-current="page"' : ''}><span class="mobile-menu-icon">${icon(glyph,22)}</span><span class="mobile-menu-copy"><strong>${label}</strong><small>${detail}</small></span>${icon('arrow',17)}</a>`;
   $('#hud').innerHTML = `<a class="brand" href="#/dashboard"><span class="brand-mark">${icon('sparkles',19)}</span><span>LifeLaunch</span></a>
-  <nav class="tabs" aria-label="Main">${menuItems.map(([k, r]) => `<a class="tab" href="#/${k}" ${k === cur ? 'aria-current="page"' : ''}>${icon(navIcons[k],18)}<span>${r.label}</span></a>`).join('')}</nav>
-  <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span><span></span></button>
+  <nav class="tabs" aria-label="${ctx.t('Main')}">${menuItems.map(([k, r]) => `<a class="tab" href="#/${k}" ${k === cur ? 'aria-current="page"' : ''}>${icon(navIcons[k],18)}<span>${ctx.t(r.label)}</span></a>`).join('')}</nav>
+  <button class="nav-toggle" id="nav-toggle" type="button" aria-label="${ctx.t('Open navigation menu')}" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span><span></span></button>
   <div class="hud-stats"><span class="chip hearts" title="Hearts">♥ ${heartsNow(state)}</span><span class="chip cash">${money(state.cash)}</span><span class="chip xp hud-xp"><b>Lv ${d.level}</b>${state.xp} XP</span>
   <details class="music-settings ${audio.musicEnabled ? 'music-on' : ''}"><summary class="icon music-summary" title="Music settings" aria-label="Music settings">${icon('music',18)}</summary><div class="music-panel"><label class="music-switch"><span><b>Menu music</b><small>Choose a soundtrack</small></span><input id="music-toggle" type="checkbox" ${audio.musicEnabled ? 'checked' : ''}></label><div class="music-track-picker"><span class="music-picker-label">YOUR SOUNDTRACK</span><div class="music-track-list" role="group" aria-label="Choose menu music">${MUSIC_TRACKS.map(track => `<button type="button" class="music-track-choice" data-music-track="${track.id}" aria-pressed="${audio.musicTrackId === track.id}"><span class="music-track-number">${track.id.slice(-1)}</span><span class="music-track-copy"><b>${track.name}</b><small>${audio.loadedMusicTracks.has(track.id) ? 'Ready to play' : 'Tap to download'}</small></span>${audio.musicTrackId === track.id ? icon('check',15) : ''}</button>`).join('')}</div></div><label class="music-volume"><span>Volume</span><input id="music-volume" type="range" min="0" max="0.35" step="0.01" value="${audio.musicVolume}"></label><small class="music-hint">Only a chosen soundtrack downloads. Music pauses during lessons.</small></div></details>
   <button class="icon theme-toggle" id="theme-toggle" title="${darkTheme ? 'Switch to light theme' : 'Switch to dark theme'}" aria-label="${darkTheme ? 'Switch to light theme' : 'Switch to dark theme'}" aria-pressed="${darkTheme}"><span class="theme-icon">${icon(darkTheme ? 'sun' : 'moon',18)}</span></button><button class="icon" id="mute" title="${audio.muted ? 'Turn sound on' : 'Turn sound off'}" aria-label="${audio.muted ? 'Turn sound on' : 'Turn sound off'}" aria-pressed="${audio.muted}">${icon(audio.muted ? 'volumeX' : 'volume',18)}</button></div>
@@ -247,16 +253,29 @@ function renderHud() {
     <button class="mobile-menu-scrim" type="button" data-menu-close aria-label="Close navigation menu"></button>
     <section class="mobile-menu-panel" role="dialog" aria-modal="true" aria-label="LifeLaunch navigation">
       <div class="menu-grabber" aria-hidden="true"></div>
-      <div class="mobile-menu-heading"><div><span class="section-kicker">YOUR NEXT MOVE</span><h2>Where to?</h2></div><span class="menu-level">${icon('sparkles',15)} LV ${d.level}</span></div>
-      <nav class="mobile-menu-grid" aria-label="Main navigation">${mobileLink('dashboard','Home','home','Your launchpad','menu-home')}${mobileLink('learn','Learn','route','Pick up your path','menu-learn')}${mobileLink('practice','Practice','game','Play and build skills','menu-practice')}${mobileLink('lessons','Library','book','Browse all lessons','menu-library')}${mobileLink('world','Your World','sparkles','Explore your little neighborhood','menu-world')}${mobileLink('profile','Profile','user','Your progress and badges','menu-profile')}</nav>
-      <div class="mobile-quick-title"><span class="section-kicker">QUICK PLAYS</span><span>Little wins, right now</span></div>
-      <div class="mobile-quick-links"><a href="#/daily" class="quick-link">${icon('trophy',18)} Mystery vault ${icon('arrow',15)}</a><a href="#/budget" class="quick-link">${icon('wallet',18)} Budget month ${icon('arrow',15)}</a><a href="#/invest" class="quick-link">${icon('chart',18)} Invest years ${icon('arrow',15)}</a></div>
-      <div class="mobile-menu-footer"><span class="menu-spark">${icon('sparkles',16)}</span><span>Small steps. Big future energy.</span><span class="menu-xp">${state.xp} XP</span><button class="menu-theme-toggle" id="theme-toggle-menu" type="button" aria-label="${darkTheme ? 'Switch to light theme' : 'Switch to dark theme'}" aria-pressed="${darkTheme}"><span class="theme-icon">${icon(darkTheme ? 'sun' : 'moon',17)}</span><span class="theme-label">${darkTheme ? 'Light theme' : 'Dark theme'}</span></button></div>
+      <div class="mobile-menu-heading"><div><span class="section-kicker">${ctx.t('Your next move')}</span><h2>${ctx.t('Where to?')}</h2></div><span class="menu-level">${icon('sparkles',15)} LV ${d.level}</span></div>
+      <nav class="mobile-menu-grid" aria-label="${ctx.t('Main navigation')}">${mobileLink('dashboard',ctx.t('Home'),'home',ctx.t('Your launchpad'),'menu-home')}${mobileLink('learn',ctx.t('Learn'),'route',ctx.t('Pick up your path'),'menu-learn')}${mobileLink('practice',ctx.t('Practice'),'game',ctx.t('Play and build skills'),'menu-practice')}${mobileLink('lessons',ctx.t('Library'),'book',ctx.t('Browse all lessons'),'menu-library')}${mobileLink('world',ctx.t('Your World'),'sparkles',ctx.t('Explore your little neighborhood'),'menu-world')}${mobileLink('profile',ctx.t('Profile'),'user',ctx.t('Your progress and badges'),'menu-profile')}</nav>
+      <div class="mobile-quick-title"><span class="section-kicker">${ctx.t('Quick plays')}</span><span>${ctx.t('Little wins, right now')}</span></div>
+      <div class="mobile-quick-links"><a href="#/daily" class="quick-link">${icon('trophy',18)} ${ctx.t('Mystery vault')} ${icon('arrow',15)}</a><a href="#/budget" class="quick-link">${icon('wallet',18)} ${ctx.t('Budget month')} ${icon('arrow',15)}</a><a href="#/invest" class="quick-link">${icon('chart',18)} ${ctx.t('Invest years')} ${icon('arrow',15)}</a></div>
+      <div class="mobile-menu-footer"><span class="menu-spark">${icon('sparkles',16)}</span><span>${ctx.t('Small steps. Big future energy.')}</span><span class="menu-xp">${state.xp} XP</span><button class="menu-theme-toggle" id="theme-toggle-menu" type="button" aria-label="${ctx.t(darkTheme ? 'Switch to light theme' : 'Switch to dark theme')}" aria-pressed="${darkTheme}"><span class="theme-icon">${icon(darkTheme ? 'sun' : 'moon',17)}</span><span class="theme-label">${ctx.t(darkTheme ? 'Light theme' : 'Dark theme')}</span></button><button class="menu-language-toggle" type="button" data-open-language>${ctx.t('Language')}: ${language.toUpperCase()}</button></div>
     </section>
   </div>`;
   // Keep the fixed sheet outside the sticky, backdrop-filtered header. A filtered
   // ancestor becomes the containing block for fixed descendants in modern browsers.
   document.body.append($('#mobile-menu'));
+}
+
+function showLanguagePrompt(force = false) {
+  if ((!force && languageChosen) || document.querySelector('.language-setup-overlay')) return;
+  const overlay = document.createElement('div'); overlay.className = 'language-setup-overlay';
+  overlay.innerHTML = `<section class="language-setup-card" role="dialog" aria-modal="true" aria-labelledby="language-setup-title" aria-describedby="language-setup-copy"><span class="language-setup-mark" aria-hidden="true">文</span><span class="section-kicker">LIFELAUNCH</span><h1 id="language-setup-title">${ctx.t('Choose your language')}</h1><p id="language-setup-copy">${ctx.t('You can change this later in your profile settings.')}</p><div class="language-setup-options" role="group" aria-label="${ctx.t('Select a language to get started')}">${LANGUAGES.map(item => `<button type="button" class="language-setup-option ${language === item.id ? 'is-selected' : ''}" data-set-language="${item.id}" aria-pressed="${language === item.id}"><span aria-hidden="true">${item.flag}</span><span>${item.native}</span><span aria-hidden="true">→</span></button>`).join('')}</div><p class="language-setup-note"><strong>${ctx.t('French interface beta')}</strong><br>${ctx.t('Some lesson explanations and quiz questions are still in English.')}</p>${force ? `<button type="button" class="language-setup-cancel" data-close-language>${ctx.t('Not now')}</button>` : ''}</section>`;
+  document.body.append(overlay);
+  const hud = $('#hud'), view = $('#view'); hud?.setAttribute('inert', ''); view?.setAttribute('inert', ''); document.body.classList.add('language-setup-open');
+  const choose = value => {
+    language = setLanguage(value); languageChosen = true; overlay.remove(); hud?.removeAttribute('inert'); view?.removeAttribute('inert'); document.body.classList.remove('language-setup-open'); route();
+  };
+  overlay.addEventListener('click', event => { const button = event.target.closest('[data-set-language]'); if (button) choose(button.dataset.setLanguage); if (event.target.closest('[data-close-language]')) { overlay.remove(); hud?.removeAttribute('inert'); view?.removeAttribute('inert'); document.body.classList.remove('language-setup-open'); } });
+  overlay.querySelector(`[data-set-language="${language}"]`)?.focus();
 }
 
 function closeMobileMenu(restoreFocus = false) {
@@ -291,19 +310,19 @@ async function renderDashboard(root) {
   const lessonPct = idx?.total ? Math.round(doneN / idx.total * 100) : 0;
   const moneyGarden = renderMoneyGarden(doneN, idx?.total || 30, state);
   root.innerHTML = `<div class="stack dashboard">
-  <section class="hero dashboard-hero"><div class="hero-copy"><span class="hero-eyebrow"><i aria-hidden="true">✦</i> YOUR MONEY JOURNEY</span><h1>Welcome back, ${esc(state.name)} <span class="hero-wave" aria-hidden="true">✦</span></h1><p class="lede">Every small lesson is a step toward a more confident future.</p><a class="btn hero-cta" href="#/learn">Continue learning <span aria-hidden="true">→</span></a></div>
+  <section class="hero dashboard-hero"><div class="hero-copy"><span class="hero-eyebrow"><i aria-hidden="true">✦</i> ${ctx.t('YOUR MONEY JOURNEY')}</span><h1>${ctx.t('Welcome back,')} ${esc(state.name)} <span class="hero-wave" aria-hidden="true">✦</span></h1><p class="lede">${ctx.t('Every small lesson is a step toward a more confident future.')}</p><a class="btn hero-cta" href="#/learn">${ctx.t('Continue learning')} <span aria-hidden="true">→</span></a></div>
     <div class="hero-progress"><div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-track" cx="60" cy="60" r="52"/>
     <circle class="ring-fill" id="rf" cx="60" cy="60" r="52" style="stroke-dasharray:${C};stroke-dashoffset:${C}"/></svg>
     <div class="ring-core"><strong>${d.level}</strong><span>${d.tier}</span></div></div><div class="hero-progress-copy"><span>LEVEL ${d.level}</span><strong>${d.toNext} XP to level ${d.level + 1}</strong><div class="bar"><i style="width:${d.pct}%"></i></div></div></div>
     <div class="hero-orbit hero-orbit-one" aria-hidden="true">✦</div><div class="hero-orbit hero-orbit-two" aria-hidden="true">●</div></section>
-  <aside class="tester-community"><span class="tester-community-icon" aria-hidden="true">${icon('messageCircle',21)}</span><div class="tester-community-copy"><span class="section-kicker">LIFELAUNCH TESTERS</span><strong>Help shape what we build next.</strong><p>Join the optional WhatsApp group for test updates, feedback, and behind-the-scenes progress.</p></div><a class="tester-community-link" href="https://chat.whatsapp.com/EC70BqrRPX145Da51xxDFn" target="_blank" rel="noopener noreferrer">Join the WhatsApp group <span aria-hidden="true">↗</span></a></aside>
-  <div class="tiles dashboard-tiles"><div class="tile gold"><span><i class="tile-icon">${icon('wallet',19)}</i> CASH WALLET</span><strong>${money(state.cash)}</strong><small>Your learning wallet</small></div>
-    <div class="tile violet"><span><i class="tile-icon">${icon('chart',19)}</i> NET WORTH</span><strong>${money(d.netWorth)}</strong><small>Cash + savings</small></div>
-    <div class="tile coral streak-card ${celebrateStreak ? 'streak-ignite' : ''}"><span><i class="tile-icon">${icon('flame',19)}</i> DAILY STREAK</span><strong>${state.streak} ${state.streak === 1 ? 'day' : 'days'}</strong><small>${celebrateStreak ? (state.streak > 1 ? 'Streak kept alive today!' : 'Your new streak starts today!') : 'Keep your rhythm going'}</small></div>
-    <div class="tile mint"><span><i class="tile-icon">${icon('cap',19)}</i> LESSONS FINISHED</span><strong>${all.filter(l => studied(state, l.id)).length}<em> / ${idx ? idx.total : '–'}</em></strong><small>${lessonPct}% of your path explored</small></div></div>
+  <aside class="tester-community"><span class="tester-community-icon" aria-hidden="true">${icon('messageCircle',21)}</span><div class="tester-community-copy"><span class="section-kicker">${ctx.t('LIFELAUNCH TESTERS')}</span><strong>${ctx.t('Help shape what we build next.')}</strong><p>${ctx.t('Join the optional WhatsApp group for test updates, feedback, and behind-the-scenes progress.')}</p></div><a class="tester-community-link" href="https://chat.whatsapp.com/EC70BqrRPX145Da51xxDFn" target="_blank" rel="noopener noreferrer">${ctx.t('Join the WhatsApp group')} <span aria-hidden="true">↗</span></a></aside>
+  <div class="tiles dashboard-tiles"><div class="tile gold"><span><i class="tile-icon">${icon('wallet',19)}</i> ${ctx.t('CASH WALLET')}</span><strong>${money(state.cash)}</strong><small>${ctx.t('Your learning wallet')}</small></div>
+    <div class="tile violet"><span><i class="tile-icon">${icon('chart',19)}</i> ${ctx.t('NET WORTH')}</span><strong>${money(d.netWorth)}</strong><small>${ctx.t('Cash + savings')}</small></div>
+    <div class="tile coral streak-card ${celebrateStreak ? 'streak-ignite' : ''}"><span><i class="tile-icon">${icon('flame',19)}</i> ${ctx.t('DAILY STREAK')}</span><strong>${state.streak} ${state.streak === 1 ? (language === 'fr' ? 'jour' : 'day') : (language === 'fr' ? 'jours' : 'days')}</strong><small>${celebrateStreak ? (state.streak > 1 ? 'Streak kept alive today!' : 'Your new streak starts today!') : ctx.t('Keep your rhythm going')}</small></div>
+    <div class="tile mint"><span><i class="tile-icon">${icon('cap',19)}</i> ${ctx.t('LESSONS FINISHED')}</span><strong>${all.filter(l => studied(state, l.id)).length}<em> / ${idx ? idx.total : '–'}</em></strong><small>${lessonPct}% ${ctx.t('of your path explored')}</small></div></div>
   ${moneyGarden}
   <div class="grid dashboard-panels">
-  <section class="card daily-goal-card"><div class="panel-heading"><span class="panel-icon goal-icon">${icon('target',21)}</span><h2>Daily goal</h2><span class="reward-pill">+${GOAL_XP} XP</span></div><p>${gl.done ? 'Goal reached. Nice work!' : 'A little progress today goes a long way.'}</p><div class="bar goal-bar" role="progressbar" aria-label="Daily XP goal" aria-valuenow="${Math.min(gl.xp, GOAL_XP)}" aria-valuemin="0" aria-valuemax="${GOAL_XP}"><i style="width:${Math.min(100, gl.xp / GOAL_XP * 100)}%"></i></div><small class="goal-caption">${gl.xp} of ${GOAL_XP} XP ${gl.done ? 'earned today — you did it!' : 'earned today'}</small><div class="goal-status ${gl.done ? 'complete' : ''}"><span>${icon(gl.done ? 'check' : 'sparkles',16)}</span>${gl.done ? 'You showed up for yourself today.' : 'Complete a lesson or practice to reach your goal.'}</div></section>
+  <section class="card daily-goal-card"><div class="panel-heading"><span class="panel-icon goal-icon">${icon('target',21)}</span><h2>${ctx.t('Daily goal')}</h2><span class="reward-pill">+${GOAL_XP} XP</span></div><p>${gl.done ? ctx.t('Goal reached. Nice work!') : ctx.t('A little progress today goes a long way.')}</p><div class="bar goal-bar" role="progressbar" aria-label="${ctx.t('Daily goal')}" aria-valuenow="${Math.min(gl.xp, GOAL_XP)}" aria-valuemin="0" aria-valuemax="${GOAL_XP}"><i style="width:${Math.min(100, gl.xp / GOAL_XP * 100)}%"></i></div><small class="goal-caption">${gl.xp} of ${GOAL_XP} XP ${gl.done ? 'earned today — you did it!' : ctx.t('earned today')}</small><div class="goal-status ${gl.done ? 'complete' : ''}"><span>${icon(gl.done ? 'check' : 'sparkles',16)}</span>${gl.done ? ctx.t('You showed up for yourself today.') : ctx.t('Complete a lesson or practice to reach your goal.')}</div></section>
   <section class="card next-card"><div class="panel-heading"><span class="next-penny" aria-hidden="true">${pennySvg('penny-dashboard')}</span><span class="section-kicker">PENNY’S PICK</span><span class="time-pill">5 min</span></div>${next
     ? `<h2>${next.title}</h2><p>${next.blurb}</p><p class="penny-tip penny-talk">${pennyTalk(pennyTip)}</p><a class="btn primary next-cta" href="#/learn">Continue your path ${icon('arrow',18)}</a>`
     : idx ? `<h2>Ready for your next milestone?</h2><p>All lessons cleared. Close more budget months to keep growing your net worth.</p><a class="btn primary next-cta" href="#/budget">Plan month ${state.month} ${icon('arrow',18)}</a>`
@@ -321,16 +340,16 @@ function showTestNotice() {
   overlay.className = 'preview-overlay';
   overlay.innerHTML = `<section class="preview-card" role="dialog" aria-modal="true" aria-labelledby="preview-title" aria-describedby="preview-summary">
     <div class="preview-mark" aria-hidden="true">${icon('sparkles',25)}</div>
-    <span class="preview-badge">EARLY ACCESS <i></i> TEST BUILD</span>
-    <h1 id="preview-title">You’re trying LifeLaunch early!</h1>
-    <p id="preview-summary" class="preview-summary">This is a test version of the platform. A few important things to know before you jump in:</p>
+    <span class="preview-badge">${ctx.t('EARLY ACCESS')} <i></i> ${ctx.t('TEST BUILD')}</span>
+    <h1 id="preview-title">${ctx.t('You’re trying LifeLaunch early!')}</h1>
+    <p id="preview-summary" class="preview-summary">${ctx.t('This is a test version of the platform. A few important things to know before you jump in:')}</p>
     <ul class="preview-facts">
-      <li><span class="preview-fact-icon">${icon('device',18)}</span><span><strong>Guest progress saves in this browser</strong><small>Create an account from your profile to sync your progress and continue on another device.</small></span></li>
-      <li><span class="preview-fact-icon">${icon('user',18)}</span><span><strong>Accounts are available</strong><small>Sign in with email or Google whenever you’re ready. You can keep playing as a guest too.</small></span></li>
-      <li><span class="preview-fact-icon">${icon('shield',18)}</span><span><strong>Use pretend details</strong><small>LifeLaunch is a learning prototype. Don’t enter sensitive personal or financial information.</small></span></li>
+      <li><span class="preview-fact-icon">${icon('device',18)}</span><span><strong>${ctx.t('Guest progress saves in this browser')}</strong><small>${ctx.t('Create an account from your profile to sync your progress and continue on another device.')}</small></span></li>
+      <li><span class="preview-fact-icon">${icon('user',18)}</span><span><strong>${ctx.t('Accounts are available')}</strong><small>${ctx.t('Sign in with email or Google whenever you’re ready. You can keep playing as a guest too.')}</small></span></li>
+      <li><span class="preview-fact-icon">${icon('shield',18)}</span><span><strong>${ctx.t('Use pretend details')}</strong><small>${ctx.t('LifeLaunch is a learning prototype. Don’t enter sensitive personal or financial information.')}</small></span></li>
     </ul>
-    <button class="btn primary preview-continue" type="button">Got it — show me around ${icon('arrow',18)}</button>
-    <p class="preview-footnote">Thanks for helping us test LifeLaunch. Things may change as we build.</p>
+    <button class="btn primary preview-continue" type="button">${ctx.t('Got it — show me around')} ${icon('arrow',18)}</button>
+    <p class="preview-footnote">${ctx.t('Thanks for helping us test LifeLaunch. Things may change as we build.')}</p>
   </section>`;
   document.body.append(overlay);
   const button = overlay.querySelector('.preview-continue'), hud = $('#hud'), view = $('#view');
@@ -422,13 +441,15 @@ function route() {
   } catch (err) { fail(err); }
   window.scrollTo(0, 0);
   if (name !== 'p') {
-    if (!state.testNoticeSeen) setTimeout(showTestNotice, 650);
+    if (!languageChosen) setTimeout(() => { if (current() === name) showLanguagePrompt(); }, 350);
+    else if (!state.testNoticeSeen) setTimeout(showTestNotice, 650);
     else if (!state.tutorialSeen && name !== 'world') setTimeout(() => { if (current() === name) ctx.tour(); }, 900);
     if (name === 'dashboard') setTimeout(showAccountReminder, 3800);
   }
 }
 
 document.addEventListener('click', e => {
+  if (e.target.closest('[data-open-language]')) { closeMobileMenu(); showLanguagePrompt(true); return; }
   const musicTrack = e.target.closest('[data-music-track]');
   if (musicTrack) {
     const settings = musicTrack.closest('.music-settings'), buttons = [...settings.querySelectorAll('[data-music-track]')], hint = settings.querySelector('.music-hint');

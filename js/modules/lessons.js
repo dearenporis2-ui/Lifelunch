@@ -4,8 +4,10 @@ import { mountActivity, ACTIVITY_KINDS } from './activities.js';
 import { lessonCard, questionCard } from './lesson-ui.js';
 import { icon } from './icons.js';
 import { guardSessionFocus } from './focus-guard.js';
+import { SUBJECT_VIDEO_GUIDES } from '../data/subjectVideos.js';
 
 const ERR = '<div class="empty">Could not load content. Check your connection and refresh.</div>';
+let activeSubjectVideoCleanup = null;
 const STUDY_XP = 20;
 export const shuffle = (a, rnd = Math.random) => a.map(v => [rnd(), v]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
 const today = () => new Date().toLocaleDateString('en-CA');
@@ -34,22 +36,62 @@ async function fetchLesson(ctx, id) {
     return { l, next };
   } catch { ctx.toast('Could not load that lesson. Check your connection.', 'bad'); return null; }
 }
-const trackHead = (t, n, label) => `<div class="track-head"><div class="track-title"><span class="track-icon">${icon('book',19)}</span><div><h2>${t.title}</h2><p>${t.blurb}</p></div></div><span class="chip">${n} of ${t.lessons.length} ${label}</span></div>
+const trackHead = (t, n, label, tr = value => value) => `<div class="track-head"><div class="track-title"><span class="track-icon">${icon('book',19)}</span><div><h2>${t.title}</h2><p>${t.blurb}</p></div></div><span class="chip">${n} ${tr('of')} ${t.lessons.length} ${tr(label)}</span></div>
   <div class="bar"><i style="width:${n / t.lessons.length * 100}%"></i></div>`;
+
+const htmlText = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+const subjectVideoList = (track, tr = value => value) => {
+  const videos = SUBJECT_VIDEO_GUIDES[track.id] || [];
+  if (!videos.length) return '';
+  return `<details class="subject-video-guides"><summary><span class="subject-video-summary-icon">${icon('play',16)}</span><span class="subject-video-summary-copy"><strong>${tr('Video guides')}</strong><small>${tr('Extra help for')} ${htmlText(track.title)}</small></span><span class="subject-video-count">${videos.length}</span></summary><div class="subject-video-grid">${videos.map((video, index) => `<button type="button" class="subject-video-card" data-subject-video="${video.id}"><span class="subject-video-art" aria-hidden="true"><span class="subject-video-play">▶</span><span class="subject-video-number">${tr('GUIDE')} ${String(index + 1).padStart(2, '0')}</span></span><span class="subject-video-title">${htmlText(video.title)}</span><span class="subject-video-action">${tr('Watch')} <span aria-hidden="true">→</span></span></button>`).join('')}</div></details>`;
+};
+
+export function openSubjectVideo(video, trackTitle, returnFocusTo = document.activeElement, tr = value => value) {
+  activeSubjectVideoCleanup?.();
+  const overlay = document.createElement('div'); overlay.className = 'subject-video-overlay'; overlay.setAttribute('data-subject-video-overlay', '');
+  const dialog = document.createElement('section'); dialog.className = 'subject-video-dialog'; dialog.setAttribute('role', 'dialog'); dialog.setAttribute('aria-modal', 'true'); dialog.setAttribute('aria-labelledby', 'subject-video-title');
+  dialog.innerHTML = `<div class="subject-video-dialog-head"><div><span class="section-kicker">${htmlText(trackTitle)} · ${tr('VIDEO GUIDE')}</span><h2 id="subject-video-title"></h2></div><button type="button" class="subject-video-close" aria-label="${tr('Close video')}">×</button></div><div class="subject-video-player"></div><p class="subject-video-note">${tr('Video by its original creator. Use the player controls to pause or turn on captions.')}</p>`;
+  dialog.querySelector('#subject-video-title').textContent = video.title;
+  const frame = document.createElement('iframe');
+  const params = new URLSearchParams({ autoplay: '1', rel: '0', playsinline: '1' }); if (video.playlist) params.set('list', video.playlist);
+  frame.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(video.id)}?${params}`;
+  frame.title = video.title; frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'; frame.referrerPolicy = 'strict-origin-when-cross-origin'; frame.allowFullscreen = true;
+  dialog.querySelector('.subject-video-player').append(frame); overlay.append(dialog); document.body.append(overlay); document.body.classList.add('subject-video-open');
+  const opener = returnFocusTo, closeButton = dialog.querySelector('.subject-video-close');
+  const cleanup = () => {
+    overlay.remove(); document.body.classList.remove('subject-video-open'); document.removeEventListener('keydown', onKeyDown); window.removeEventListener('hashchange', cleanup);
+    if (activeSubjectVideoCleanup === cleanup) activeSubjectVideoCleanup = null;
+    if (opener?.isConnected) opener.focus();
+  };
+  const onKeyDown = event => { if (event.key === 'Escape') { event.preventDefault(); cleanup(); } };
+  closeButton.addEventListener('click', cleanup); overlay.addEventListener('click', event => { if (event.target === overlay) cleanup(); });
+  document.addEventListener('keydown', onKeyDown); window.addEventListener('hashchange', cleanup); activeSubjectVideoCleanup = cleanup; closeButton.focus();
+}
 
 /* ---------- Lessons tab: study material only ---------- */
 export async function renderLessons(root, ctx) {
   const rid = root.dataset.rid, { state } = ctx;
   let idx; try { idx = await loadIndex(); } catch { root.innerHTML = ERR; return; }
   if (root.dataset.rid !== rid) return;
-  root.innerHTML = `<div class="page-shell"><header class="page-intro"><span class="page-mark library-mark">${icon('book',26)}</span><div><span class="section-kicker">YOUR LEARNING LIBRARY</span><h1>Lessons</h1><p class="lede">${idx.total} lessons across ${idx.tracks.length} subjects. Start with any subject that interests you; finish its lessons in order to unlock what comes next. Quizzes unlock after each lesson.</p></div></header>` +
-    idx.tracks.map(t => `<section class="track">${trackHead(t, t.lessons.filter(l => studied(state, l.id)).length, 'studied')}
+  const tr = ctx.t;
+  root.innerHTML = `<div class="page-shell"><header class="page-intro"><span class="page-mark library-mark">${icon('book',26)}</span><div><span class="section-kicker">${tr('YOUR LEARNING LIBRARY')}</span><h1>${tr('Lessons')}</h1><p class="lede">${idx.total} ${tr('lessons across')} ${idx.tracks.length} ${tr('subjects. Start with any subject that interests you; finish its lessons in order to unlock what comes next. Quizzes unlock after each lesson.')}</p></div></header>` +
+    idx.tracks.map(t => `<section class="track">${trackHead(t, t.lessons.filter(l => studied(state, l.id)).length, 'studied', tr)}${subjectVideoList(t, tr)}
       <div class="lessons">${t.lessons.map((l, i) => {
         const open = i === 0 || studied(state, t.lessons[i - 1].id);
         return `<button class="lrow" data-start="${l.id}" ${open ? '' : 'disabled'}><span class="lesson-row-icon">${icon(studied(state, l.id) ? 'bookCheck' : open ? 'play' : 'lock',19)}</span><span class="lesson-row-copy"><strong>${l.title}</strong><small>${l.blurb}</small></span>
-        <span class="meta lesson-row-meta">${l.v ? `<span>${icon('play',14)} Video</span>` : ''}<span>${studied(state, l.id) ? `${icon('check',15)} Studied` : open ? 'Start' : `${icon('lock',14)} Locked`}</span></span></button>`;
+        <span class="meta lesson-row-meta">${l.v ? `<span>${icon('play',14)} ${tr('Video')}</span>` : ''}<span>${studied(state, l.id) ? `${icon('check',15)} ${tr('Studied')}` : open ? tr('Start') : `${icon('lock',14)} ${tr('Locked')}`}</span></span></button>`;
       }).join('')}</div></section>`).join('') + '</div>';
-  root.onclick = e => { const id = e.target.closest('[data-start]')?.dataset.start; if (id) openLesson(root, ctx, id); };
+  root.onclick = e => {
+    const videoCard = e.target.closest('[data-subject-video]');
+    if (videoCard) {
+      const videoId = videoCard.dataset.subjectVideo;
+      const track = idx.tracks.find(item => (SUBJECT_VIDEO_GUIDES[item.id] || []).some(video => video.id === videoId));
+      const video = SUBJECT_VIDEO_GUIDES[track?.id]?.find(item => item.id === videoId);
+      if (video && track) openSubjectVideo(video, track.title, videoCard, tr);
+      return;
+    }
+    const id = e.target.closest('[data-start]')?.dataset.start; if (id) openLesson(root, ctx, id);
+  };
   if (ctx.pendingLesson) { const id = ctx.pendingLesson; ctx.pendingLesson = null; openLesson(root, ctx, id); }
 }
 
@@ -105,13 +147,14 @@ export async function renderQuizzes(root, ctx) {
   let idx; try { idx = await loadIndex(); } catch { root.innerHTML = ERR; return; }
   if (root.dataset.rid !== rid) return;
   const dailyDone = state.daily?.day === today();
-  root.innerHTML = `<div class="page-shell"><header class="page-intro"><span class="page-mark quiz-mark">${icon('target',26)}</span><div><span class="section-kicker">CHECK WHAT STUCK</span><h1>Quizzes</h1><p class="lede">Test what you have learned. Each quiz unlocks when you finish its lesson.</p></div></header>
-    <section class="card daily-quiz-card"><span class="panel-icon challenge-icon">${icon('trophy',21)}</span><div><h2>Daily challenge</h2><p>${dailyDone ? 'Done for today. A new set arrives tomorrow.' : 'Three quick questions for bonus XP and cash.'}</p></div>${dailyDone ? '' : `<a class="btn primary" href="#/daily">Start challenge ${icon('arrow',17)}</a>`}</section>` +
-    idx.tracks.map(t => `<section class="track" style="margin-top:28px">${trackHead(t, t.lessons.filter(l => quizResult(state, l.id)).length, 'passed')}
+  const tr = ctx.t;
+  root.innerHTML = `<div class="page-shell"><header class="page-intro"><span class="page-mark quiz-mark">${icon('target',26)}</span><div><span class="section-kicker">${tr('CHECK WHAT STUCK')}</span><h1>${tr('Quizzes')}</h1><p class="lede">${tr('Test what you have learned. Each quiz unlocks when you finish its lesson.')}</p></div></header>
+    <section class="card daily-quiz-card"><span class="panel-icon challenge-icon">${icon('trophy',21)}</span><div><h2>${tr('Daily challenge')}</h2><p>${dailyDone ? tr('Done for today. A new set arrives tomorrow.') : tr('Three quick questions for bonus XP and cash.')}</p></div>${dailyDone ? '' : `<a class="btn primary" href="#/daily">${tr('Start challenge')} ${icon('arrow',17)}</a>`}</section>` +
+    idx.tracks.map(t => `<section class="track" style="margin-top:28px">${trackHead(t, t.lessons.filter(l => quizResult(state, l.id)).length, 'passed', tr)}
       <div class="lessons">${t.lessons.map(l => {
         const d = quizResult(state, l.id), ok = studied(state, l.id);
-        return `<button class="lrow" data-quiz="${l.id}" ${ok ? '' : 'disabled'}><span class="lesson-row-icon">${icon(ok ? 'target' : 'lock',19)}</span><span class="lesson-row-copy"><strong>${l.title}</strong><small>${l.n} questions${ok ? '' : '. Study the lesson first.'}</small></span>
-        <span class="meta lesson-row-meta"><span>${d ? `${icon('trophy',14)} Best ${d.best}% · Retake` : ok ? `${icon('sparkles',14)} Unlocked · Not taken` : `${icon('lock',14)} Locked`}</span></span></button>`;
+        return `<button class="lrow" data-quiz="${l.id}" ${ok ? '' : 'disabled'}><span class="lesson-row-icon">${icon(ok ? 'target' : 'lock',19)}</span><span class="lesson-row-copy"><strong>${l.title}</strong><small>${l.n} ${tr('questions')}${ok ? '' : `. ${tr('Study the lesson first.')}`}</small></span>
+        <span class="meta lesson-row-meta"><span>${d ? `${icon('trophy',14)} ${tr('Best')} ${d.best}% · ${tr('Retake')}` : ok ? `${icon('sparkles',14)} ${tr('Unlocked')} · ${tr('Not taken')}` : `${icon('lock',14)} ${tr('Locked')}`}</span></span></button>`;
       }).join('')}</div></section>`).join('') + '</div>';
   root.onclick = async e => {
     const id = e.target.closest('[data-quiz]')?.dataset.quiz; if (!id) return;

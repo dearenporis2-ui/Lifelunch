@@ -1,6 +1,7 @@
 import { BADGES } from '../data/gameData.js';
 import { icon } from './icons.js';
 import { AVATAR_PARTS, DEFAULT_AVATAR, avatarSvg, normalizeAvatar } from './avatar.js';
+import { LANGUAGES } from './i18n.js';
 
 const enc = o => btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const dec = s => JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/')))));
@@ -10,28 +11,28 @@ function snapshot(state, d) {
   return { n: state.name, a: normalizeAvatar(state.avatar), l: d.level, t: d.tier, xp: state.xp, nw: Math.round(d.netWorth), st: state.streak, b: state.badges, ls: Object.keys({ ...state.lessons, ...state.studied, ...state.quizResults }).length };
 }
 
-function optionButtons(part, selected, presentation) {
+function optionButtons(part, selected, presentation, tr = value => value) {
   const options = AVATAR_PARTS[part].filter(option => part !== 'hairStyle' || (option.presentation || 'feminine') === presentation);
   return options.map(option => {
     const textual = part === 'hairStyle' || part === 'outfitStyle' || part === 'expression';
     const visual = textual ? '' : `<i class="avatar-swatch ${part === 'hairColor' ? 'hair-swatch' : ''}" style="--avatar-swatch:${option.base}" aria-hidden="true"></i>`;
-    return `<button type="button" class="avatar-option ${selected === option.id ? 'is-selected' : ''} ${textual ? 'avatar-option-text' : ''}" data-avatar-part="${part}" data-avatar-value="${option.id}" aria-label="${option.label}" aria-pressed="${selected === option.id}" title="${option.label}">${visual}${textual ? `<span>${option.label}</span>` : `<span class="sr-only">${option.label}</span>`}</button>`;
+    return `<button type="button" class="avatar-option ${selected === option.id ? 'is-selected' : ''} ${textual ? 'avatar-option-text' : ''}" data-avatar-part="${part}" data-avatar-value="${option.id}" aria-label="${tr(option.label)}" aria-pressed="${selected === option.id}" title="${tr(option.label)}">${visual}${textual ? `<span>${tr(option.label)}</span>` : `<span class="sr-only">${tr(option.label)}</span>`}</button>`;
   }).join('');
 }
 
-function avatarStudioHtml(value, activeTab = 'outfit', savedLabel = 'Saved on this device') {
+function avatarStudioHtml(value, activeTab = 'outfit', savedLabel = 'Saved on this device', tr = value => value) {
   const a = normalizeAvatar(value || DEFAULT_AVATAR);
   const tabs = [['skin','Skin'],['hair','Hair'],['face','Face'],['outfit','Outfit']];
   const panel = activeTab === 'skin'
-    ? `<div class="avatar-panel-heading"><span>Skin tone</span><small>Choose a shade</small></div><div class="avatar-options swatch-options">${optionButtons('skin', a.skin)}</div>`
+    ? `<div class="avatar-panel-heading"><span>${tr('Skin tone')}</span><small>${tr('Choose a shade')}</small></div><div class="avatar-options swatch-options">${optionButtons('skin', a.skin, null, tr)}</div>`
     : activeTab === 'hair'
-      ? `<div class="avatar-panel-heading"><span>Hair</span><small>Pick a style and color</small></div><div class="avatar-style-grid">${optionButtons('hairStyle', a.hairStyle, a.presentation)}</div><div class="avatar-options swatch-options avatar-color-row">${optionButtons('hairColor', a.hairColor)}</div>`
+      ? `<div class="avatar-panel-heading"><span>${tr('Hair')}</span><small>${tr('Pick a style and color')}</small></div><div class="avatar-style-grid">${optionButtons('hairStyle', a.hairStyle, a.presentation, tr)}</div><div class="avatar-options swatch-options avatar-color-row">${optionButtons('hairColor', a.hairColor, null, tr)}</div>`
       : activeTab === 'face'
-        ? `<div class="avatar-panel-heading"><span>Expression</span><small>Choose a mood</small></div><div class="avatar-style-grid expression-grid">${optionButtons('expression', a.expression)}</div>`
-        : `<div class="avatar-panel-heading"><span>Clothing</span><small>Choose a cut and color</small></div><div class="avatar-style-grid outfit-style-grid">${optionButtons('outfitStyle', a.outfitStyle)}</div><div class="avatar-options swatch-options avatar-color-row">${optionButtons('outfitColor', a.outfitColor)}</div>`;
-  return `<div class="avatar-studio-top"><div><span class="section-kicker">YOUR LITTLE LOOK</span><h2>Make it yours</h2><p>Mix a few details and find a look that feels like you.</p></div><span class="avatar-saved">${icon(savedLabel === 'Saved on this device' ? 'device' : 'cloud',14)} ${savedLabel}</span></div>
-    <div class="avatar-studio-body"><div class="avatar-preview-column"><div class="avatar-stage">${avatarSvg(a, 'avatar-art avatar-preview')}<span class="avatar-stage-glint" aria-hidden="true">✦</span></div><div class="avatar-presentation" role="group" aria-label="Character style">${AVATAR_PARTS.presentation.map(option => `<button type="button" data-avatar-presentation="${option.id}" aria-pressed="${a.presentation === option.id}">${option.label}</button>`).join('')}</div></div>
-      <div class="avatar-customizer"><div class="avatar-tabs" role="tablist" aria-label="Avatar options">${tabs.map(([id,label]) => `<button type="button" class="avatar-tab" role="tab" id="avatar-tab-${id}" aria-selected="${activeTab === id}" aria-controls="avatar-panel" data-avatar-tab="${id}">${label}</button>`).join('')}</div>
+        ? `<div class="avatar-panel-heading"><span>${tr('Expression')}</span><small>${tr('Choose a mood')}</small></div><div class="avatar-style-grid expression-grid">${optionButtons('expression', a.expression, null, tr)}</div>`
+        : `<div class="avatar-panel-heading"><span>${tr('Clothing')}</span><small>${tr('Choose a cut and color')}</small></div><div class="avatar-style-grid outfit-style-grid">${optionButtons('outfitStyle', a.outfitStyle, null, tr)}</div><div class="avatar-options swatch-options avatar-color-row">${optionButtons('outfitColor', a.outfitColor, null, tr)}</div>`;
+  return `<div class="avatar-studio-top"><div><span class="section-kicker">${tr('YOUR LITTLE LOOK')}</span><h2>${tr('Make it yours')}</h2><p>${tr('Mix a few details and find a look that feels like you.')}</p></div><span class="avatar-saved">${icon(savedLabel === 'Saved on this device' ? 'device' : 'cloud',14)} ${tr(savedLabel)}</span></div>
+    <div class="avatar-studio-body"><div class="avatar-preview-column"><div class="avatar-stage">${avatarSvg(a, 'avatar-art avatar-preview')}<span class="avatar-stage-glint" aria-hidden="true">✦</span></div><div class="avatar-presentation" role="group" aria-label="${tr('Character style')}">${AVATAR_PARTS.presentation.map(option => `<button type="button" data-avatar-presentation="${option.id}" aria-pressed="${a.presentation === option.id}">${tr(option.label)}</button>`).join('')}</div></div>
+      <div class="avatar-customizer"><div class="avatar-tabs" role="tablist" aria-label="${tr('Avatar options')}">${tabs.map(([id,label]) => `<button type="button" class="avatar-tab" role="tab" id="avatar-tab-${id}" aria-selected="${activeTab === id}" aria-controls="avatar-panel" data-avatar-tab="${id}">${tr(label)}</button>`).join('')}</div>
         <section class="avatar-panel" id="avatar-panel" role="tabpanel" aria-labelledby="avatar-tab-${activeTab}">${panel}</section></div>
     </div>`;
 }
@@ -54,18 +55,19 @@ function cardHtml(p, ctx) {
 export function renderProfile(root, ctx) {
   const { state, derive } = ctx;
   const savedLabel = () => ctx.cloud.state.conflict ? 'Choose which save to keep' : ctx.cloud.state.user ? (ctx.cloud.state.status.startsWith('Syncing') ? 'Syncing your progress…' : 'Synced to your account') : 'Saved on this device';
-  root.innerHTML = `<div class="page-shell"><header class="page-intro"><span class="page-mark profile-mark">${icon('user',26)}</span><div><span class="section-kicker">YOUR PROGRESS, YOURS</span><h1>Your profile</h1><p class="lede">Customize your name, celebrate your milestones, and share your progress.</p></div></header>
-  <div class="profile-layout"><div class="stack profile-settings"><section class="avatar-studio" id="avatar-studio" aria-label="Avatar customization">${avatarStudioHtml(state.avatar, 'outfit', savedLabel())}</section><label class="field">Display name<input id="nm" maxlength="24" value="${ctx.esc(state.name)}"></label>
-  <section class="account-panel" aria-labelledby="account-title"><div class="account-panel-heading"><span class="section-kicker">YOUR ACCOUNT</span><h2 id="account-title">Save across devices</h2><p>Keep your learning progress when you change devices.</p></div>
+  root.innerHTML = `<div class="page-shell"><header class="page-intro"><span class="page-mark profile-mark">${icon('user',26)}</span><div><span class="section-kicker">${ctx.t('YOUR PROGRESS, YOURS')}</span><h1>${ctx.t('Your profile')}</h1><p class="lede">${ctx.t('Customize your name, celebrate your milestones, and share your progress.')}</p></div></header>
+  <div class="profile-layout"><div class="stack profile-settings"><section class="avatar-studio" id="avatar-studio" aria-label="${ctx.t('Avatar customization')}">${avatarStudioHtml(state.avatar, 'outfit', savedLabel(), ctx.t)}</section><label class="field">${ctx.t('Display name')}<input id="nm" maxlength="24" value="${ctx.esc(state.name)}"></label>
+  <section class="language-settings" aria-labelledby="language-title"><div><span class="section-kicker">${ctx.t('PREFERENCES')}</span><h2 id="language-title">${ctx.t('Language')}</h2><p>${ctx.t('Choose the language used in LifeLaunch.')} ${ctx.t('Your language choice is saved on this device.')}</p></div><div class="language-setting-options" role="group" aria-label="${ctx.t('Language')}">${LANGUAGES.map(item => `<button type="button" class="language-setting-option" data-profile-language="${item.id}" aria-pressed="${ctx.language === item.id}"><span aria-hidden="true">${item.flag}</span>${item.native}${ctx.language === item.id ? icon('check',16) : ''}</button>`).join('')}</div></section>
+  <section class="account-panel" aria-labelledby="account-title"><div class="account-panel-heading"><span class="section-kicker">${ctx.t('YOUR ACCOUNT')}</span><h2 id="account-title">${ctx.t('Save across devices')}</h2><p>${ctx.t('Keep your learning progress when you change devices.')}</p></div>
     <p class="account-status" data-account-status role="status">${ctx.esc(ctx.cloud.state.status)}</p>
-    <div class="account-form-wrap"><button class="btn google-auth" type="button" data-google-sign-in><span aria-hidden="true">G</span> Continue with Google</button><div class="account-divider"><span>or use email</span></div>
-    <form class="account-form" id="account-form"><label class="field">Email<input type="email" name="email" autocomplete="email" required maxlength="254"></label><label class="field">Password<input type="password" name="password" autocomplete="current-password" required minlength="6" maxlength="128"></label><div class="account-actions"><button class="btn primary" type="submit">Sign in</button><button class="btn ghost" type="button" data-create-account>Create account</button></div></form></div>
-    <div class="account-signed-in" data-account-user hidden><p>Signed in as <strong data-account-email></strong></p><button class="btn ghost" type="button" data-sign-out>Sign out</button></div>
-    <div class="account-conflict" data-account-conflict hidden><p>There’s progress on this device and in your account. Which save should we keep?</p><div class="account-actions"><button class="btn primary" type="button" data-use-cloud>Use account save</button><button class="btn ghost" type="button" data-use-device>Keep this device save</button></div></div>
+    <div class="account-form-wrap"><button class="btn google-auth" type="button" data-google-sign-in><span aria-hidden="true">G</span> ${ctx.t('Continue with Google')}</button><div class="account-divider"><span>${ctx.t('or use email')}</span></div>
+    <form class="account-form" id="account-form"><label class="field">${ctx.t('Email')}<input type="email" name="email" autocomplete="email" required maxlength="254"></label><label class="field">${ctx.t('Password')}<input type="password" name="password" autocomplete="current-password" required minlength="6" maxlength="128"></label><div class="account-actions"><button class="btn primary" type="submit">${ctx.t('Sign in')}</button><button class="btn ghost" type="button" data-create-account>${ctx.t('Create account')}</button></div></form></div>
+    <div class="account-signed-in" data-account-user hidden><p>${ctx.t('Signed in as')} <strong data-account-email></strong></p><button class="btn ghost" type="button" data-sign-out>${ctx.t('Sign out')}</button></div>
+    <div class="account-conflict" data-account-conflict hidden><p>${ctx.t('There’s progress on this device and in your account. Which save should we keep?')}</p><div class="account-actions"><button class="btn primary" type="button" data-use-cloud>${ctx.t('Use account save')}</button><button class="btn ghost" type="button" data-use-device>${ctx.t('Keep this device save')}</button></div></div>
   </section>
   <div id="card"></div>
-  <div class="actions"><button class="btn primary" id="share">${icon('share',17)} Share profile</button><button class="btn ghost" id="replay">${icon('rotate',17)} Replay tutorial</button><button class="btn danger" id="reset">${icon('trash',17)} Reset progress</button></div></div>
-  <section class="profile-badges"><div class="section-title-row"><div><span class="section-kicker">KEEP COLLECTING</span><h2>All badges</h2></div><span class="badge-count">${state.badges.length} / ${BADGES.length}</span></div><div class="badges">${BADGES.map(b => { const on = state.badges.includes(b.id);
+  <div class="actions"><button class="btn primary" id="share">${icon('share',17)} ${ctx.t('Share profile')}</button><button class="btn ghost" id="replay">${icon('rotate',17)} ${ctx.t('Replay tutorial')}</button><button class="btn danger" id="reset">${icon('trash',17)} ${ctx.t('Reset progress')}</button></div></div>
+  <section class="profile-badges"><div class="section-title-row"><div><span class="section-kicker">${ctx.t('KEEP COLLECTING')}</span><h2>${ctx.t('All badges')}</h2></div><span class="badge-count">${state.badges.length} / ${BADGES.length}</span></div><div class="badges">${BADGES.map(b => { const on = state.badges.includes(b.id);
     return `<div class="badge ${on ? '' : 'locked'}"><i>${b.icon}</i><div>${b.name}<small>${b.desc}</small></div></div>`; }).join('')}</div></section></div></div>`;
   const paint = () => { root.querySelector('#card').innerHTML = cardHtml(snapshot(state, derive(state)), ctx); };
   paint();
@@ -124,21 +126,22 @@ export function renderProfile(root, ctx) {
   root.querySelector('[data-use-cloud]').onclick = () => ctx.cloud.useCloud();
   root.querySelector('[data-use-device]').onclick = () => ctx.cloud.useDevice();
   const studio = root.querySelector('#avatar-studio');
+  root.querySelectorAll('[data-profile-language]').forEach(button => button.onclick = () => { if (button.dataset.profileLanguage !== ctx.language) ctx.setLanguage(button.dataset.profileLanguage); });
   let activeTab = 'outfit';
   studio.onclick = e => {
     const presentation = e.target.closest('[data-avatar-presentation]');
     if (presentation) {
       const updated = normalizeAvatar({ ...state.avatar, presentation: presentation.dataset.avatarPresentation });
       ctx.update(s => { s.avatar = updated; });
-      studio.innerHTML = avatarStudioHtml(state.avatar, activeTab, savedLabel()); paint(); return;
+      studio.innerHTML = avatarStudioHtml(state.avatar, activeTab, savedLabel(), ctx.t); paint(); return;
     }
     const tab = e.target.closest('[data-avatar-tab]');
-    if (tab) { activeTab = tab.dataset.avatarTab; studio.innerHTML = avatarStudioHtml(state.avatar, activeTab, savedLabel()); return; }
+    if (tab) { activeTab = tab.dataset.avatarTab; studio.innerHTML = avatarStudioHtml(state.avatar, activeTab, savedLabel(), ctx.t); return; }
     const button = e.target.closest('[data-avatar-part]'); if (!button) return;
     const { avatarPart, avatarValue } = button.dataset;
     const updated = normalizeAvatar({ ...state.avatar, [avatarPart]: avatarValue });
     ctx.update(s => { s.avatar = updated; });
-    studio.innerHTML = avatarStudioHtml(state.avatar, activeTab, savedLabel()); paint();
+    studio.innerHTML = avatarStudioHtml(state.avatar, activeTab, savedLabel(), ctx.t); paint();
   };
   root.querySelector('#nm').onchange = e => { ctx.update(s => { s.name = e.target.value.trim().slice(0, 24) || 'Player One'; }); paint(); };
   root.querySelector('#share').onclick = async () => {

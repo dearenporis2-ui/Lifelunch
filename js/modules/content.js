@@ -1,4 +1,5 @@
 // Loads content on demand: a small index up front, each lesson only when opened.
+import { t } from './i18n.js';
 const BASE = 'content/', cache = {};
 const memo = (k, fn) => cache[k] ??= fn().catch(e => { delete cache[k]; throw e; });
 const getJson = u => fetch(u).then(r => { if (!r.ok) throw new Error(u + ' ' + r.status); return r.json(); });
@@ -12,8 +13,13 @@ const norm = c => c[0] === 'i' ? { type: 'info', title: c[1], body: c[2] }
   : c[0] === 'o' ? { type: 'info', kind: 'order', title: c[1], body: c[2], steps: c[3] }
   : c[0] === 'q' ? { type: 'quiz', q: c[1], options: c[2], answer: c[3], why: c[4] }
   : { type: 'quiz', q: 'True or false: ' + c[1], options: ['True', 'False'], answer: c[2] ? 0 : 1, why: c[3] };
-export const loadIndex = () => memo('index', () => getJson(BASE + 'index.json'));
-export const loadLesson = id => memo('l:' + id, () => getJson(`${BASE}lessons/${id}.json`).then(l => ({ ...l, cards: l.cards.map(norm) })));
+const localizeIndex = index => ({ ...index, tracks: index.tracks.map(track => ({
+  ...track, title: t(track.title), blurb: t(track.blurb),
+  lessons: track.lessons.map(lesson => ({ ...lesson, title: t(lesson.title), blurb: t(lesson.blurb) }))
+})) });
+export const loadIndex = () => memo('index', () => getJson(BASE + 'index.json')).then(localizeIndex);
+export const loadLesson = id => memo('l:' + id, () => getJson(`${BASE}lessons/${id}.json`))
+  .then(lesson => ({ ...lesson, title: t(lesson.title), blurb: t(lesson.blurb), cards: lesson.cards.map(norm) }));
 
 // Accepts a YouTube link (watch, youtu.be, embed, shorts) or a bare 11-character id. Returns the id or null.
 export const parseYouTube = v => {

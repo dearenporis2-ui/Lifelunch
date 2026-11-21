@@ -2,7 +2,8 @@
 import { loadIndex, loadLesson } from './content.js';
 import { mountCalc } from './calc.js';
 import { mountActivity, ACTIVITY_KINDS } from './activities.js';
-import { fmt, shuffle, studied, quizResult } from './lessons.js';
+import { fmt, shuffle, studied, quizResult, openSubjectVideo } from './lessons.js';
+import { SUBJECT_VIDEO_GUIDES } from '../data/subjectVideos.js';
 import { lessonCard, questionCard } from './lesson-ui.js';
 import { heartsNow, loseHeart, addHeart, msToNext, fmtWait, MAX_HEARTS, REFILL_COST, GOAL_XP } from './hearts.js';
 import { icon } from './icons.js';
@@ -26,6 +27,32 @@ const PENNY_LINES = {
 };
 const pennyLine = (lines, seed) => lines[Math.abs(seed) % lines.length];
 const ERR = '<div class="empty">Could not load content. Check your connection and refresh.</div>';
+const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+const folderArt = `<svg viewBox="0 0 64 52" aria-hidden="true"><rect class="folder-sheet folder-sheet-back" x="12" y="5" width="37" height="27" rx="3" fill="#FBFFFC"/><rect class="folder-sheet folder-sheet-front" x="19" y="2" width="35" height="27" rx="3" fill="#FFFFFF"/><path d="M5 16h20l5 5h29v24H5z" fill="#D99424"/><path d="M7 14h17l5 5h28v23H7z" fill="#F2B83F"/><path d="M7 23h50v19H7z" fill="#FFD56C"/><path d="M7 23h50" stroke="#E6A931" stroke-width="1.4"/><path d="m34 12 7 4-7 4z" fill="#07866F"/></svg>`;
+const videoFolderButton = (track, tr = value => value) => {
+  const videos = SUBJECT_VIDEO_GUIDES[track.id] || [];
+  if (!videos.length) return '';
+  return `<button type="button" class="path-video-folder" data-video-folder="${escapeHtml(track.id)}" aria-label="${tr('Open video guides for')} ${escapeHtml(track.title)}"><span class="path-folder-art">${folderArt}</span><span class="path-folder-copy"><strong>${tr('Video guides')}</strong><small>${videos.length} ${tr(videos.length === 1 ? 'video' : 'videos')}</small></span></button>`;
+};
+function openVideoShelf(root, track, trigger, tr = value => value) {
+  const videos = SUBJECT_VIDEO_GUIDES[track.id] || [];
+  if (!videos.length) return;
+  const overlay = document.createElement('div'); overlay.className = 'path-video-overlay';
+  const dialog = document.createElement('section'); dialog.className = 'path-video-shelf'; dialog.setAttribute('role', 'dialog'); dialog.setAttribute('aria-modal', 'true'); dialog.setAttribute('aria-labelledby', 'path-video-heading');
+  dialog.innerHTML = `<header class="path-video-shelf-head"><div class="path-video-shelf-brand"><span class="path-shelf-folder-art">${folderArt}</span><div><span class="section-kicker">${tr('A LITTLE EXTRA HELP')}</span><h2 id="path-video-heading">${escapeHtml(track.title)}</h2><p>${videos.length} ${tr(videos.length === 1 ? 'video guide chosen for this subject' : 'video guides chosen for this subject')}</p></div></div><button type="button" class="path-video-shelf-close" aria-label="${tr('Close video guides')}">×</button></header><div class="path-video-shelf-items">${videos.map((video, index) => `<button type="button" class="path-video-paper" data-shelf-video="${escapeHtml(video.id)}"><span class="path-video-paper-art" aria-hidden="true"><i>▶</i><small>${tr('GUIDE')} ${String(index + 1).padStart(2, '0')}</small></span><strong>${escapeHtml(video.title)}</strong><span class="path-video-paper-action">${tr('Watch guide')} <b aria-hidden="true">→</b></span></button>`).join('')}</div>`;
+  overlay.append(dialog); document.body.append(overlay); document.body.classList.add('path-video-shelf-open');
+  const closeButton = dialog.querySelector('.path-video-shelf-close');
+  const close = () => { overlay.remove(); document.body.classList.remove('path-video-shelf-open'); document.removeEventListener('keydown', onKey); if (trigger?.isConnected) trigger.focus(); };
+  const onKey = event => { if (event.key === 'Escape') { event.preventDefault(); close(); } };
+  closeButton.addEventListener('click', close);
+  overlay.addEventListener('click', event => { if (event.target === overlay) close(); });
+  dialog.addEventListener('click', event => {
+    const card = event.target.closest('[data-shelf-video]'); if (!card) return;
+    const video = videos.find(item => item.id === card.dataset.shelfVideo); if (!video) return;
+    close(); openSubjectVideo(video, track.title, trigger, tr);
+  });
+  document.addEventListener('keydown', onKey); closeButton.focus();
+}
 export const sessionCount = s => Math.max(1, Math.round(s / 4)); // about 4 teaching cards per session
 const sessionsDone = (st, id, n) => {
   const pathDone = Math.min(n, st.path?.[id] || 0);
@@ -42,7 +69,7 @@ export async function renderLearn(root, ctx) {
   heartsNow(state);
   const trackIcons = ['coins', 'wallet', 'bank', 'chart', 'shield'];
   let curSeen = false;
-  root.innerHTML = `<div class="page-shell"><header class="page-intro"><span class="page-mark path-mark">${icon('route',26)}</span><div><span class="section-kicker">GUIDED LEARNING PATH</span><h1>Your path</h1><p class="lede">Short sessions that teach, then test you. Follow this recommended route one step at a time, or choose a subject freely from the Library.</p></div></header>` +
+  root.innerHTML = `<div class="page-shell"><header class="page-intro"><span class="page-mark path-mark">${icon('route',26)}</span><div><span class="section-kicker">${ctx.t('GUIDED LEARNING PATH')}</span><h1>${ctx.t('Your path')}</h1><p class="lede">${ctx.t('Short sessions that teach, then test you. Follow this recommended route one step at a time, or choose a subject freely from the Library.')}</p></div></header>` +
     idx.tracks.map((t, u) => {
       let gi = 0;
       const body = t.lessons.map(l => {
@@ -54,16 +81,22 @@ export async function renderLearn(root, ctx) {
           const quizPending = openedFromLibrary && !quizResult(state, l.id);
           const cls = isDone ? 'done' : isCur ? `current${quizPending ? ' quiz-ready' : ''}` : openedFromLibrary ? 'available quiz-ready' : 'locked';
           const x = OFFSETS[gi++ % OFFSETS.length], buddy = isCur ? `<span class="path-buddy ${x > 0 ? 'side-left' : 'side-right'}">${pennySvg('path-penny')}<span class="path-buddy-bubble"><strong>NEXT UP</strong><small class="penny-talk">${pennyTalk(l.title)}</small></span></span>` : '';
-          const status = isDone ? 'done' : quizPending ? 'lesson finished, quiz not taken' : isCur ? 'up next' : openedFromLibrary ? 'unlocked from your Library lesson' : 'locked';
-          return `<div class="node-wrap" style="--x:${x}px"><button class="node ${cls}" data-node="${l.id}:${k}" aria-label="${l.title}, part ${k + 1} of ${n}, ${status}">${icon(isDone ? 'check' : quizPending ? 'target' : isCur ? 'sparkles' : openedFromLibrary ? 'play' : 'lock',isAvailable ? 25 : 22)}</button>${isAvailable ? `<span class="start-tip">${quizPending ? 'Quiz next' : isCur ? 'Start' : 'Unlocked'}</span>` : ''}${buddy}</div>`;
+          const status = ctx.t(isDone ? 'done' : quizPending ? 'lesson finished, quiz not taken' : isCur ? 'up next' : openedFromLibrary ? 'unlocked from your Library lesson' : 'Locked');
+          return `<div class="node-wrap" style="--x:${x}px"><button class="node ${cls}" data-node="${l.id}:${k}" aria-label="${l.title}, ${ctx.t('Part')} ${k + 1} ${ctx.t('of')} ${n}, ${status}">${icon(isDone ? 'check' : quizPending ? 'target' : isCur ? 'sparkles' : openedFromLibrary ? 'play' : 'lock',isAvailable ? 25 : 22)}</button>${isAvailable ? `<span class="start-tip">${ctx.t(quizPending ? 'Quiz next' : isCur ? 'Start' : 'Unlocked')}</span>` : ''}${buddy}</div>`;
         }).join('');
         return `<div class="lesson-label">${l.title}</div><div class="nodes">${nodes}</div>`;
       }).join('');
-      return `<section class="unit" style="--u:${COLORS[u % COLORS.length]}"><div class="unit-head"><span class="unit-icon">${icon(trackIcons[u % trackIcons.length],23)}</span><div class="unit-copy"><span class="section-kicker">PATH ${String(u + 1).padStart(2,'0')}</span><h2>${t.title}</h2><p>${t.blurb}</p></div></div>${body}</section>`;
+      return `<section class="unit" style="--u:${COLORS[u % COLORS.length]}"><div class="unit-head"><div class="unit-head-main"><span class="unit-icon">${icon(trackIcons[u % trackIcons.length],23)}</span><div class="unit-copy"><span class="section-kicker">${ctx.t('PATH')} ${String(u + 1).padStart(2,'0')}</span><h2>${t.title}</h2><p>${ctx.t(t.blurb)}</p></div></div>${videoFolderButton(t, ctx.t)}</div>${body}</section>`;
     }).join('') + '</div>';
   root.onclick = e => {
+    const folder = e.target.closest('[data-video-folder]');
+    if (folder) {
+      const track = idx.tracks.find(item => item.id === folder.dataset.videoFolder);
+      if (track) openVideoShelf(root, track, folder, ctx.t);
+      return;
+    }
     const b = e.target.closest('[data-node]'); if (!b) return;
-    if (b.classList.contains('locked')) { ctx.toast('Finish the earlier steps to unlock this one.', 'bad'); ctx.audio.play('wrong'); return; }
+    if (b.classList.contains('locked')) { ctx.toast(ctx.t('Finish the earlier steps to unlock this one.'), 'bad'); ctx.audio.play('wrong'); return; }
     const [id, k] = b.dataset.node.split(':'); openSheet(root, ctx, idx, id, +k);
   };
 }
@@ -73,12 +106,12 @@ function openSheet(root, ctx, idx, id, k) {
   const again = k < sessionsDone(st, id, n), quizPending = studied(st, id) && !quizResult(st, id), free = id === 'intro' && !st.tutorialDone, hn = heartsNow(st);
   root.querySelector('.sheet-bg')?.remove();
   root.insertAdjacentHTML('beforeend', `<div class="sheet-bg"><div class="sheet" role="dialog" aria-modal="true" aria-label="${meta.title}">
-    <h2>${meta.title}</h2><p>Part ${k + 1} of ${n}. ${again ? 'This path session is complete. Replay it for a small XP bonus.' : quizPending ? 'You’ve finished the lesson material. Its separate quiz is unlocked in Quizzes. Continue this path session to progress along the recommended route.' : `Earn up to ${Math.round(meta.xp / n)} XP.`}</p>
-    ${hn > 0 || free ? `<button class="btn primary big" id="sgo">${again ? 'Replay lesson session' : quizPending ? 'Start path session' : 'Start'}</button>` :
-      `<p class="why"><strong>You are out of hearts.</strong> One comes back every 20 minutes. The next one arrives in ${fmtWait(msToNext(st))}.</p>
-       <button class="btn primary big" id="refill" ${st.cash < REFILL_COST ? 'disabled' : ''}>Refill hearts for ${REFILL_COST} cash</button>
-       <button class="btn big" id="qp">Practice to win a heart</button>`}
-    ${meta.v ? '<button class="btn ghost" id="svid">Watch the video first</button>' : ''}<button class="btn ghost" id="sx">Not now</button></div></div>`);
+    <h2>${meta.title}</h2><p>${ctx.t('Part')} ${k + 1} ${ctx.t('of')} ${n}. ${again ? ctx.t('This path session is complete. Replay it for a small XP bonus.') : quizPending ? ctx.t('You’ve finished the lesson material. Its separate quiz is unlocked in Quizzes. Continue this path session to progress along the recommended route.') : `${ctx.t('Earn up to')} ${Math.round(meta.xp / n)} XP.`}</p>
+    ${hn > 0 || free ? `<button class="btn primary big" id="sgo">${ctx.t(again ? 'Replay lesson session' : quizPending ? 'Start path session' : 'Start')}</button>` :
+      `<p class="why"><strong>${ctx.t('You are out of hearts.')}</strong> ${ctx.t('One comes back every 20 minutes. The next one arrives in')} ${fmtWait(msToNext(st))}.</p>
+       <button class="btn primary big" id="refill" ${st.cash < REFILL_COST ? 'disabled' : ''}>${ctx.t('Refill hearts for')} ${REFILL_COST} ${ctx.t('cash')}</button>
+       <button class="btn big" id="qp">${ctx.t('Practice to win a heart')}</button>`}
+    ${meta.v ? `<button class="btn ghost" id="svid">${ctx.t('Watch the video first')}</button>` : ''}<button class="btn ghost" id="sx">${ctx.t('Not now')}</button></div></div>`);
   const $ = s => root.querySelector(s), close = () => root.querySelector('.sheet-bg')?.remove();
   $('.sheet-bg').onclick = e => { if (e.target.classList.contains('sheet-bg')) close(); };
   $('#sx').onclick = close;

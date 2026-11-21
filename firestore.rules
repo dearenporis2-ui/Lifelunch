@@ -11,10 +11,27 @@ service cloud.firestore {
       allow delete: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Published entries are opt-in and written only by the Admin SDK trigger.
+    // Free-tier leaderboard entries are opt-in and must mirror the owner's save.
     match /leaderboard/{entryId} {
       allow read: if true;
-      allow write: if false;
+      allow create, update: if request.auth != null
+        && request.auth.uid == entryId
+        && exists(/databases/$(database)/documents/users/$(entryId))
+        && get(/databases/$(database)/documents/users/$(entryId)).data.progress.leaderboardOptIn == true
+        && request.resource.data.keys().hasAll(['name', 'avatar', 'xp', 'level', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['name', 'avatar', 'xp', 'level', 'updatedAt'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 24
+        && request.resource.data.name == get(/databases/$(database)/documents/users/$(entryId)).data.progress.name
+        && request.resource.data.avatar == get(/databases/$(database)/documents/users/$(entryId)).data.progress.avatar
+        && request.resource.data.xp is int
+        && request.resource.data.xp == get(/databases/$(database)/documents/users/$(entryId)).data.progress.xp
+        && request.resource.data.xp >= 0
+        && request.resource.data.level is int
+        && request.resource.data.level >= 1
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if request.auth != null && request.auth.uid == entryId;
     }
   }
 }

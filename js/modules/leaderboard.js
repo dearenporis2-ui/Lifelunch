@@ -10,10 +10,10 @@ export function renderLeaderboard(root, ctx) {
   root.innerHTML = `<div class="page-shell leaderboard-page">
     <header class="page-intro"><span class="page-mark leaderboard-mark">${icon('trophy',26)}</span><div><span class="section-kicker">GROW TOGETHER</span><h1>Leaderboard</h1><p class="lede">See how the LifeLaunch community is learning and growing.</p></div></header>
     <section class="card leaderboard-card"><div class="leaderboard-heading"><div><span class="section-kicker">ALL-TIME XP</span><h2>Top learners</h2><p>Updates live as players make progress.</p></div><span class="leaderboard-live"><i></i> Live</span></div>
-      <div class="leaderboard-optin" ${signedIn ? '' : 'hidden'}><label><input type="checkbox" data-leaderboard-optin ${optedIn ? 'checked' : ''}><span><strong>Show me on the leaderboard</strong><small>Your display name, avatar and XP will be public. You can turn this off any time.</small></span></label><span class="leaderboard-optin-status" data-optin-status>${optedIn ? 'You’re visible' : 'You’re private'}</span></div>
+      <div class="leaderboard-optin" ${signedIn ? '' : 'hidden'}><label><input type="checkbox" data-leaderboard-optin ${optedIn ? 'checked' : ''}><span><strong>Show me on the leaderboard</strong><small>Your display name, avatar, XP and an opaque account ID are public. Your email stays private. You can opt out any time.</small></span></label><span class="leaderboard-optin-status" data-optin-status>${optedIn ? 'You’re visible' : 'You’re private'}</span></div>
       ${signedIn ? '' : `<div class="leaderboard-signin"><p>Sign in to join the leaderboard. Your progress is saved on this device until you connect an account.</p><a class="btn primary" href="#/profile">Go to your profile ${icon('arrow',17)}</a></div>`}
       <div class="leaderboard-list" data-leaderboard-list><div class="leaderboard-loading"><span class="leaderboard-spinner"></span><span>Loading the leaderboard…</span></div></div>
-      <p class="leaderboard-note">Only players who choose to appear are listed. XP reflects the progress saved to their LifeLaunch account.</p>
+      <p class="leaderboard-note">Only players who choose to appear are listed. This is a friendly test leaderboard: XP follows saved account progress and is not cheat-proof yet.</p>
     </section></div>`;
 
   const list = root.querySelector('[data-leaderboard-list]');

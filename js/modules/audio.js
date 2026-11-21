@@ -12,6 +12,7 @@ export const SFX = {
   levelup: 'levelup.mp3', badge: 'badge.mp3', streak: 'streak.mp3',
   lessonStart: 'lesson-start.mp3', lessonComplete: 'lesson-complete.mp3',
   goal: 'goal.mp3', heart: 'heart.mp3', challenge: 'challenge.mp3',
+  worldLaptop: 'world-laptop.mp3', worldPouf: 'world-pouf.mp3',
   friendRequest: 'friend-request.mp3', friendAccepted: 'friend-accepted.mp3',
   friendChallenge: 'friend-challenge.mp3', rankUp: 'rank-up.mp3'
 };
@@ -19,7 +20,7 @@ const TONES = {
   click: [520], correct: [660, 880], wrong: [220, 160], reward: [660, 880, 1100],
   levelup: [440, 660, 880, 1320], badge: [880, 1175], streak: [523, 659, 784],
   lessonStart: [392, 523], lessonComplete: [523, 659, 784], goal: [659, 784, 988],
-  heart: [392, 587], challenge: [523, 659, 880], friendRequest: [587, 784],
+  heart: [392, 587], challenge: [523, 659, 880], worldLaptop: [660, 880, 520], worldPouf: [330, 220, 440], friendRequest: [587, 784],
   friendAccepted: [523, 659, 784], friendChallenge: [659, 784], rankUp: [523, 659, 784, 1047]
 };
 
@@ -34,6 +35,7 @@ class AudioManager {
     this.loadedMusicTracks = new Set(); this.musicUrls = new Map(); this.musicLoads = new Map();
     this.musicSuspended = false;
     this.music = new Audio(); this.music.preload = 'none'; this.music.loop = true; this.music.volume = this.musicVolume;
+    this.worldAmbience = null;
   }
   async preload(onProgress = () => {}) {
     const entries = Object.entries(SFX), total = entries.length;
@@ -67,7 +69,36 @@ class AudioManager {
       onProgress(++ready, total, name);
     }));
   }
-  setMuted(m) { this.muted = m; try { localStorage.setItem('ll.muted', m ? '1' : '0'); } catch {} }
+  setMuted(m) {
+    this.muted = m; try { localStorage.setItem('ll.muted', m ? '1' : '0'); } catch {}
+    if (m) this.stopWorldAmbience();
+    document.dispatchEvent(new CustomEvent('lifelaunch:mute-change', { detail: { muted: m } }));
+  }
+  async startWorldAmbience() {
+    if (this.muted) return false;
+    if (this.worldAmbience?.active) return true;
+    try {
+      const source = new URL(BASE + 'world-ambience.mp3', document.baseURI).href;
+      if (!this.worldAmbience) {
+        const player = new Audio(); player.preload = 'none'; player.loop = true; player.volume = .22;
+        this.worldAmbience = { active: false, player, source: '' };
+      }
+      const state = this.worldAmbience;
+      if (state.source !== source) { state.player.src = source; state.player.load(); state.source = source; }
+      await state.player.play();
+      if (this.muted || this.worldAmbience !== state) { state.player.pause(); return false; }
+      state.active = true; return true;
+    } catch {
+      if (this.worldAmbience && !this.worldAmbience.active) {
+        this.worldAmbience.source = ''; this.worldAmbience.player.removeAttribute('src'); this.worldAmbience.player.load();
+      }
+      return false;
+    }
+  }
+  stopWorldAmbience() {
+    const state = this.worldAmbience; if (!state) return;
+    state.active = false; state.player.pause();
+  }
   async setMusicEnabled(enabled) {
     this.musicEnabled = enabled;
     try { localStorage.setItem('ll.music', enabled ? '1' : '0'); } catch {}

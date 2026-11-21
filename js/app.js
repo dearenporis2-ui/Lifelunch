@@ -13,7 +13,7 @@ import { pennySvg, pennyTalk } from './modules/mascot.js';
 import { renderMoneyGarden } from './modules/garden.js';
 
 const KEY = 'lifelaunch.v1';
-const fresh = () => ({ name: 'Player One', cash: 500, savings: 0, xp: 0, streak: 0, lastDay: null, lessons: {}, quizResults: {}, studied: {}, path: {}, hearts: 5, heartsAt: Date.now(), goal: null, badges: [], month: 1, draft: null, daily: null, dailyDone: 0, dailyVaults: 0, gardenItems: [], gardenTheme: 'meadow', gardenDecoration: '', perfects: 0, testNoticeSeen: false, tutorialSeen: false, tutorialDone: false, bestScore: 0, history: [] });
+const fresh = () => ({ name: 'Player One', avatar: { skin: 'warm', hairStyle: 'swoop', hairColor: 'espresso', outfitStyle: 'hoodie', outfitColor: 'lagoon' }, cash: 500, savings: 0, xp: 0, streak: 0, lastDay: null, lessons: {}, quizResults: {}, studied: {}, path: {}, hearts: 5, heartsAt: Date.now(), goal: null, badges: [], month: 1, draft: null, daily: null, dailyDone: 0, dailyVaults: 0, gardenItems: [], gardenTheme: 'meadow', gardenDecoration: '', perfects: 0, testNoticeSeen: false, tutorialSeen: false, tutorialDone: false, bestScore: 0, history: [] });
 const load = () => { try { return { ...fresh(), ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { return fresh(); } };
 const state = load();
 
@@ -106,13 +106,18 @@ const ROUTES = {
   daily: { label: 'Daily', fn: renderDaily, hidden: true },
   budget: { label: 'Budget', fn: renderBudget, hidden: true },
   invest: { label: 'Invest', fn: renderInvest, hidden: true },
+  world: { label: 'World', fn: async (root, ctx) => {
+    const rid = root.dataset.rid;
+    const { renderWorld } = await import('./modules/world.js');
+    if (root.dataset.rid === rid) renderWorld(root, ctx);
+  } },
   profile: { label: 'Profile', fn: renderProfile }
 };
 const current = () => (location.hash.replace(/^#\/?/, '') || 'dashboard').split('/')[0];
 
 function renderHud() {
   const d = derive(state), cur = { daily: 'practice', budget: 'practice', invest: 'practice', quizzes: 'lessons' }[current()] || current();
-  const navIcons = { dashboard: 'home', learn: 'route', practice: 'game', lessons: 'book', profile: 'user' };
+  const navIcons = { dashboard: 'home', learn: 'route', practice: 'game', lessons: 'book', world: 'sparkles', profile: 'user' };
   const menuItems = Object.entries(ROUTES).filter(([, r]) => !r.hidden);
   const mobileLink = (key, label, glyph, detail, tone) => `<a class="mobile-menu-item ${tone} ${key === cur ? 'is-current' : ''}" href="#/${key}" ${key === cur ? 'aria-current="page"' : ''}><span class="mobile-menu-icon">${icon(glyph,22)}</span><span class="mobile-menu-copy"><strong>${label}</strong><small>${detail}</small></span>${icon('arrow',17)}</a>`;
   $('#hud').innerHTML = `<a class="brand" href="#/dashboard"><span class="brand-mark">${icon('sparkles',19)}</span><span>LifeLaunch</span></a>
@@ -126,7 +131,7 @@ function renderHud() {
     <section class="mobile-menu-panel" role="dialog" aria-modal="true" aria-label="LifeLaunch navigation">
       <div class="menu-grabber" aria-hidden="true"></div>
       <div class="mobile-menu-heading"><div><span class="section-kicker">YOUR NEXT MOVE</span><h2>Where to?</h2></div><span class="menu-level">${icon('sparkles',15)} LV ${d.level}</span></div>
-      <nav class="mobile-menu-grid" aria-label="Main navigation">${mobileLink('dashboard','Home','home','Your launchpad','menu-home')}${mobileLink('learn','Learn','route','Pick up your path','menu-learn')}${mobileLink('practice','Practice','game','Play and build skills','menu-practice')}${mobileLink('lessons','Library','book','Browse all lessons','menu-library')}${mobileLink('profile','Profile','user','Your progress and badges','menu-profile')}</nav>
+      <nav class="mobile-menu-grid" aria-label="Main navigation">${mobileLink('dashboard','Home','home','Your launchpad','menu-home')}${mobileLink('learn','Learn','route','Pick up your path','menu-learn')}${mobileLink('practice','Practice','game','Play and build skills','menu-practice')}${mobileLink('lessons','Library','book','Browse all lessons','menu-library')}${mobileLink('world','Your World','sparkles','Explore your little neighborhood','menu-world')}${mobileLink('profile','Profile','user','Your progress and badges','menu-profile')}</nav>
       <div class="mobile-quick-title"><span class="section-kicker">QUICK PLAYS</span><span>Little wins, right now</span></div>
       <div class="mobile-quick-links"><a href="#/daily" class="quick-link">${icon('trophy',18)} Mystery vault ${icon('arrow',15)}</a><a href="#/budget" class="quick-link">${icon('wallet',18)} Budget month ${icon('arrow',15)}</a><a href="#/invest" class="quick-link">${icon('chart',18)} Invest years ${icon('arrow',15)}</a></div>
       <div class="mobile-menu-footer"><span class="menu-spark">${icon('sparkles',16)}</span><span>Small steps. Big future energy.</span><span class="menu-xp">${state.xp} XP</span><button class="menu-theme-toggle" id="theme-toggle-menu" type="button" aria-label="${darkTheme ? 'Switch to light theme' : 'Switch to dark theme'}" aria-pressed="${darkTheme}"><span class="theme-icon">${icon(darkTheme ? 'sun' : 'moon',17)}</span><span class="theme-label">${darkTheme ? 'Light theme' : 'Dark theme'}</span></button></div>
@@ -250,7 +255,7 @@ function route() {
   window.scrollTo(0, 0);
   if (name !== 'p') {
     if (!state.testNoticeSeen) setTimeout(showTestNotice, 650);
-    else if (!state.tutorialSeen) setTimeout(ctx.tour, 900);
+    else if (!state.tutorialSeen && name !== 'world') setTimeout(() => { if (current() === name) ctx.tour(); }, 900);
   }
 }
 

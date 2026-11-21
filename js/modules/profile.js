@@ -19,7 +19,7 @@ function optionButtons(part, selected, presentation) {
   }).join('');
 }
 
-function avatarStudioHtml(value, activeTab = 'outfit') {
+function avatarStudioHtml(value, activeTab = 'outfit', savedLabel = 'Saved on this device') {
   const a = normalizeAvatar(value || DEFAULT_AVATAR);
   const tabs = [['skin','Skin'],['hair','Hair'],['face','Face'],['outfit','Outfit']];
   const panel = activeTab === 'skin'
@@ -29,7 +29,7 @@ function avatarStudioHtml(value, activeTab = 'outfit') {
       : activeTab === 'face'
         ? `<div class="avatar-panel-heading"><span>Expression</span><small>Choose a mood</small></div><div class="avatar-style-grid expression-grid">${optionButtons('expression', a.expression)}</div>`
         : `<div class="avatar-panel-heading"><span>Clothing</span><small>Choose a cut and color</small></div><div class="avatar-style-grid outfit-style-grid">${optionButtons('outfitStyle', a.outfitStyle)}</div><div class="avatar-options swatch-options avatar-color-row">${optionButtons('outfitColor', a.outfitColor)}</div>`;
-  return `<div class="avatar-studio-top"><div><span class="section-kicker">YOUR LITTLE LOOK</span><h2>Make it yours</h2><p>Mix a few details and find a look that feels like you.</p></div><span class="avatar-saved">${icon('device',14)} Saved on this device</span></div>
+  return `<div class="avatar-studio-top"><div><span class="section-kicker">YOUR LITTLE LOOK</span><h2>Make it yours</h2><p>Mix a few details and find a look that feels like you.</p></div><span class="avatar-saved">${icon(savedLabel === 'Saved on this device' ? 'device' : 'cloud',14)} ${savedLabel}</span></div>
     <div class="avatar-studio-body"><div class="avatar-preview-column"><div class="avatar-stage">${avatarSvg(a, 'avatar-art avatar-preview')}<span class="avatar-stage-glint" aria-hidden="true">✦</span></div><div class="avatar-presentation" role="group" aria-label="Character style">${AVATAR_PARTS.presentation.map(option => `<button type="button" data-avatar-presentation="${option.id}" aria-pressed="${a.presentation === option.id}">${option.label}</button>`).join('')}</div></div>
       <div class="avatar-customizer"><div class="avatar-tabs" role="tablist" aria-label="Avatar options">${tabs.map(([id,label]) => `<button type="button" class="avatar-tab" role="tab" id="avatar-tab-${id}" aria-selected="${activeTab === id}" aria-controls="avatar-panel" data-avatar-tab="${id}">${label}</button>`).join('')}</div>
         <section class="avatar-panel" id="avatar-panel" role="tabpanel" aria-labelledby="avatar-tab-${activeTab}">${panel}</section></div>
@@ -53,8 +53,9 @@ function cardHtml(p, ctx) {
 
 export function renderProfile(root, ctx) {
   const { state, derive } = ctx;
+  const savedLabel = () => ctx.cloud.state.conflict ? 'Choose which save to keep' : ctx.cloud.state.user ? (ctx.cloud.state.status.startsWith('Syncing') ? 'Syncing your progress…' : 'Synced to your account') : 'Saved on this device';
   root.innerHTML = `<div class="page-shell"><header class="page-intro"><span class="page-mark profile-mark">${icon('user',26)}</span><div><span class="section-kicker">YOUR PROGRESS, YOURS</span><h1>Your profile</h1><p class="lede">Customize your name, celebrate your milestones, and share your progress.</p></div></header>
-  <div class="profile-layout"><div class="stack profile-settings"><section class="avatar-studio" id="avatar-studio" aria-label="Avatar customization">${avatarStudioHtml(state.avatar)}</section><label class="field">Display name<input id="nm" maxlength="24" value="${ctx.esc(state.name)}"></label>
+  <div class="profile-layout"><div class="stack profile-settings"><section class="avatar-studio" id="avatar-studio" aria-label="Avatar customization">${avatarStudioHtml(state.avatar, 'outfit', savedLabel())}</section><label class="field">Display name<input id="nm" maxlength="24" value="${ctx.esc(state.name)}"></label>
   <section class="account-panel" aria-labelledby="account-title"><div class="account-panel-heading"><span class="section-kicker">YOUR ACCOUNT</span><h2 id="account-title">Save across devices</h2><p>Keep your learning progress when you change devices.</p></div>
     <p class="account-status" data-account-status role="status">${ctx.esc(ctx.cloud.state.status)}</p>
     <div class="account-form-wrap"><button class="btn google-auth" type="button" data-google-sign-in><span aria-hidden="true">G</span> Continue with Google</button><div class="account-divider"><span>or use email</span></div>
@@ -129,15 +130,15 @@ export function renderProfile(root, ctx) {
     if (presentation) {
       const updated = normalizeAvatar({ ...state.avatar, presentation: presentation.dataset.avatarPresentation });
       ctx.update(s => { s.avatar = updated; });
-      studio.innerHTML = avatarStudioHtml(state.avatar, activeTab); paint(); return;
+      studio.innerHTML = avatarStudioHtml(state.avatar, activeTab, savedLabel()); paint(); return;
     }
     const tab = e.target.closest('[data-avatar-tab]');
-    if (tab) { activeTab = tab.dataset.avatarTab; studio.innerHTML = avatarStudioHtml(state.avatar, activeTab); return; }
+    if (tab) { activeTab = tab.dataset.avatarTab; studio.innerHTML = avatarStudioHtml(state.avatar, activeTab, savedLabel()); return; }
     const button = e.target.closest('[data-avatar-part]'); if (!button) return;
     const { avatarPart, avatarValue } = button.dataset;
     const updated = normalizeAvatar({ ...state.avatar, [avatarPart]: avatarValue });
     ctx.update(s => { s.avatar = updated; });
-    studio.innerHTML = avatarStudioHtml(state.avatar, activeTab); paint();
+    studio.innerHTML = avatarStudioHtml(state.avatar, activeTab, savedLabel()); paint();
   };
   root.querySelector('#nm').onchange = e => { ctx.update(s => { s.name = e.target.value.trim().slice(0, 24) || 'Player One'; }); paint(); };
   root.querySelector('#share').onclick = async () => {

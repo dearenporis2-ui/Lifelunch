@@ -322,8 +322,8 @@ function showTestNotice() {
     <h1 id="preview-title">You’re trying LifeLaunch early!</h1>
     <p id="preview-summary" class="preview-summary">This is a test version of the platform. A few important things to know before you jump in:</p>
     <ul class="preview-facts">
-      <li><span class="preview-fact-icon">${icon('device',18)}</span><span><strong>Your progress stays here</strong><small>It’s saved in this browser on this device. It won’t sync to another device, and clearing browser data may erase it.</small></span></li>
-      <li><span class="preview-fact-icon">${icon('user',18)}</span><span><strong>No accounts or database yet</strong><small>Account linking and cloud saves aren’t connected in this test build.</small></span></li>
+      <li><span class="preview-fact-icon">${icon('device',18)}</span><span><strong>Guest progress saves in this browser</strong><small>Create an account from your profile to sync your progress and continue on another device.</small></span></li>
+      <li><span class="preview-fact-icon">${icon('user',18)}</span><span><strong>Accounts are available</strong><small>Sign in with email or Google whenever you’re ready. You can keep playing as a guest too.</small></span></li>
       <li><span class="preview-fact-icon">${icon('shield',18)}</span><span><strong>Use pretend details</strong><small>LifeLaunch is a learning prototype. Don’t enter sensitive personal or financial information.</small></span></li>
     </ul>
     <button class="btn primary preview-continue" type="button">Got it — show me around ${icon('arrow',18)}</button>
@@ -350,6 +350,57 @@ function showTestNotice() {
   requestAnimationFrame(() => { overlay.classList.add('is-visible'); button.focus(); });
 }
 
+const ACCOUNT_REMINDER_DISABLED = 'lifelaunch.accountReminder.disabled';
+const ACCOUNT_REMINDER_SNOOZE = 'lifelaunch.accountReminder.snoozeUntil';
+const ACCOUNT_REMINDER_ATTEMPT = 'lifelaunch.accountReminder.lastAttempt';
+
+function showAccountReminder() {
+  if (current() !== 'dashboard' || !cloudApi || !cloudState.ready || cloudState.connecting || cloudState.user || !state.testNoticeSeen) return;
+  if (!Object.keys(state.studied || {}).length && !Object.keys(state.quizResults || {}).length) return;
+  try {
+    if (localStorage.getItem(ACCOUNT_REMINDER_DISABLED) === '1') return;
+    if (Date.now() < Number(localStorage.getItem(ACCOUNT_REMINDER_SNOOZE) || 0)) return;
+    if (Date.now() - Number(localStorage.getItem(ACCOUNT_REMINDER_ATTEMPT) || 0) < 24 * 60 * 60 * 1000) return;
+  } catch { /* Continue with an in-memory reminder if storage is unavailable. */ }
+  if (document.querySelector('.preview-overlay,.tour,.world-intro-overlay,.celebration-overlay,.account-reminder-overlay')) return;
+  try { localStorage.setItem(ACCOUNT_REMINDER_ATTEMPT, String(Date.now())); } catch {}
+  if (Math.random() > .24) return;
+
+  const overlay = document.createElement('div'); overlay.className = 'account-reminder-overlay';
+  overlay.innerHTML = `<section class="account-reminder-card" role="dialog" aria-modal="true" aria-labelledby="account-reminder-title" aria-describedby="account-reminder-copy">
+    <button class="account-reminder-close" type="button" aria-label="Close reminder">×</button>
+    <span class="account-reminder-icon" aria-hidden="true">${icon('cloud',24)}</span><span class="section-kicker">YOUR PROGRESS, READY TO TRAVEL</span>
+    <h2 id="account-reminder-title">Keep your progress with you</h2><p id="account-reminder-copy">You’re playing as a guest, so this save lives in this browser. Sign in with email or Google to sync it and pick up on another device.</p>
+    <div class="account-reminder-actions"><button class="btn primary" type="button" data-reminder-account>Sign in or create account ${icon('arrow',17)}</button><button class="btn ghost" type="button" data-reminder-later>Maybe later</button><button class="account-reminder-dismiss" type="button" data-reminder-disable>Don’t show this again</button></div>
+  </section>`;
+  document.body.append(overlay);
+  const hud = $('#hud'), view = $('#view'), accountButton = overlay.querySelector('[data-reminder-account]');
+  hud?.setAttribute('inert', ''); view?.setAttribute('inert', ''); document.body.classList.add('account-reminder-open');
+  let closing = false;
+  const close = (choice = 'later') => {
+    if (closing) return; closing = true; document.removeEventListener('keydown', onKey);
+    try {
+      if (choice === 'never') localStorage.setItem(ACCOUNT_REMINDER_DISABLED, '1');
+      else localStorage.setItem(ACCOUNT_REMINDER_SNOOZE, String(Date.now() + 7 * 24 * 60 * 60 * 1000));
+    } catch { /* The reminder can still be dismissed for this visit. */ }
+    overlay.classList.remove('is-visible');
+    setTimeout(() => {
+      overlay.remove(); hud?.removeAttribute('inert'); view?.removeAttribute('inert'); document.body.classList.remove('account-reminder-open');
+      if (choice === 'account') location.hash = '#/profile';
+    }, 220);
+  };
+  const onKey = e => {
+    if (e.key === 'Escape') { e.preventDefault(); close(); }
+    if (e.key === 'Tab') { e.preventDefault(); accountButton.focus(); }
+  };
+  accountButton.addEventListener('click', () => close('account'));
+  overlay.querySelector('[data-reminder-later]').addEventListener('click', () => close());
+  overlay.querySelector('[data-reminder-disable]').addEventListener('click', () => close('never'));
+  overlay.querySelector('.account-reminder-close').addEventListener('click', () => close());
+  document.addEventListener('keydown', onKey);
+  requestAnimationFrame(() => { overlay.classList.add('is-visible'); accountButton.focus(); });
+}
+
 let rc = 0;
 function route() {
   const root = $('#view'), h = location.hash.replace(/^#\/?/, '') || 'dashboard', name = h.split('/')[0];
@@ -370,6 +421,7 @@ function route() {
   if (name !== 'p') {
     if (!state.testNoticeSeen) setTimeout(showTestNotice, 650);
     else if (!state.tutorialSeen && name !== 'world') setTimeout(() => { if (current() === name) ctx.tour(); }, 900);
+    if (name === 'dashboard') setTimeout(showAccountReminder, 3800);
   }
 }
 

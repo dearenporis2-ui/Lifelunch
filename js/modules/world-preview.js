@@ -126,15 +126,16 @@ export function renderWorld(root) {
   const modelLabel = root.querySelector('[data-world-model-label]'), modelSubtitle = root.querySelector('[data-world-model-subtitle]');
   const loadTitle = root.querySelector('[data-world-load-title]'), loadCopy = root.querySelector('[data-world-load-copy]');
   const caption = root.querySelector('[data-world-caption]'), description = root.querySelector('[data-world-description]');
-  let renderer, observer, disposed = false, introTimer = 0, introOverlay = null;
+  let renderer, observer, disposed = false, introTimer = 0, introOverlay = null, transitionRaf = 0, transitioning = false;
   let theta = Math.PI / 4, phi = .94, zoom = matchMedia('(max-width: 720px)').matches ? .68 : 1;
+  let cameraDistance = 22;
   const defaultZoom = zoom;
   let target = new THREE.Vector3(0, 1.6, 0), exterior = null, interior = null, activeAsset = null, mode = 'outside', loadingInterior = false;
   let dragging = false, downX = 0, downY = 0, lastX = 0, lastY = 0;
   const scene = new THREE.Scene(); scene.background = new THREE.Color('#d7f4e8'); scene.fog = new THREE.Fog('#d7f4e8', 30, 60);
   const camera = new THREE.OrthographicCamera(-9, 9, 7.4, -7.4, .1, 100);
   const updateCamera = () => {
-    const radius = 22, sinPhi = Math.sin(phi);
+    const radius = cameraDistance, sinPhi = Math.sin(phi);
     camera.position.set(target.x + radius * sinPhi * Math.sin(theta), target.y + radius * Math.cos(phi), target.z + radius * sinPhi * Math.cos(theta));
     camera.lookAt(target); camera.zoom = zoom; camera.updateProjectionMatrix();
   };
@@ -215,7 +216,7 @@ export function renderWorld(root) {
     // This room is an open-front cutaway. Orbiting around to the closed back
     // makes its solid exterior walls cover the bed and desk, so keep the room
     // camera in the two open-front viewing quadrants.
-    if (mode === 'inside') { theta = Math.PI / 4; phi = .94; }
+    theta = Math.PI / 4; phi = .94; cameraDistance = 22;
     const rect = canvas.getBoundingClientRect(), framed = placeModel(asset, camera, rect.width / Math.max(rect.height, 1), zoom);
     target.copy(framed.target); updateCamera();
     const isRoom = mode === 'inside';
@@ -228,24 +229,74 @@ export function renderWorld(root) {
     enterButton.innerHTML = isRoom ? 'Back outside <span aria-hidden="true">↙</span>' : 'Step inside <span aria-hidden="true">↗</span>';
     enterButton.disabled = false; loading.hidden = true; renderer.render(scene, camera);
   };
+  const transitionTo = async nextMode => {
+    if (transitioning || disposed) return;
+    const nextAsset = nextMode === 'inside' ? interior : exterior;
+    if (!nextAsset) return;
+    transitioning = true; enterButton.disabled = true; canvas.classList.add('is-transitioning');
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduceMotion) {
+      const start = performance.now(), duration = 660, startZoom = zoom;
+      await new Promise(resolve => {
+        const tick = now => {
+          if (disposed) { resolve(); return; }
+          const progress = Math.min(1, (now - start) / duration);
+          const eased = progress * progress * (3 - 2 * progress);
+          cameraDistance = THREE.MathUtils.lerp(22, 7.5, eased);
+          zoom = THREE.MathUtils.lerp(startZoom, startZoom * 1.12, eased);
+          const veil = THREE.MathUtils.clamp((progress - .58) / .42, 0, 1);
+          canvas.style.opacity = String(1 - veil);
+          canvas.style.filter = `blur(${veil * 8}px)`;
+          canvas.style.transform = `scale(${1 + veil * .035})`;
+          updateCamera(); renderer.render(scene, camera);
+          if (progress < 1) transitionRaf = requestAnimationFrame(tick); else resolve();
+        };
+        transitionRaf = requestAnimationFrame(tick);
+      });
+    }
+    if (disposed) return;
+    loading.hidden = true;
+    activate(nextAsset, nextMode);
+    enterButton.disabled = true;
+    if (!reduceMotion) {
+      const start = performance.now(), duration = 440;
+      await new Promise(resolve => {
+        const tick = now => {
+          if (disposed) { resolve(); return; }
+          const progress = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          canvas.style.opacity = String(eased);
+          canvas.style.filter = `blur(${(1 - eased) * 8}px)`;
+          canvas.style.transform = `scale(${1 + (1 - eased) * .035})`;
+          renderer.render(scene, camera);
+          if (progress < 1) transitionRaf = requestAnimationFrame(tick); else resolve();
+        };
+        transitionRaf = requestAnimationFrame(tick);
+      });
+    }
+    canvas.style.opacity = ''; canvas.style.filter = ''; canvas.style.transform = '';
+    canvas.classList.remove('is-transitioning');
+    transitioning = false; enterButton.disabled = false;
+    renderer.render(scene, camera);
+  };
   const enterInterior = async () => {
-    if (mode === 'inside') { activate(exterior, 'outside'); return; }
-    if (loadingInterior) return;
+    if (transitioning || loadingInterior) return;
+    if (mode === 'inside') { await transitionTo('outside'); return; }
     loadingInterior = true; enterButton.disabled = true;
     if (!interior) interior = await loadAsset('interior');
     loadingInterior = false;
-    if (interior) activate(interior, 'inside');
+    if (interior) { loading.hidden = true; await transitionTo('inside'); }
     else { loading.hidden = true; enterButton.disabled = false; }
   };
   enterButton.addEventListener('click', enterInterior);
   const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2();
   const onClickCanvas = e => {
-    if (mode !== 'outside' || dragging || !exterior) return;
+    if (transitioning || mode !== 'outside' || dragging || !exterior) return;
     const rect = canvas.getBoundingClientRect(); pointer.set((e.clientX - rect.left) / rect.width * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
     raycaster.setFromCamera(pointer, camera);
     if (raycaster.intersectObject(exterior, true).length) enterInterior();
   };
-  const pointerDown = e => { dragging = false; downX = lastX = e.clientX; downY = lastY = e.clientY; canvas.setPointerCapture(e.pointerId); canvas.classList.add('is-dragging'); };
+  const pointerDown = e => { if (transitioning) return; dragging = false; downX = lastX = e.clientX; downY = lastY = e.clientY; canvas.setPointerCapture(e.pointerId); canvas.classList.add('is-dragging'); };
   const pointerMove = e => {
     if (!canvas.hasPointerCapture(e.pointerId)) return;
     const dx = e.clientX - lastX, dy = e.clientY - lastY;
@@ -260,6 +311,7 @@ export function renderWorld(root) {
   const pointerUp = e => { if (!dragging) onClickCanvas(e); dragging = false; canvas.classList.remove('is-dragging'); };
   const wheel = e => { e.preventDefault(); zoom = THREE.MathUtils.clamp(zoom * (e.deltaY > 0 ? .92 : 1.08), .5, 1.55); updateCamera(); renderer.render(scene, camera); };
   const controlClick = e => {
+    if (transitioning) return;
     const button = e.target.closest('[data-world-zoom],[data-world-reset]'); if (!button) return;
     if (button.hasAttribute('data-world-reset')) { theta = Math.PI / 4; phi = .94; zoom = defaultZoom; }
     else zoom = THREE.MathUtils.clamp(zoom * (button.dataset.worldZoom === 'in' ? 1.14 : .88), .5, 1.55);
@@ -299,6 +351,7 @@ export function renderWorld(root) {
     window.removeEventListener('hashchange', leaveWorld); document.removeEventListener('visibilitychange', visibility); document.removeEventListener('keydown', introKey);
     enterButton.removeEventListener('click', enterInterior); root.querySelector('.world-controls')?.removeEventListener('click', controlClick);
     canvas.removeEventListener('pointerdown', pointerDown); canvas.removeEventListener('pointermove', pointerMove); canvas.removeEventListener('pointerup', pointerUp); canvas.removeEventListener('pointercancel', pointerUp); canvas.removeEventListener('wheel', wheel);
+    if (transitionRaf) cancelAnimationFrame(transitionRaf);
     introOverlay?.remove(); introOverlay = null; document.body.classList.remove('world-intro-open'); document.querySelector('#hud')?.removeAttribute('inert'); document.querySelector('#view')?.removeAttribute('inert');
     scene.remove(exterior, interior); disposeModel(exterior); disposeModel(interior); renderer.dispose();
   };

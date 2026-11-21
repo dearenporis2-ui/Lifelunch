@@ -16,6 +16,35 @@ const KEY = 'lifelaunch.v1';
 const fresh = () => ({ name: 'Player One', avatar: { skin: 'warm', hairStyle: 'swoop', hairColor: 'espresso', outfitStyle: 'hoodie', outfitColor: 'lagoon' }, cash: 500, savings: 0, xp: 0, streak: 0, lastDay: null, lessons: {}, quizResults: {}, studied: {}, path: {}, hearts: 5, heartsAt: Date.now(), goal: null, badges: [], month: 1, draft: null, daily: null, dailyDone: 0, dailyVaults: 0, gardenItems: [], gardenTheme: 'meadow', gardenDecoration: '', perfects: 0, testNoticeSeen: false, tutorialSeen: false, tutorialDone: false, bestScore: 0, history: [] });
 const load = () => { try { return { ...fresh(), ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { return fresh(); } };
 const state = load();
+const cloudState = { ready: false, connecting: true, user: null, status: 'Guest progress is saved on this device.', conflict: null };
+let cloudApi = null, cloudSaveTimer = 0;
+
+const stableValue = value => Array.isArray(value) ? value.map(stableValue)
+  : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(key => [key, stableValue(value[key])])) : value;
+const stableJson = value => JSON.stringify(stableValue(value));
+const syncMarkerKey = uid => `lifelaunch.v1.synced.${uid}`;
+function saveLocal() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); return true; }
+  catch { toast('Progress could not be saved in this browser', 'bad'); return false; }
+}
+function save() {
+  saveLocal();
+  if (!cloudApi || !cloudState.user || !cloudState.ready || cloudState.conflict) return;
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer = setTimeout(async () => {
+    const uid = cloudState.user?.uid; if (!uid || cloudState.conflict) return;
+    const snapshot = JSON.parse(JSON.stringify(state)); cloudState.status = 'Syncing your progress…';
+    try {
+      await cloudApi.writeProgress(uid, snapshot);
+      localStorage.setItem(syncMarkerKey(uid), stableJson(snapshot));
+      cloudState.status = 'Synced to your account';
+    } catch (error) {
+      console.error('LifeLaunch cloud save failed:', error);
+      cloudState.status = 'Cloud sync failed. Your device save is safe.';
+    }
+    if (current() === 'profile') route();
+  }, 650);
+}
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -67,7 +96,6 @@ function applyTheme() {
   });
 }
 applyTheme();
-function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { toast('Progress could not be saved in this browser', 'bad'); } }
 
 function derive(s) {
   const level = levelOf(s.xp), base = (level - 1) ** 2 * 60, next = level ** 2 * 60;
@@ -94,6 +122,92 @@ function update(fn) {
 }
 
 const ctx = { state, update, toast, esc, money, derive, audio };
+ctx.cloud = {
+  state: cloudState,
+  createAccount: (...args) => cloudApi?.createAccount(...args),
+  signIn: (...args) => cloudApi?.signIn(...args),
+  signInWithGoogle: () => cloudApi?.signInWithGoogle(),
+  signOut: () => cloudApi?.signOutAccount(),
+  deleteProgress: uid => cloudApi?.deleteProgress(uid),
+  useCloud: () => resolveCloudConflict(true),
+  useDevice: () => resolveCloudConflict(false)
+};
+
+async function applyCloudProgress(progress, uid) {
+  Object.assign(state, fresh(), progress);
+  saveLocal();
+  localStorage.setItem(syncMarkerKey(uid), stableJson(progress));
+  cloudState.conflict = null; cloudState.status = 'Synced to your account';
+  renderHud(); route();
+}
+
+async function resolveCloudConflict(useCloud) {
+  const user = cloudState.user, conflict = cloudState.conflict;
+  if (!user || !conflict) return;
+  cloudState.status = 'Syncing your progress…';
+  try {
+    if (useCloud) await applyCloudProgress(conflict.remote, user.uid);
+    else {
+      const local = JSON.parse(JSON.stringify(state));
+      await cloudApi.writeProgress(user.uid, local);
+      localStorage.setItem(syncMarkerKey(user.uid), stableJson(local));
+      cloudState.conflict = null; cloudState.status = 'Synced to your account'; route();
+    }
+  } catch (error) {
+    console.error('LifeLaunch cloud save selection failed:', error);
+    cloudState.status = 'Could not sync yet. Your device save is safe.'; route();
+  }
+}
+
+async function handleCloudAuth(user) {
+  cloudState.user = user; cloudState.ready = true; cloudState.conflict = null;
+  if (!user) {
+    cloudState.status = 'Guest progress is saved on this device.';
+    if (current() === 'profile') route();
+    return;
+  }
+  cloudState.status = 'Checking your cloud save…';
+  if (current() === 'profile') route();
+  try {
+    const remote = await cloudApi.readProgress(user.uid);
+    const local = JSON.parse(localStorage.getItem(KEY) || JSON.stringify(fresh()));
+    if (!remote) {
+      await cloudApi.writeProgress(user.uid, local);
+      localStorage.setItem(syncMarkerKey(user.uid), stableJson(local));
+      cloudState.status = 'Your device progress is now synced';
+    } else {
+      const localText = stableJson(local), remoteText = stableJson(remote);
+      const marker = localStorage.getItem(syncMarkerKey(user.uid));
+      if (localText === remoteText) {
+        localStorage.setItem(syncMarkerKey(user.uid), remoteText); cloudState.status = 'Synced to your account';
+      } else if (marker && localText === marker) {
+        await applyCloudProgress(remote, user.uid);
+      } else if (marker && remoteText === marker) {
+        await cloudApi.writeProgress(user.uid, local);
+        localStorage.setItem(syncMarkerKey(user.uid), localText); cloudState.status = 'Synced your offline progress';
+      } else {
+        cloudState.conflict = { remote };
+        cloudState.status = 'Choose which save to keep';
+      }
+    }
+  } catch (error) {
+    console.error('LifeLaunch cloud sync could not start:', error);
+    cloudState.status = 'Cloud unavailable. Your device save is safe.';
+  }
+  if (current() === 'profile') route();
+}
+
+async function connectFirebase() {
+  try {
+    cloudApi = await import('./modules/firebase.js');
+    cloudState.connecting = false;
+    cloudApi.watchAuth(handleCloudAuth);
+  } catch (error) {
+    console.error('Firebase could not be initialized:', error);
+    cloudState.connecting = false; cloudState.ready = true; cloudState.status = 'Cloud sign-in could not start. Guest mode is still available.';
+    if (current() === 'profile') route();
+  }
+}
 let tourOn = false;
 let streakCelebration = false;
 ctx.tour = () => { if (tourOn) return; tourOn = true; startTutorial(ctx, { onHandoff: () => { tourOn = false; }, onClose: () => { tourOn = false; route(); } }); };
@@ -363,5 +477,6 @@ await audio.preload((done, total) => {
 });
 checkIn();
 route();
+setTimeout(connectFirebase, 900);
 setInterval(() => { if (!document.body.classList.contains('in-session') && heartsNow(state) < 5) renderHud(); }, 60000);
 setTimeout(() => { boot.classList.add('boot-exit'); setTimeout(() => boot.remove(), 700); }, 260);

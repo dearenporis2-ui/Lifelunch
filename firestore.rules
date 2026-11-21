@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create, update: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['progress', 'updatedAt'])
+        && request.resource.data.progress is map
+        && request.resource.data.updatedAt is timestamp;
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Leaderboard records will be written by trusted server code in a later step.
+    match /leaderboard/{entryId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

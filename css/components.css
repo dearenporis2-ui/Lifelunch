@@ -1236,6 +1236,26 @@ html[data-theme="dark"] .garden-eyebrow{color:#80E3B9}html[data-theme="dark"] .g
 html[data-theme="dark"] .badge>i{border-color:#5A4D32;background:linear-gradient(145deg,#3C3426,#302A21)}
 @media(max-width:720px){.dashboard-tiles .tile-icon{flex-basis:29px}}
 .money-motion{position:relative;margin:18px 0 2px;padding:16px 18px;border:1px solid #DCEBE0;border-radius:18px;background:linear-gradient(145deg,#F8FCF7,#EDF8EF);overflow:hidden}
+
+/* Keep the desktop header inside the viewport when translated labels expand. */
+@media(min-width:721px){
+  .hud{width:100%;min-width:0;gap:clamp(7px,1vw,20px);padding-inline:clamp(12px,2vw,40px)}
+  .brand{flex:0 0 auto;white-space:nowrap}
+  .tabs{flex:1 1 0%;min-width:0;justify-content:center;gap:clamp(1px,.35vw,6px)}
+  .tab{min-width:0;gap:clamp(4px,.4vw,8px);padding-inline:clamp(5px,.8vw,15px);white-space:nowrap}
+  .tab>span{font-size:clamp(.75rem,.9vw,1rem)}
+  .hud-stats{flex:0 0 auto;gap:clamp(4px,.55vw,10px)}
+  .hud-stats .chip{padding-inline:clamp(7px,.7vw,13px);white-space:nowrap}
+}
+@media(min-width:721px) and (max-width:2000px){
+  .tabs{display:none!important}
+  #hud{gap:12px}
+  .nav-toggle{display:flex;order:3}
+  .hud-stats{order:2;margin-left:auto;gap:7px}
+  .brand{order:1}
+  .mobile-menu{align-items:center;padding:20px}
+  .mobile-menu-panel{width:min(600px,100%);border-bottom:1px solid rgba(255,255,255,.78);border-radius:30px;transform:translateY(18px) scale(.985)}
+}
 .motion-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.motion-heading>span{color:#16846A;font-size:.67rem;font-weight:900;letter-spacing:.1em}.motion-heading small{color:#809189;font-size:.65rem}
 .money-motion p{margin-top:10px;color:#687E73;font-size:.73rem;line-height:1.4}
 .pay-flow{display:flex;align-items:center;gap:10px}.pay-chip,.pay-split>span{min-width:0;display:grid;gap:3px;padding:9px 11px;border:1px solid #DCE9DF;border-radius:13px;background:#fff}.pay-chip{flex:1}.pay-chip small,.pay-split small{color:#7B8B82;font-size:.62rem}.pay-chip b,.pay-split b{font-size:.95rem;color:#23483B}.pay-arrow{color:#63A186;font-weight:800}.pay-split{flex:1.3;display:grid;grid-template-columns:1fr 1fr;gap:6px}.pay-split .deductions{background:#FFF5EB;border-color:#F2DFCD}.pay-split .deductions b{color:#C66A37}.pay-split .takehome{background:#E9F8EF;border-color:#CDEBD7}.pay-split .takehome b{color:#16846A}
